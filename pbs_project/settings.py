@@ -13,6 +13,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 FEX_MAIL = os.environ.get('FEX_MAIL', 'pbs@dpaw.wa.gov.au')
 FEX_SVR_HTTP = os.environ.get('FEX_SVR_HTTP', 'https://fex.dpaw.wa.gov.au')
 PDF_TO_FEXSRV = os.environ.get('PDF_TO_FEXSRV', True)
+DAY_ROLLOVER_HOUR = int(os.environ.get('DAY_ROLLOVER_HOUR', 17))
 
 # PDF MUTEX - file lock max time 4 mins (4*60)
 MAX_LOCK_TIME = os.environ.get('MAX_LOCK_TIME', 240)
@@ -63,7 +64,7 @@ INSTALLED_APPS = (
     'django_select2',
     'chosen',
     'smart_selects',
-    #'debug_toolbar',
+    'debug_toolbar',
     #'debug_toolbar_htmltidy',
     'crispy_forms',
     'registration',

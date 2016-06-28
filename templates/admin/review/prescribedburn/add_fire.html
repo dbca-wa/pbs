@@ -1,0 +1,108 @@
+{% extends "admin/base_site.html" %}
+{% load i18n staticfiles admin_list %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+  {% url 'admin:prescription_priorityjustification_changelist' as priority_justification %}
+  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
+  <li><a href="{% url 'admin:daily_burn_program' %}?report=epfp_fireload">{% trans 'Daily Burn Program' %}</a> <span class="divider">/</span></li>
+  <li>Add Fire</li>
+</ul>
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/widgets.css" %}">
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+<style>
+    div#id_pageerrors.error {
+        background-color: #F2DEDE;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-bottom: 1px;
+        margin-bottom: 10px;
+    }
+    div.collapse,
+    div.collapse textarea {
+        width: 99%;
+    }
+    hr.id_purposes_hr {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block contentwrapper %}
+<div class="row">
+<div class="span12">
+<div id="id_pageerrors"><span id="id__all__"></span></div>
+<form action="" method="post">{% csrf_token %}
+  <table class="table table-bordered table-striped table-condensed">
+    <tbody>
+        <tr>
+            <th class="cbas">ID *</th>
+            <td colspan="3" class="cbas">{{ form.form.fire_id}}</td>
+            <th class="cbas">Name *</th>
+            <td colspan="3" class="cbas">{{ form.form.name}}</td>
+       </tr>
+         <tr>
+            <th class="cbas">Region *</th>
+            <td colspan="3" class="cbas">{{ form.form.region}}</td>
+            <th class="cbas">District *</th>
+            <td colspan="3" class="cbas">{{ form.form.district}}</td>
+        </tr>
+    </tbody>
+  </table>
+  <table class="table table-bordered table-striped table-condensed">
+    <tbody>
+        <tr>
+            <th class="cbas">Status *</th>
+            <td class="cbas">{{ burnform.status}}</td>
+            <th class="cbas">Area Burnt *</th>
+            <td class="cbas">{{ burnform.area}}</td>
+       </tr>
+         <tr>
+            <th class="cbas">Tenures *</th>
+            <td class="cbas">{{ burnform.tenures}}</td>
+            <th class="cbas">Location *</th>
+            <td class="cbas">{{ burnform.location}}</td>
+        </tr>
+         <tr>
+            <th class="cbas">Condition</th>
+            <td colspan="3" class="cbas">{{ burnform.conditions}}</td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    {{ form.date }}
+<div class="navbar navbar-fixed-bottom">
+  <div class="navbar-inner">
+    <div class="container">
+        <a id="id_save_button" href="#" class="btn pull-right btn-success">{% trans 'Save' %}</a>
+    </div>
+  </div>
+</div>
+</form>
+</div>
+</div>
+
+<script>
+$(function() {
+    $('a#id_save_button').click(function(e) {
+        console.log("********");
+        //ajaxPost(e);
+        $.ajax({
+            type: "POST",
+            url: "",
+            dataType: "json",
+            data: $('form').serialize()
+        });
+    });
+
+});
+
+</script>
+
+{% endblock %}

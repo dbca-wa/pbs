@@ -446,9 +446,21 @@ class Prescription(Audit):
     # ModelAdmin save_model method.
     # Will probably be removed when all contigency objects have been migrated.
     contingencies_migrated = models.BooleanField(default=False, editable=False)
+#    reviewed = models.BooleanField(verbose_name="Reviewed by FMSB and DRFMS", default=False, editable=False)
 
     def __str__(self):
         return self.burn_id
+
+    def purposes_list(self):
+        """
+        Place 'Bushfire Risk Management' at top of list/string
+        """
+        #return ', '.join([i.name.strip('Management') for i in self.purposes.all()])
+        purposes = [i.name for i in self.purposes.all()]
+        if 'Bushfire Risk Management' in purposes:
+            return 'Bushfire Risk Management, ' + ', '.join([i for i in purposes if i != 'Bushfire Risk Management'])
+        return ', '.join([i for i in purposes])
+
 
     def generate_description(self):
         try:
@@ -538,7 +550,19 @@ class Prescription(Audit):
         if self.description == "":
             self.description = self.generate_description()
 
+#        if all(x in [i.review_type for i in self.burnstate.all()] for x in ['FMSB','DRFMS']):
+#            self.reviewed = True
+#        else:
+#            self.reviewed = False
+
         super(Prescription, self).save(**kwargs)
+
+    @property
+    def is_reviewed(self):
+        if all(x in [i.review_type for i in self.burnstate.all()] for x in ['FMSB','DRFMS']):
+            return True
+        else:
+            return False
 
     def get_absolute_url(self):
         return reverse('admin:prescription_prescription_detail',

@@ -1,6 +1,0 @@
-BWD_067, a
-DON_053, b
-BWD_066, c
-BWD_068, d
-WTN_035, e
-BWD_069, f

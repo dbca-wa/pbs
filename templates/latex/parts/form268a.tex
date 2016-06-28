@@ -1,0 +1,96 @@
+\part{268a - Planned Burns}
+  \fancyhead[R] {
+    {\bfseries FIRE268a} \\
+    {\bfseries Fire Management Services Branch} \\
+    \textsc{\Small
+    Technology Park, Western Precinct \\
+    17 Dick Perry Ave \\
+    Kensington WA 6151 \\
+    Phone: (08) 9219 9108 Fax: (08) 9367 9913 \\
+    }
+  }
+
+\fancyfoot[L]{ \leftmark\newline\textbf Custodian: Principal Fire Operations Officer}
+\noindent Sent by: {{ user }}\hfill Date: {{date}} {{time}}\hfill Region: {{region}}
+\subsubsection{Part A: TODAY'S PLANNED BURN PROGRAM}
+
+\begin{table}[h]
+\begin{tabular}{cc}
+    \begin{minipage}{.4\linewidth}
+        \raggedright
+        \begin{tabular} { | l | r | }
+        \hline
+        \textbf{No. of Active Burns} & \textbf{10} \\
+        \hline
+        \end{tabular}
+    \end{minipage} &
+
+    \begin{minipage}{.45\linewidth}
+        \raggedleft
+        \begin{tabular} { | l | r | }
+        \hline
+        \textbf{No. of Active Fires} & \textbf{20} \\
+        \hline
+        \end{tabular}
+
+    \end{minipage} 
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+The Following Burns are proposed for ignition today subject to the approval of the State Duty Officer. The burns will be conducted in accordance with the approved burn plan.
+\footnotesize
+\begin{longtabu} to \linewidth { | X[0.7] | X[2.0] | X[0.8] | X[0.8] | X[0.8] | X[0.8] | X | }
+%%\begin{longtabu} to \linewidth { | X | X | X | X |} %%X | X | X | }
+\hline
+\textbf{Burn ID} & \textbf{Name} & \textbf{Location} & \textbf{Burn Purpose} & \textbf{Area} & \bfseries\makecell[c]{Est Start \\ WST} & \textbf{Invite to Assist}\\
+\hline
+{% for pb in prescribed_burns %}
+\textbf{ {{ pb|texify|safe }}} & {{ pb.name|texify|safe }} & {{ pb.location|texify|safe }} & {{ pb.location|texify|safe }} & {{ pb.planned_area }} & {{ pb.est_start }} & {{ pb.external_assist_str }}\\
+\hline
+{% empty %}
+\multicolumn{6}{|X|}{No Prescribed Burnes Planned for Today} \\
+\hline
+{% endfor %}
+\end{longtabu}
+\end{table}
+
+\subsubsection{Endorsement}
+\begin{tabu} to \linewidth { | X[0.4] | X | }
+\hline
+\textbf{for Regional Manager} & \textbf{ {{ endorsed_by }} } \\
+\hline
+\end{tabu}\\%%[\baselineskip]
+
+\begin{table}[h]
+\subsubsection{Part B: SPECIAL CONDITIONS}
+\footnotsize
+\begin{longtabu} to \linewidth { | X[0.4] | X | }
+\hline
+\textbf{Burn ID} & \textbf{Special Condition of Approval as specified by the SDO (in addition to the compliance of the approved burn plan)} \\
+\hline
+{% for pb in prescribed_burns %}
+  {% if pb.conditions %}
+    \textbf{ {{ pb|texify|safe }}} & {{ pb.conditions|texify|safe }} \\
+     \hline
+  {% endif %}
+{% empty %}
+\multicolumn{6}{|X|}{None} \\
+{% endfor %}
+\hline
+& \\
+\hline
+& \\
+\hline
+\end{longtabu}
+\end{table}
+
+\subsubsection{Approval}
+The planned burns listed in Part A are approved subject to the conditions stipulated in Part B (where applicable).
+\begin{tabu} to \linewidth { | X[0.4] | X | }
+\hline
+\textbf{for State Duty Officer} & \textbf{ {{ approved_by }} } \\
+\hline
+\end{tabu}\\%%[\baselineskip]
+
+\clearpage

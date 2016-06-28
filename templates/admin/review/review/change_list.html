@@ -1,0 +1,338 @@
+{% extends "admin/change_list.html" %}
+{% load i18n staticfiles admin_list %}
+{% load multiselect_extras %}
+
+{% block breadcrumbs %}
+{% endblock %}
+{% block content_title %}
+<h1>Regional Overview</h1>
+{% endblock %}
+
+{% comment %}
+{% block filters %}
+{% if cl.has_filters %}
+<div class="span3 hide">
+  <ul class="nav nav-list">
+      {% for spec in cl.filter_specs %}
+        {% admin_list_filter cl spec %}
+      {% endfor %}
+  </ul>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{# object-tools block should be empty (i.e. no "Create prescribed fire plan" button) #}
+{% block object-tools %}{% endblock %}
+
+</div>
+<button id="toggletools" type="button" class="btn btn-success btn-small pull-right" style="margin-top:0px;">
+    Search and Column tools
+</button>
+</div>
+<div class="row toggletools hide">
+    <div class="span12">
+        <div class="alert alert-success">
+            <strong>Filter</strong>
+            <div class="row">
+                <div class="filter-tools btn-group span12" style="white-space:normal;">
+                    <form id="id_form_filtering" action="/prescription/prescription/" method="post">
+                        {% csrf_token %}
+                        <div class="span8" >
+                            {% multiselect_form %}
+                        </div>
+                        <div class="span3">
+                            <div class="search-tools span3 hide" ></div>
+                            <div>
+                                <input type="submit"
+                                       class="btn btn-success btn-small btn-block"
+                                       style="float:right"
+                                       value="Update selection">
+                            </div>
+                        </div>
+                    </form >
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="span12">
+        <div class="alert alert-info">
+            <strong>Show/Hide Columns</strong>
+            <div class="column-tools btn-group" style="white-space:normal;">
+                <button id="template-button" class="btn btn-small btn-info hide">template-button</button>
+            </div>
+        </div>
+    </div>
+    <div class="span12">
+        <a id="id_filter_url" class="btn btn-success btn-block" href="">Update selection</a>
+        <br />
+    </div>
+</div>
+<script type="text/javascript" src="//static.dpaw.wa.gov.au/static/libs/URI.js/1.16.1/URI.min.js"></script>
+<!-- The visibility-tools script will bring a Vis object into scope -->
+<script src="{% static 'pbs/js/visibility-tools.js' %}"></script>
+<script>
+$(document).ready(function() {
+    $('.changelist-multiselect').each(function () {
+        var self = this;
+        $(this).multiselect({
+            buttonText: function() {
+                return $(self).attr('title');
+            },
+            buttonClass: "btn btn-small",
+            checkboxName: $(self).attr("id")
+        });
+    });
+
+    window.hidden_columns = JSON.parse(localStorage.getItem("regional_summary_hidden_columns")) ||
+                            ["contentious", "approval_expiry", "aircraft_burn", "allocation",
+                             "status", "prescribing_officer_name", "remote_sense_priority",
+                             "date_modified_local", "contingencies_migrated"];
+    var untoggleable_columns = ["action-checkbox-column", "burn_id", "name", "region", "district"];
+    localStorage.setItem("regional_summary_hidden_columns", JSON.stringify(hidden_columns));
+    var column_button = $("button#template-button");
+
+    var tools = $("div.toggletools");
+    var toolsButton = $("button#toggletools");
+    var visKey = "toolsVisible";
+    var myStore = localStorage;
+    var toolsVisible = Vis.getToolsVisibility(myStore, visKey);
+    if (toolsVisible === "true") {
+        Vis.ensureToolsVisible(tools, toolsButton, myStore, visKey);
+    } else {
+        Vis.ensureToolsHidden(tools, toolsButton, myStore, visKey);
+    }
+
+
+    $("table#result_list thead").find("th").each(function() {
+        var newbutton = column_button.clone();
+        var name = $(this).text();
+        var cclass = $(this).attr("class");
+        if (cclass) {
+            // Note that the line below fails on an empty query result.
+            var cclass = cclass.split("column-")[1] || cclass.split(" ")[1];
+            cclass = cclass.split(" ")[0]
+        } else {
+            // Hide the table if it's empty (columns have no id's)
+            $('table#result_list thead').addClass('hide');
+            return false;
+        }
+        if ($.inArray(cclass, untoggleable_columns) > -1) {
+            return true;
+        }
+        var cid = "toggle-" + cclass;
+        newbutton.attr("id", cid);
+        newbutton.attr("data-cclass", cclass);
+        newbutton.text(name);
+        if ($.inArray(cclass, hidden_columns) > -1) {
+            var index = $("th.column-" + cclass).index() + 1;
+            $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').addClass("hide");
+            newbutton.removeClass("btn-info");
+        }
+        newbutton.removeClass("hide");
+        $("div.column-tools").append(newbutton);
+
+    });
+    $("div.column-tools button").on("click", function(evt) {
+        var button = $(evt.target)
+        var index = $("th.column-" + button.attr("data-cclass")).index() + 1;
+        if (button.hasClass("btn-info")) {
+            $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').addClass("hide");
+            button.removeClass("btn-info");
+            hidden_columns.push(button.attr("id").slice(7));
+        } else {
+            $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').removeClass("hide");
+            button.addClass("btn-info");
+            hidden_columns = $.grep(hidden_columns, function(value) {return button.attr("id").search(value) != 7});
+        }
+        localStorage.setItem("regional_summary_hidden_columns", JSON.stringify(hidden_columns));
+        Vis.setToolsVisibilty(myStore, visKey, toolsVisible);
+    })
+    $("div.search-tools").append($("div#toolbar form").css({"margin": 0}));
+
+    // upgrade django's filters into more compact dropdowns
+    //var filters = $("div.span3 ul.nav-list").parents("div.span3").addClass("hide");
+    var filters = $("div.span3 ul.nav-list");
+    var templateFilterDropdown = $("#template-filter-dropdown");
+    var filterDiv = $("div.filter-tools");
+    filters.find("li.nav-header").each(function() {
+        var dropdown = templateFilterDropdown.clone()
+        dropdown.find("ul").append($(this).nextUntil("li.nav-header"));
+        var buttonText = $(this).text()
+        buttonText = buttonText.slice(3);
+        buttonText = buttonText.charAt(0).toUpperCase() + buttonText.slice(1);
+        var button = dropdown.find("a.btn").prepend(buttonText);
+        if (dropdown.find("li.active").text().slice(1) != "All") {
+            button.addClass("btn-success");
+        }
+        filterDiv.append(dropdown);
+        dropdown.removeClass("hide");
+    });
+
+    {% if request.user.profile.region %}
+    var myRegion = filterDiv.find("a:contains(Region)")
+                            .siblings("ul")
+                            .find("li:contains({{ request.user.profile.region }})")
+                            .clone()
+    var button = myRegion.find("a")
+                            .clone()
+                            .addClass("btn btn-small")
+                            .prepend("My Region (")
+                            .append(")");
+    if(myRegion.hasClass("active")) {
+        button.addClass("btn-success");
+    } else {
+        button.addClass("btn-inverse")
+    }
+    filterDiv.prepend(button);
+    {% endif %}
+
+    $("#tablemask").removeClass("hide");
+    toolsButton.click(function() {
+        if (tools.hasClass("hide")) {
+            Vis.ensureToolsVisible(tools, toolsButton, myStore, visKey);
+        } else {
+            Vis.ensureToolsHidden(tools, toolsButton, myStore, visKey);
+        }
+    });
+    if ($('table#result_list thead').hasClass('hide')) {
+        toolsButton.click();
+    }
+
+    // ---------------------------------------------------------
+    // Hacky filter/column sort solution follows
+    // ---------------------------------------------------------
+    // First, hide the form submit and prevent it being submitted.
+    $("form#id_form_filtering").submit(function(evt) {
+        evt.preventDefault();
+    });
+    $("input.btn:submit").hide();
+    // Insert the new filter button in its place.
+    $("a#id_filter_url").insertAfter($("input.btn:submit"));
+
+    var base_url = "{% url 'admin:prescription_prescription_changelist' %}"
+    // Parse the current URL query parameters into an object.
+    var qs = URI(document.URL).query(true);
+
+    // Iterate through each query parameter and convert comma-separated value into an array.
+    $.each(qs, function(key, val) {
+        // Alter the key to remove "__in" from the end (if present).
+        if (key.substr(-4) === "__in") {
+            qs[key.replace("__in", "")] = val.split(",");
+            delete qs[key];
+        }
+    });
+
+    // SPECIAL CASE
+    // Check if both "region__id__exact" and "region__id__in" query parameters are present.
+    // If so, combine them into a single "region__id" parameter.
+    $.each(qs, function(key, val) {
+        if (key === "region__id__exact") {
+            if ("region__id" in qs) {
+                qs["region__id"].push(val);
+                delete qs[key];
+            } else {
+                qs["region__id"] = [val];
+                delete qs[key];
+            }
+        }
+    });
+
+    // Next, iterate through each checkbox and determine if it should be checked or not.
+    $("input:checkbox").each(function() {
+        if (this.name in qs) {
+            if (qs[this.name].indexOf(this.value.toString()) > -1) {
+                this.checked = true;
+            }
+        }
+    });
+
+    // Onchange event for filter form check boxes:
+    // Whenever an option is selected/deselected, update the qs object.
+    // Then rewrite the "Filter URL" href with query parameters.
+    $("input:checkbox").change(function() {
+        // Parse what parameter this checkbox is filtering.
+        var key = this.name;
+        var val = this.value;
+
+        switch(key) {
+            // SPECIAL CASE - boolean fields.
+            case "contentious":
+            case "aircraft_burn":
+                if (this.checked) {
+                    // Traverse up the DOM to the parent li and find its only sibling.
+                    var otherLi = $(this).parents("li").siblings()[0];
+                    // Walk down the DOM to the single input element and uncheck it.
+                    var otherInput = $(otherLi).find("input")[0];
+                    otherInput.checked = false;
+                    qs[key] = val;  // Just replace the parameter value.
+                    //otherOption.checked = false;
+                } else {
+                    delete qs[key];
+                }
+                break;
+            // All other field types.
+            default:
+                if (key in qs && qs[key] instanceof Array) {  // Key is already present.
+                    if (this.checked) {
+                        qs[key].push(val);
+                        qs[key] = $.unique(qs[key]);
+                    } else { // Unchecked; remove the value from the key.
+                        var index = qs[key].indexOf(val);
+                        if (index > -1) {
+                            qs[key].splice(index, 1);
+                        }
+                    }
+                } else { // Key is not present.
+                    if (this.checked) {
+                        qs[key] = [val];
+                    }
+                }
+        }
+
+        // Iterate through each key/value in the filter parameters
+        var searchQs = {};
+        for (var key in qs) {
+            switch(key) {
+                case "contentious":
+                case "aircraft_burn":
+                case "o":
+                    searchQs[key] = qs[key];
+                    break;
+                default:
+                    // Add "__in" to the end of non-boolean parameters.
+                    searchQs[key + "__in"] = qs[key].join(',');
+            }
+        };
+        // Finally, replace the target URL.
+        updateFilterUrl(searchQs);
+    });
+
+    // Function to replace the target URL with the base_url plus query parameters.
+    var updateFilterUrl = function(qs) {
+        $("a#id_filter_url").attr("href", URI(base_url).addSearch(qs));
+    }
+
+    // ---------------------------------------------------------
+    // Hacky filter/column sort solution ends
+    // ---------------------------------------------------------
+});
+</script>
+<div id="tablemask" class="hide row">
+<div class="span12">
+    {{ block.super }}
+</div>
+</div>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<script>
+    $(function() {
+        $("div.actions span.all").hide();
+        $("div.actions span.question").hide();
+        $("div.actions span.clear").hide();
+    });
+</script>
+{% endblock %}
+{% endcomment %}

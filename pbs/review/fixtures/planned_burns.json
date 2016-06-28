@@ -1,0 +1,280 @@
+[
+{
+  "pk": 1,
+  "model": "review.externalassist",
+  "fields": {
+    "name": "Volunteers"
+  }
+},
+{
+  "pk": 2,
+  "model": "review.externalassist",
+  "fields": {
+    "name": "DFES"
+  }
+},
+{
+  "pk": 3,
+  "model": "review.externalassist",
+  "fields": {
+    "name": "DPaW Ext"
+  }
+},
+
+{
+  "COMMENT": "PLANNED, APPROVED",
+  "pk": 1,
+  "model": "review.prescribedburn",
+  "fields": {
+    "creator": ["jawaidm"],
+    "modifier": ["jawaidm"],
+    "created": "2016-05-11",
+    "modified": "2016-05-11",
+    "prescription": 613,
+    "date": "2016-05-11",
+    "status": null,
+    "form_name": 1,
+    "approval_status": 4,
+    "approval_status_modified": "2016-05-11 18:18:18",
+    "submitted_by": ["jawaidm"],
+    "submitted_date": "2016-05-11 18:18:18",
+    "endorsed_by": ["nicksa"],
+    "endorsed_date": "2016-05-11 18:18:18",
+    "approved_by": ["wilmab"],
+    "approved_date": "2016-05-11 18:18:18",
+    "further_ignitions": "False",
+    "planned_area": 10,
+    "area": null,
+    "est_start": "18:59:59",
+    "conditions": "Some ..."
+  }
+},
+{
+  "COMMENT": "PLANNED, APPROVED",
+  "pk": 2,
+  "model": "review.prescribedburn",
+  "fields": {
+    "creator": ["jawaidm"],
+    "modifier": ["jawaidm"],
+    "created": "2016-05-11",
+    "modified": "2016-05-11",
+    "prescription": 614,
+    "date": "2016-05-11",
+    "status": null,
+    "form_name": 1,
+    "approval_status": 4,
+    "approval_status_modified": "2016-05-11 18:18:18",
+    "submitted_by": ["jawaidm"],
+    "submitted_date": "2016-05-11 18:18:18",
+    "endorsed_by": ["nicksa"],
+    "endorsed_date": "2016-05-11 18:18:18",
+    "approved_by": ["wilmab"],
+    "approved_date": "2016-05-11 18:18:18",
+    "further_ignitions": "False",
+    "planned_area": 10,
+    "area": null,
+    "est_start": "18:59:59",
+    "conditions": "Some ..."
+  }
+},
+{
+  "COMMENT": "PLANNED, APPROVED",
+  "pk": 3,
+  "model": "review.prescribedburn",
+  "fields": {
+    "creator": ["jawaidm"],
+    "modifier": ["jawaidm"],
+    "created": "2016-05-11",
+    "modified": "2016-05-11",
+    "prescription": 615,
+    "date": "2016-05-11",
+    "status": null,
+    "form_name": 1,
+    "approval_status": 4,
+    "approval_status_modified": "2016-05-11 18:18:18",
+    "submitted_by": ["jawaidm"],
+    "submitted_date": "2016-05-11 18:18:18",
+    "endorsed_by": ["nicksa"],
+    "endorsed_date": "2016-05-11 18:18:18",
+    "approved_by": ["wilmab"],
+    "approved_date": "2016-05-11 18:18:18",
+    "further_ignitions": "False",
+    "planned_area": 10,
+    "area": null,
+    "est_start": "18:59:59",
+    "conditions": "Some ..."
+  }
+},
+{
+  "COMMENT": "DUPLICATE, PLANNED, ENDORSED",
+  "pk": 4,
+  "model": "review.prescribedburn",
+  "fields": {
+    "creator": ["jawaidm"],
+    "modifier": ["jawaidm"],
+    "created": "2016-05-11",
+    "modified": "2016-05-11",
+    "prescription": 616,
+    "date": "2016-05-11",
+    "status": null,
+    "form_name": 1,
+    "approval_status": 3,
+    "approval_status_modified": "2016-05-11 18:18:18",
+    "submitted_by": ["jawaidm"],
+    "submitted_date": "2016-05-11 18:18:18",
+    "endorsed_by": ["nicksa"],
+    "endorsed_date": "2016-05-11 18:18:18",
+    "further_ignitions": "False",
+    "planned_area": 10,
+    "area": null,
+    "est_start": "18:59:59",
+    "conditions": "Some ..."
+  }
+},
+{
+  "COMMENT": "DUPLICATE BURN_ID, ACTIVE, APPROVED",
+  "pk": 5,
+  "model": "review.prescribedburn",
+  "fields": {
+    "creator": ["jawaidm"],
+    "modifier": ["jawaidm"],
+    "created": "2016-05-11",
+    "modified": "2016-05-11",
+    "prescription": 616,
+    "date": "2016-05-11",
+    "status": 1,
+    "form_name": 2,
+    "approval_status": 4,
+    "approval_status_modified": "2016-05-11 18:18:18",
+    "submitted_by": ["jawaidm"],
+    "submitted_date": "2016-05-11 18:18:18",
+    "endorsed_by": ["nicksa"],
+    "endorsed_date": "2016-05-11 18:18:18",
+    "approved_by": ["wilmab"],
+    "approved_date": "2016-05-11 18:18:18",
+    "further_ignitions": "False",
+    "planned_area": 10,
+    "area": null,
+    "est_start": "18:59:59",
+    "conditions": "Some ..."
+  }
+},
+{
+  "COMMENT": "ACTIVE, APPROVED",
+  "pk": 6,
+  "model": "review.prescribedburn",
+  "fields": {
+    "creator": ["jawaidm"],
+    "modifier": ["jawaidm"],
+    "created": "2016-05-11",
+    "modified": "2016-05-11",
+    "prescription": 617,
+    "date": "2016-05-11",
+    "status": 1,
+    "form_name": 2,
+    "approval_status": 4,
+    "approval_status_modified": "2016-05-11 18:18:18",
+    "submitted_by": ["jawaidm"],
+    "submitted_date": "2016-05-11 18:18:18",
+    "endorsed_by": ["nicksa"],
+    "endorsed_date": "2016-05-11 18:18:18",
+    "approved_by": ["wilmab"],
+    "approved_date": "2016-05-11 18:18:18",
+    "further_ignitions": "False",
+    "planned_area": 10,
+    "area": null,
+    "est_start": "18:59:59",
+    "conditions": "Some ..."
+  }
+},
+{
+  "COMMENT": "ACTIVE, APPROVED",
+  "pk": 7,
+  "model": "review.prescribedburn",
+  "fields": {
+    "creator": ["jawaidm"],
+    "modifier": ["jawaidm"],
+    "created": "2016-05-11",
+    "modified": "2016-05-11",
+    "prescription": 618,
+    "date": "2016-05-11",
+    "status": 1,
+    "form_name": 2,
+    "approval_status": 4,
+    "approval_status_modified": "2016-05-11 18:18:18",
+    "submitted_by": ["jawaidm"],
+    "submitted_date": "2016-05-11 18:18:18",
+    "endorsed_by": ["nicksa"],
+    "endorsed_date": "2016-05-11 18:18:18",
+    "approved_by": ["wilmab"],
+    "approved_date": "2016-05-11 18:18:18",
+    "further_ignitions": "False",
+    "planned_area": 10,
+    "area": null,
+    "est_start": "18:59:59",
+    "conditions": "Some ..."
+  }
+},
+{
+  "COMMENT": "ACTIVE, APPROVED",
+  "pk": 8,
+  "model": "review.prescribedburn",
+  "fields": {
+    "creator": ["jawaidm"],
+    "modifier": ["jawaidm"],
+    "created": "2016-05-11",
+    "modified": "2016-05-11",
+    "prescription": 619,
+    "date": "2016-05-11",
+    "status": 1,
+    "form_name": 2,
+    "approval_status": 4,
+    "approval_status_modified": "2016-05-11 18:18:18",
+    "submitted_by": ["jawaidm"],
+    "submitted_date": "2016-05-11 18:18:18",
+    "endorsed_by": ["nicksa"],
+    "endorsed_date": "2016-05-11 18:18:18",
+    "approved_by": ["wilmab"],
+    "approved_date": "2016-05-11 18:18:18",
+    "further_ignitions": "False",
+    "planned_area": 10,
+    "area": null,
+    "est_start": "18:59:59",
+    "conditions": "Some ..."
+  }
+},
+{
+  "COMMENT": "INACTIVE, APPROVED",
+  "pk": 9,
+  "model": "review.prescribedburn",
+  "fields": {
+    "creator": ["jawaidm"],
+    "modifier": ["jawaidm"],
+    "created": "2016-05-11",
+    "modified": "2016-05-11",
+    "prescription": 620,
+    "date": "2016-05-11",
+    "status": 2,
+    "form_name": 2,
+    "approval_status": 4,
+    "approval_status_modified": "2016-05-11 18:18:18",
+    "submitted_by": ["jawaidm"],
+    "submitted_date": "2016-05-11 18:18:18",
+    "endorsed_by": ["nicksa"],
+    "endorsed_date": "2016-05-11 18:18:18",
+    "approved_by": ["wilmab"],
+    "approved_date": "2016-05-11 18:18:18",
+    "further_ignitions": "False",
+    "planned_area": 10,
+    "area": null,
+    "est_start": "18:59:59",
+    "conditions": "Some ..."
+  }
+}
+
+
+
+]
+
+
+

@@ -59,8 +59,8 @@ from pbs.stakeholder.admin import (CriticalStakeholderAdmin,
                                    PublicContactAdmin, NotificationAdmin)
 from pbs.stakeholder.models import (CriticalStakeholder, PublicContact,
                                     Notification)
-from pbs.review.models import (BurnState)
-from pbs.review.admin import (BurnStateAdmin)
+from pbs.review.models import (BurnState, PrescribedBurn)
+from pbs.review.admin import (BurnStateAdmin, PrescribedBurnAdmin, FireAdmin)
 
 from swingers.sauth.sites import AuditSite
 
@@ -69,6 +69,7 @@ import unicodecsv
 import datetime
 from dateutil import tz
 import re
+import itertools
 
 
 log = logging.getLogger(__name__)
@@ -115,6 +116,13 @@ class PrescriptionSite(AuditSite):
             url(r'^endorse-authorise/$',
                 wrap(self.endorse_authorise_summary),
                 name='endorse_authorise_summary'),
+#            url(r'^daily-burn-program/$',
+#                wrap(self.daily_burn_program),
+#                name='daily_burn_program'),
+#            url(r'^daily-burn-program/add$',
+#                wrap(self.daily_burn_program_add),
+#                name='daily_burn_program_add'),
+
             url(r'^endorse-authorise/export_csv/$',
                 wrap(self.export_to_csv),
                 name='endorse_authorise_exportcsv'),
@@ -489,6 +497,7 @@ site.register(PostBurnChecklist, PostBurnChecklistAdmin)
 site.register(OperationalOverview, OperationalOverviewAdmin)
 
 site.register(BurnState, BurnStateAdmin)
+site.register(PrescribedBurn, PrescribedBurnAdmin)
 
 # add our own texify filter to the builtins here.
 add_to_builtins('pbs.prescription.templatetags.texify')

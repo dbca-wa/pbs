@@ -1,0 +1,56 @@
+{% extends "admin/change_form.html" %}
+
+
+{% block extrahead %}{{ block.super }}
+<button type="button">Click</button>
+
+
+<script>
+$(function() {
+
+    $("#id_prescription").change(function () {
+        console.log('True  ' + $("#id_prescription").val() )
+        //$("#id_tenures").text( $('option:selected', $("#id_prescription")).text() );
+        //$("#id_location").val("{% url 'admin:prescription_view' %}");
+
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'admin:prescription_view' %}",
+            data: {
+                //burn_id: $('option:selected', $("#id_prescription")).text()
+                burn_id: $("#id_prescription :selected").text()
+            },
+            success: function(response){
+                var response = JSON.parse(response);
+                console.log("response " + response);
+                //$("#id_approval_status").val(2);•
+                //$("#id_approval_status option[value='1']").attr("selected", true);
+                console.log("response.location " + response['location']);
+                $("#id_location").val(response['location']);
+                $("#id_tenures").val(response['tenures']);
+
+
+            }
+            //success: console.log('success - jm' + checked_list), //remove_rows(),
+        })
+
+
+    });
+
+
+        $("select#id_risk").prop('disabled', true);
+        $("a#add_id_risk").hide();
+        $('form').bind('submit', function() {
+            $('select#id_risk').removeAttr('disabled');
+        });
+
+    //$("#id_date").attr('readonly','readonly')
+
+    $(".datetimeshortcuts").find('a').remove()
+    //$("#id_prescription").click(function () {
+    //    $(".datetimeshortcuts").find('a').remove()
+    //});
+});
+
+</script>
+{% endblock %}

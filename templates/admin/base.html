@@ -80,6 +80,8 @@
 {% load i18n %}
 {% url 'admin:index' as home %}
 {% url 'admin:prescription_prescription_changelist' as all_prescriptions %}
+{% url 'admin:review_prescribedburn_add' as add_prescribed_burn %}
+{% url 'admin:review_prescribedburn_add' as add_fire %}
 {% if current %}
 {% url 'admin:prescription_prescription_sitemap' current.id as sitemap %}
 {% url 'admin:prescription_prescription_detail' current.id as overview %}
@@ -250,6 +252,8 @@
               <li{% if request.path == endorse_authorise_summary %} class="active"{% endif %}><a href="{{ endorse_authorise_summary }}"><i class="icon-dashboard"></i> Endorse/Authorise Summary</a></li>
               {% url 'admin:epfp_review_summary' as epfp_review_summary %}
               <li{% if request.path == epfp_review_summary %} class="active"{% endif %}><a href="{{ epfp_review_summary }}"><i class="icon-dashboard"></i> Day of Burn ePFP review</a></li>
+              {% url 'admin:daily_burn_program' as daily_burn_program %}
+              <li{% if request.path == daily_burn_program %} class="active"{% endif %}><a href="{{ daily_burn_program }}"><i class="icon-dashboard"></i> Daily Burn Program</a></li>
               {% if current %}
             </ul>
             <ul class="nav pull-right">
@@ -294,7 +298,7 @@
                   <li{% if request.path == exclusion_area %} class="active"{% endif %}><a href="{{ exclusion_area }}">B5 - Areas to be Excluded from ignition</a></li>
                   <li{% if request.path == contingency %} class="active"{% endif %}><a href="{{ contingency }}">B6 - Contingency Plan</a></li>
                   <li{% if request.path == org_structure %} class="active"{% endif %}><a href="{{ org_structure }}">B7 - Organisational Structure</a></li>
-                  <li{% if request.path == briefing_checklist %} class="active"{% endif %}><a href="{{ briefing_checklist }}">B8 - Briefing Checklist (SMEACS)</a></li>
+                  <li{% if request.path == briefing_checklist %} class="active"{% endif %}><a href="{{ briefing_checklist }} target=_blank">B8 - Briefing Checklist (SMEACS)</a></li>
                   <li{% if request.path == sectionb9 %} class="active"{% endif %}><a href="{{ sectionb9 }}">B9 - Operations Officer's Day of Burn Checklist</a></li>
                       <li{% if request.path == sectionb10 %} class="active"{% endif %}><a href="{{ sectionb10 }}">B10 - Fire and Weather Observations</a></li>
                   <li{% if request.path == area_achievement %} class="active"{% endif %}><a href="{{ area_achievement }}">B11 - DoB achievement update</a></li>

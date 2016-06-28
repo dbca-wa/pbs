@@ -1,0 +1,13 @@
+{% extends "admin/change_form.html" %}
+{% block extrahead %}{{ block.super }}
+<p>************************<p>
+<script>
+    $(function() {
+        $("select#id_risk").prop('disabled', true);
+        $("a#add_id_risk").hide();
+        $('form').bind('submit', function() {
+            $('select#id_risk').removeAttr('disabled');
+        });
+    });
+</script>
+{% endblock %}

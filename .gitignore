@@ -40,3 +40,7 @@ staticfiles/
 
 # Testing coverage
 .coverage
+
+# pgdump
+*.pgdump
+

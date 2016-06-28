@@ -187,7 +187,15 @@
       ["view_proposedaction", "report", "proposedaction"],
       ["add_summarycompletionstate", "report", "summarycompletionstate"],
       ["change_summarycompletionstate", "report", "summarycompletionstate"],
-      ["view_summarycompletionstate", "report", "summarycompletionstate"]
+      ["view_summarycompletionstate", "report", "summarycompletionstate"],
+      ["add_prescribedburn", "review", "prescribedburn"],
+      ["view_prescribedburn", "review", "prescribedburn"],
+      ["change_prescribedburn", "review", "prescribedburn"],
+      ["delete_prescribedburn", "review", "prescribedburn"],
+      ["add_fire", "review", "fire"],
+      ["view_fire", "review", "fire"],
+      ["change_fire", "review", "fire"],
+      ["delete_fire", "review", "fire"]
     ]
   }
 },
@@ -232,5 +240,27 @@
       ["delete_burnstate", "review", "burnstate"]
     ]
   }
+},
+{
+  "pk": 6,
+  "model": "auth.group",
+  "fields": {
+    "name": "State Regional Manager",
+    "permissions": [
+      ["can_endorse", "review", "prescribedburn"]
+    ]
+  }
+},
+{
+  "pk": 7,
+  "model": "auth.group",
+  "fields": {
+    "name": "State Duty Officer",
+    "permissions": [
+      ["can_endorse", "review", "prescribedburn"],
+      ["can_approve", "review", "prescribedburn"]
+    ]
+  }
 }
+
 ]
