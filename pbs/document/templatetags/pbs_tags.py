@@ -22,7 +22,7 @@ def tag_id(name):
         pass
 
 
-@register.assignment_tag
+@register.simple_tag
 def filter_by_tag_name(qs, name):
     """
     Filters the queryset by tag name, the lookup is case-insensitive.
@@ -33,7 +33,7 @@ def filter_by_tag_name(qs, name):
     return filter(lambda x: x.filename.endswith('.pdf'), qs.tag_names(name))
 
 
-@register.assignment_tag
+@register.simple_tag
 def document_names_by_category(prescription):
     """
     Return a dictionary of document names indexed by category.
@@ -48,7 +48,7 @@ def document_names_by_category(prescription):
     return names
 
 
-@register.assignment_tag
+@register.simple_tag
 def attached_documents(prescription):
     """
     Return the set of all attached (printable) documents. Exclude those

@@ -18,6 +18,6 @@ class Counter(object):
         return unicode(self.next())
 
 
-@register.assignment_tag
+@register.simple_tag
 def counter_from(start, step=1):
     return Counter(int(start), int(step))
