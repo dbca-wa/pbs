@@ -8,10 +8,12 @@ from django.utils.safestring import mark_safe
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin.utils import (lookup_field, display_for_field,
                                        display_for_value, label_for_field)
-from django.contrib.admin.views.main import (EMPTY_CHANGELIST_VALUE,
-                                             ORDER_VAR)
+# from django.contrib.admin.views.main import (EMPTY_CHANGELIST_VALUE,
+#                                              ORDER_VAR)
+# from django.contrib.admin import EMPTY_CHANGELIST_VALUE
 from django.db import models
-from django.template import resolve_variable, NodeList
+# from django.template import resolve_variable, NodeList
+from django.template import NodeList
 
 import datetime
 import json
@@ -23,6 +25,8 @@ from swingers.utils import shorthash
 register = template.Library()
 
 DOT = '.'
+ORDER_PARAM = 'o'
+EMPTY_CHANGELIST_VALUE = '---'
 
 
 @register.simple_tag
@@ -199,11 +203,11 @@ def result_headers(cl):
             "ascending": order_type == "asc",
             "sort_priority": sort_priority,
             "url_primary": cl.get_query_string(
-                {ORDER_VAR: '.'.join(o_list_primary)}),
+                {ORDER_PARAM: '.'.join(o_list_primary)}),
             "url_remove": cl.get_query_string(
-                {ORDER_VAR: '.'.join(o_list_remove)}),
+                {ORDER_PARAM: '.'.join(o_list_remove)}),
             "url_toggle": cl.get_query_string(
-                {ORDER_VAR: '.'.join(o_list_toggle)}),
+                {ORDER_PARAM: '.'.join(o_list_toggle)}),
             "classes": ' '.join(th_classes) if th_classes else '',
             "column": 'column-%s' % field_name,
         }
@@ -415,7 +419,8 @@ class GroupCheckNode(template.Node):
         self.nodelist_false = nodelist_false
 
     def render(self, context):
-        user = resolve_variable('user', context)
+        # user = resolve_variable('user', context)
+        user = context.get('user')
 
         if not user.is_authenticated():
             return self.nodelist_false.render(context)
