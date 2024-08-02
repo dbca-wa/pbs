@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
+# from django.utils.encoding import python_2_unicode_compatible
 
 from swingers import models
 from swingers.models import Audit
@@ -88,7 +88,7 @@ class ApplicationLink(models.Audit):
         return getattr(hashlib, self.auth_method)(stringtohash).hexdigest()
 
 
-@python_2_unicode_compatible
+
 class Token(models.Model):
     link = models.ForeignKey(ApplicationLink)
     user = models.ForeignKey(

@@ -178,7 +178,7 @@ class Document(Audit):
     class Meta:
         ordering = ['tag', 'document']
         permissions = (
-            ("archive_document", "Can archive documents")
+            ("archive_document", "Can archive documents"),
         )
 
     def __str__(self):
