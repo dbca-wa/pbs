@@ -5,7 +5,6 @@ import os
 
 from swingers.models.auth import Audit
 from swingers import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
 from django.db.models import Max, Q
 from smart_selects.db_fields import ChainedForeignKey
@@ -15,8 +14,8 @@ from pbs.document.utils import get_dimensions
 from pbs.prescription.models import Prescription
 import datetime
 
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^pbs\.document\.fields\.ContentTypeRestrictedFileField"])
+# from south.modelsinspector import add_introspection_rules
+# add_introspection_rules([], ["^pbs\.document\.fields\.ContentTypeRestrictedFileField"])
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +34,7 @@ def content_file_name(self, filename):
         extension)
 
 
-@python_2_unicode_compatible
+
 class DocumentCategory(models.Model):
     name = models.CharField(max_length=200)
     order = models.PositiveSmallIntegerField(default=0)
@@ -64,7 +63,7 @@ class CategoryManager(models.Manager):
         return self.get_query_set().filter(self._query_by_names(*names))
 
 
-@python_2_unicode_compatible
+
 class DocumentTag(models.Model):
     name = models.CharField(verbose_name="Document Tag", max_length=200)
     category = models.ForeignKey(DocumentCategory, on_delete=models.PROTECT)
@@ -109,7 +108,7 @@ class TagManager(models.Manager):
         return filter(lambda x: x.filename.endswith('.pdf'), qs)
 
 
-@python_2_unicode_compatible
+
 class Document(Audit):
     prescription = models.ForeignKey(
         Prescription, null=True,

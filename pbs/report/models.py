@@ -8,7 +8,6 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 from django.core.validators import MinValueValidator
 
 from swingers.models.auth import Audit
@@ -98,7 +97,7 @@ class SummaryCompletionState(AbstractState):
     section has been fully completed.
     """
     prescription = models.OneToOneField(
-        Prescription, related_name='pre_state')
+        Prescription, related_name='pre_state', on_delete=models.PROTECT)
     summary = models.BooleanField(choices=BOOL_CHOICES, default=False)
     context_statement = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
@@ -241,7 +240,7 @@ class BurnImplementationState(AbstractState):
     been fully completed.
     """
     prescription = models.OneToOneField(
-        Prescription, related_name='day_state')
+        Prescription, related_name='day_state', on_delete=models.PROTECT)
     overview = models.BooleanField(choices=BOOL_CHOICES, default=False)
     pre_actions = models.NullBooleanField(choices=NULL_CHOICES, default=False)
     actions = models.NullBooleanField(choices=NULL_CHOICES, default=False)
@@ -705,7 +704,7 @@ class BurnClosureState(AbstractState):
     section has been fully completed.
     """
     prescription = models.OneToOneField(
-        Prescription, related_name='post_state')
+        Prescription, related_name='post_state', on_delete=models.PROTECT)
     post_actions = models.NullBooleanField(choices=NULL_CHOICES, default=False)
     evaluation_summary = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
@@ -822,7 +821,7 @@ class BurnClosureState(AbstractState):
                                   "closed.")
 
 
-@python_2_unicode_compatible
+
 class AreaAchievement(Audit):
     prescription = models.ForeignKey(Prescription, on_delete=models.PROTECT)
     #Jira issue PBS-1407
@@ -901,7 +900,7 @@ class Evaluation(Audit):
         (ACHIEVED_PARTIAL, "Partially"),
     )
     criteria = models.OneToOneField(
-        SuccessCriteria, verbose_name="Success Criteria")
+        SuccessCriteria, verbose_name="Success Criteria", on_delete=models.PROTECT)
     achieved = models.PositiveSmallIntegerField(
         choices=ACHIEVED_CHOICES, blank=True, null=True,
         verbose_name="Success Criteria Achieved?")
@@ -942,7 +941,7 @@ class ProposedAction(Audit):
 
 
 class ClosureDeclaration(Audit):
-    prescription = models.OneToOneField(Prescription)
+    prescription = models.OneToOneField(Prescription, on_delete=models.PROTECT)
     closed = models.BooleanField(default=False)
 
 

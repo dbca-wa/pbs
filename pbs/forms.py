@@ -158,7 +158,7 @@ class SessionPersistenceMixin(object):
         """
         return self.request.session.get(self.session_key)
 
-class PbsErrorList(forms.util.ErrorList):
+class PbsErrorList(forms.utils.ErrorList):
     # custom error classes
     def as_ul(self):
         if not self:

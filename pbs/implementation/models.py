@@ -10,7 +10,6 @@ from swingers import models
 from django.conf import settings
 from django.forms import ValidationError
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 from django.template.defaultfilters import date
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.files.storage import FileSystemStorage
@@ -26,7 +25,7 @@ trafficdiagram_storage = FileSystemStorage(
     base_url=settings.STATIC_URL + "pbs/traffic-control-diagrams/")
 
 
-@python_2_unicode_compatible
+
 class OperationalOverview(Audit):
     prescription = models.ForeignKey(Prescription, on_delete=models.PROTECT)
     overview = models.TextField(blank=True, null=True)
@@ -44,7 +43,7 @@ class IgnitionTypeManager(models.Manager):
         return self.get(name=name)
 
 
-@python_2_unicode_compatible
+
 class IgnitionType(models.Model):
     """
     """
@@ -67,7 +66,7 @@ class TrafficControlDiagramManager(models.Manager):
         qs = qs.filter(display_order__gte=0, archive_date__isnull=True).order_by('display_order', 'name')
         return qs
 
-@python_2_unicode_compatible
+
 class TrafficControlDiagram(models.Model):
     """
     """
@@ -117,7 +116,7 @@ class TrafficControlDiagram(models.Model):
         verbose_name_plural = "Traffic Control Diagrams"
 
 
-@python_2_unicode_compatible
+
 class Way(Audit):
     prescription = models.ForeignKey(
         Prescription, help_text="Prescription this belongs to.", on_delete=models.PROTECT)
@@ -137,7 +136,7 @@ class Way(Audit):
                                   'install date.')
 
 
-@python_2_unicode_compatible
+
 class RoadSegment(Way):
     road_type = models.TextField(
         verbose_name="Road Type",
@@ -159,7 +158,7 @@ class RoadSegment(Way):
         verbose_name_plural = "Roads"
 
 
-@python_2_unicode_compatible
+
 class TrailSegment(Way):
     start = models.TextField(
         blank=True, verbose_name="Start Location")
@@ -183,7 +182,7 @@ class TrailSegment(Way):
         verbose_name_plural = "Tracks/Trails"
 
 
-@python_2_unicode_compatible
+
 class SignInspection(Audit):
     way = models.ForeignKey(
         Way, verbose_name="Road/Track/Trail Name", on_delete=models.PROTECT)
@@ -205,7 +204,7 @@ class SignInspection(Audit):
         verbose_name_plural = "Sign Inspections"
 
 
-@python_2_unicode_compatible
+
 class BurningPrescription(Audit):
     prescription = models.ForeignKey(
         Prescription, help_text="Prescription this fuel schedule belongs to.", on_delete=models.PROTECT)
@@ -374,7 +373,7 @@ class BurningPrescription(Audit):
         verbose_name_plural = "Burning Prescriptions"
 
 
-@python_2_unicode_compatible
+
 class EdgingPlan(Audit):
     prescription = models.ForeignKey(
         Prescription, help_text="Prescription this edging plan belongs to.", on_delete=models.PROTECT)
@@ -456,7 +455,7 @@ class EdgingPlan(Audit):
         ordering = ['created']
 
 
-@python_2_unicode_compatible
+
 class LightingSequence(Audit):
     prescription = models.ForeignKey(
         Prescription,
@@ -587,7 +586,7 @@ class LightingSequence(Audit):
         return "{0}. {1}".format(self.seqno, self.cellname)
 
 
-@python_2_unicode_compatible
+
 class ExclusionArea(Audit):
     prescription = models.ForeignKey(
         Prescription, help_text="Prescription this exclusion area belongs to.", on_delete=models.PROTECT)

@@ -12,7 +12,7 @@ from django.db.models.signals import post_save, post_delete
 from django.db.models.query import QuerySet
 from django.dispatch import receiver
 from django.template.defaultfilters import truncatewords
-from django.utils.encoding import python_2_unicode_compatible
+# from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from unidecode import unidecode
 
@@ -39,7 +39,6 @@ class RiskCategoryManager(models.Manager):
         return self.get(name=name)
 
 
-@python_2_unicode_compatible
 class RiskCategory(models.Model):
     name = models.CharField(
         verbose_name="Potential Source of Risk Category", max_length=200)
@@ -57,7 +56,7 @@ class RiskCategory(models.Model):
         verbose_name_plural = "Potential Source of Risk Categories"
 
 
-@python_2_unicode_compatible
+
 class Risk(Audit):
     """
     Standard set of risks to be created on every prescription.
@@ -112,7 +111,7 @@ class Context(Audit):
         ordering = ['pk']
 
 
-@python_2_unicode_compatible
+
 class Action(Audit):
     RESOLUTION_NO = "No"
     RESOLUTION_YES = "Yes"
@@ -284,7 +283,7 @@ class Action(Audit):
 class ContextRelevantAction(Audit):
     action = models.OneToOneField(
         Action, related_name="context_considered",
-        verbose_name=("Action relevant for context statement"))
+        verbose_name=("Action relevant for context statement"), on_delete=models.PROTECT)
     considered = models.BooleanField(
         default=False, verbose_name="Considered?",
         help_text=("Has this action been considered as part of writing the "
@@ -295,7 +294,7 @@ class ContextRelevantAction(Audit):
         return self.action.prescription
 
 
-@python_2_unicode_compatible
+
 class Register(Audit):
     CONSEQUENCE_LOW = 1
     CONSEQUENCE_HIGH = 2
@@ -434,7 +433,7 @@ class TreatmentLocationManager(models.Manager):
         return self.get(name=name)
 
 
-@python_2_unicode_compatible
+
 class TreatmentLocation(models.Model):
     name = models.CharField(max_length=200)
     objects = TreatmentLocationManager()
@@ -476,21 +475,30 @@ class TreatmentQuerySet(QuerySet):
 
 
 class TreatmentManager(models.Manager):
-    use_for_related_fields = True
+    #use_for_related_fields = True
 
-    def get_query_set(self):
+    def get_queryset(self):
         return TreatmentQuerySet(self.model, using=self._db)
+
+    #This function was getting Recursion error so modifying it
+    # def __getattr__(self, name):
+    #     if name in LOCATION_MAPPING.keys():
+    #         return getattr(self.get_query_set(), name)
+    #     elif hasattr(self, name):
+    #         return getattr(self, name)
+    #     else:
+    #         raise AttributeError
 
     def __getattr__(self, name):
         if name in LOCATION_MAPPING.keys():
             return getattr(self.get_query_set(), name)
-        elif hasattr(self, name):
-            return getattr(self, name)
-        else:
+        try:
+            return  super().__getattr__(name)
+        except:
             raise AttributeError
 
 
-@python_2_unicode_compatible
+
 class Treatment(Audit):
     register = models.ForeignKey(Register, on_delete=models.PROTECT)
     description = models.TextField()
@@ -506,7 +514,7 @@ class Treatment(Audit):
         return self.register.prescription
 
 
-@python_2_unicode_compatible
+
 class Contingency(Audit):
     '''This model is intended to replace the Contingency model, above.
     The Contingency model should be manually migrated by users to the new
@@ -565,7 +573,7 @@ class Contingency(Audit):
         return subitems
 
 
-@python_2_unicode_compatible
+
 class ContingencyAction(Audit):
     contingency = models.ForeignKey(Contingency, related_name='actions', on_delete=models.PROTECT)
     action = models.TextField(blank=True, null=True)
@@ -574,7 +582,7 @@ class ContingencyAction(Audit):
         return self.action
 
 
-@python_2_unicode_compatible
+
 class ContingencyNotification(Audit):
     contingency = models.ForeignKey(Contingency, related_name='notifications', on_delete=models.PROTECT)
     name = models.CharField(max_length=100, verbose_name='Notify (Name)',
@@ -591,7 +599,7 @@ class ContingencyNotification(Audit):
         ordering = ['name']
 
 
-@python_2_unicode_compatible
+
 class Complexity(Audit):
     RATING_UNRATED = 0
     RATING_LOW = 2

@@ -56,7 +56,7 @@ def pfp_status(context):
     )
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def all_actions(context):
     """
     All actions on the current prescription.
@@ -79,7 +79,7 @@ def all_actions(context):
     }
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def all_ways(context):
     """
     All of the roads, tracks, and trails for a particular ePFP.
@@ -103,9 +103,9 @@ def all_ways(context):
         "standard_traffic_diagrams": traffic_diagrams,
         "inspections": inspections,
         "modified": max([modified for modified in
-                         roads.modified, trails.modified,
+                         [roads.modified, trails.modified,
                          ways.modified, inspections.modified,
-                         current.created
+                         current.created]
                          if modified is not None])
     }
 
@@ -120,7 +120,7 @@ def latex_criteria(value):
     return value
 
 
-@register.assignment_tag
+@register.simple_tag
 def get_required_role(prescription):
     risk, label, role = prescription._max_risk(prescription.maximum_risk)
     return role
@@ -149,14 +149,14 @@ def base_dir(context):
     return '{}'.format(os.getcwd())
 
 @register.simple_tag
-#@register.assignment_tag
+#@register.simple_tag
 def _has_unique_district(objects):
     #import ipdb; ipdb.set_trace()
     objs_distinct = [obj.fire_idd for obj in objects.distinct('district')]
     #return [] if objs_distinct==1 else objs_distinct
     return True if len(objs_distinct)<=1 else False
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def __has_unique_district(context):
     #import ipdb; ipdb.set_trace()
     planned_burns = context['qs_burn']
@@ -166,7 +166,7 @@ def __has_unique_district(context):
 
 @register.filter(takes_context=True)
 def has_unique_district(objects):
-    print objects
+    print(objects)
     #objs_distinct = [obj.fire_idd for obj in objects.distinct('district')]
     #return [] if objs_distinct==1 else objs_distinct
    # return True if len(objs_distinct)<=1 else False

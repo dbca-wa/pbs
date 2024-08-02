@@ -1,6 +1,6 @@
 from django.contrib.admin import filters
 from django.db import models
-from django.contrib.admin.util import (get_model_from_relation,)
+from django.contrib.admin.utils import (get_model_from_relation,)
 
 class ExcludeListFilterMixin(object):
     def queryset(self, request, queryset):

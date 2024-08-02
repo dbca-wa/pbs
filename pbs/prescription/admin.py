@@ -20,11 +20,11 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin import helpers
-from django.contrib.admin.util import quote, unquote, flatten_fieldsets
+from django.contrib.admin.utils import quote, unquote, flatten_fieldsets
 from django.contrib.auth.models import Group
 from django.core.exceptions import (FieldError, ValidationError,
                                     PermissionDenied)
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction, router
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.forms.models import modelform_factory
@@ -1526,7 +1526,7 @@ class PrescriptionMixin(object):
             request, object_id, extra_context=context)
 
     @csrf_protect_m
-    @transaction.commit_on_success
+    @transaction.atomic
     def delete_view(self, request, object_id, prescription_id,
                     extra_context=None):
         "The 'delete' admin view for this model."

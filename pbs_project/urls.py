@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
 """
 some import statmement will load some module (directly or indirectly)
@@ -10,10 +10,10 @@ Solution is using two steps to populate urlpatterns
 2. populate others.
 
 """
-urlpatterns = patterns('',
+urlpatterns = ['',
     (r'^docs/', include('django.contrib.admindocs.urls')),
     (r'^', include('django.contrib.auth.urls'))
-)
+]
 
 from django.views.generic.base import RedirectView
 from django_downloadview import ObjectDownloadView
@@ -32,7 +32,7 @@ favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 v1_api = Api(api_name='v1')
 v1_api.register(PrescribedBurnResource())
 
-urlpatterns = urlpatterns + patterns('',
+urlpatterns = urlpatterns + ['',
     url(r'^select2/', include('django_select2.urls')),
     (r'^', include('pbs.registration.urls')),
     # the password reset must come before site.urls, site.urls match all
@@ -43,4 +43,4 @@ urlpatterns = urlpatterns + patterns('',
     url('^documents/(?P<pk>\d+)/download$', document_download, name='document_download'),
     url(r'^favicon\.ico$', favicon_view, name='favicon_view'),
     url(r'^api/', include(v1_api.urls)),
-)
+]

@@ -6,7 +6,7 @@ from pbs.prescription.models import (Prescription, Region, District, Tenure)
 from smart_selects.db_fields import ChainedForeignKey
 from swingers.models.auth import Audit
 from dateutil import tz
-from django.utils.encoding import python_2_unicode_compatible
+
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.forms import ValidationError
@@ -40,7 +40,7 @@ class BurnState(models.Model):
             self.prescription, self.review_type, self.record)
 
 
-@python_2_unicode_compatible
+
 class ExternalAssist(models.Model):
     name = models.CharField(max_length=25)
 
@@ -51,7 +51,7 @@ class ExternalAssist(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
+
 class FireTenure(models.Model):
     name = models.CharField(max_length=50)
 
@@ -85,7 +85,7 @@ class Acknowledgement(models.Model):
             self.burn, self.acknow_type, self.record)
 
 
-@python_2_unicode_compatible
+
 class PrescribedBurn(Audit):
     BURN_ACTIVE = 1
     BURN_INACTIVE = 2
@@ -511,7 +511,7 @@ class AircraftApproval(models.Model):
             self.aircraft_burn, self.approval_type, self.record)
 
 
-@python_2_unicode_compatible
+
 class AircraftBurn(Audit):
     APPROVAL_DRAFT = 'DRAFT'
     APPROVAL_SUBMITTED = 'USER'
@@ -601,14 +601,15 @@ class AnnualIndicativeBurnProgram(models.Model):
     perim_km = models.DecimalField(max_digits=19, decimal_places=11, blank=True, null=True)
     longitude = models.DecimalField(max_digits=19, decimal_places=11, blank=True, null=True)
     latitude = models.DecimalField(max_digits=19, decimal_places=11, blank=True, null=True)
-    objects = models.GeoManager()
+    # objects = models.GeoManager()
+    objects = models.Manager()
 
     class Meta:
         managed=False
 
 
 class BurnProgramLink(models.Model):
-    prescription = models.ForeignKey(Prescription, unique=True)
+    prescription = models.ForeignKey(Prescription, unique=True, on_delete=models.PROTECT)
     wkb_geometry = models.MultiPolygonField(srid=4326)
     area_ha = models.FloatField()
     longitude = models.FloatField()

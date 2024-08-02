@@ -4,12 +4,13 @@ from functools import update_wrapper
 
 from django.conf import settings
 from django.contrib.admin import ModelAdmin
-from django.contrib.admin.validation import ImproperlyConfigured
+# from django.contrib.admin.validation import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth import REDIRECT_FIELD_NAME, login
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin, GroupAdmin
 from django.contrib.sites.models import get_current_site
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import resolve_url
 from django.template import add_to_builtins

@@ -3,7 +3,8 @@ from __future__ import absolute_import, unicode_literals
 from functools import update_wrapper
 
 from django.contrib.admin import ModelAdmin
-from django.contrib.admin.util import unquote
+# from django.contrib.admin.util import unquote
+from django.contrib.admin.utils import unquote
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.template.response import TemplateResponse

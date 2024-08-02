@@ -3,9 +3,11 @@ import locale
 import django
 
 from django.conf import settings
-from django.contrib.admin.templatetags.admin_static import static
-from django.core.urlresolvers import reverse
-from django.db.models import get_model
+# from django.contrib.admin.templatetags.admin_static import static
+from django.templatetags.static import static
+from django.urls import reverse
+#from django.db.models import get_model
+from django.apps import apps
 from django.forms.widgets import Select
 from django.utils.safestring import mark_safe
 
@@ -177,7 +179,7 @@ class ChainedSelect(Select):
                         filter = {self.model_field + "__in": pks}
                     except:  # give up
                         filter = {}
-            filtered = list(get_model(self.app_name, self.model_name).objects.filter(**filter).distinct())
+            filtered = list(apps.get_model(self.app_name, self.model_name).objects.filter(**filter).distinct())
             filtered.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(unicode(x)))
             for choice in filtered:
                 final_choices.append((choice.pk, unicode(choice)))

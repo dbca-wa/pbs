@@ -1,12 +1,12 @@
 import dj_database_url
-import ldap
+#import ldap
 import os
 import json
 import pytz
 from .env import env
 from django.utils import timezone
 from datetime import datetime
-from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, LDAPSearchUnion
+#from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, LDAPSearchUnion
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -69,26 +69,37 @@ INSTALLED_APPS = (
     # third-party applications
     'pagination',
     'django_extensions',
-    'south',
+    # 'south',
     'guardian',
-    'admin_enhancer',
+    #'admin_enhancer',
     'django_select2',
     'chosen',
     'smart_selects',
     'crispy_forms',
-    'registration',
+    #'registration',
     'django_wsgiserver',
     'swingers',
     'tastypie',
 )
 
+# MIDDLEWARE_CLASSES = (
+#     'pagination.middleware.PaginationMiddleware',
+#     'django.middleware.common.CommonMiddleware',
+#     'django.contrib.sessions.middleware.SessionMiddleware',
+#     'django.middleware.csrf.CsrfViewMiddleware',
+#     'django.contrib.auth.middleware.AuthenticationMiddleware',
+#     'django.contrib.messages.middleware.MessageMiddleware',
+#     'pbs.middleware.SSOLoginMiddleware',
+# )
 MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'pbs.middleware.SSOLoginMiddleware',
 )
 
@@ -195,41 +206,41 @@ LOGOUT_URL = '/logout/'
 LOGOUT_REDIRECT_URL = LOGOUT_URL
 
 # LDAP settings
-AUTH_LDAP_SERVER_URI = env('LDAP_SERVER_URI', 'ldap_server')
-AUTH_LDAP_BIND_DN = env('LDAP_BIND_DN', 'ldap_bind')
-AUTH_LDAP_BIND_PASSWORD = env('LDAP_BIND_PASSWORD', 'ldap_password')
+# AUTH_LDAP_SERVER_URI = env('LDAP_SERVER_URI', 'ldap_server')
+# AUTH_LDAP_BIND_DN = env('LDAP_BIND_DN', 'ldap_bind')
+# AUTH_LDAP_BIND_PASSWORD = env('LDAP_BIND_PASSWORD', 'ldap_password')
 
-AUTH_LDAP_ALWAYS_UPDATE_USER = False
-AUTH_LDAP_AUTHORIZE_ALL_USERS = True
-AUTH_LDAP_FIND_GROUP_PERMS = False
-AUTH_LDAP_MIRROR_GROUPS = False
-AUTH_LDAP_CACHE_GROUPS = False
-AUTH_LDAP_GROUP_CACHE_TIMEOUT = 300
+# AUTH_LDAP_ALWAYS_UPDATE_USER = False
+# AUTH_LDAP_AUTHORIZE_ALL_USERS = True
+# AUTH_LDAP_FIND_GROUP_PERMS = False
+# AUTH_LDAP_MIRROR_GROUPS = False
+# AUTH_LDAP_CACHE_GROUPS = False
+# AUTH_LDAP_GROUP_CACHE_TIMEOUT = 300
 
-AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
-    LDAPSearch("DC=corporateict,DC=domain", ldap.SCOPE_SUBTREE,
-               "(sAMAccountName=%(user)s)"),
-    LDAPSearch("DC=corporateict,DC=domain", ldap.SCOPE_SUBTREE,
-               "(mail=%(user)s)"),
-)
+# AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(
+#     LDAPSearch("DC=corporateict,DC=domain", ldap.SCOPE_SUBTREE,
+#                "(sAMAccountName=%(user)s)"),
+#     LDAPSearch("DC=corporateict,DC=domain", ldap.SCOPE_SUBTREE,
+#                "(mail=%(user)s)"),
+# )
 
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
-    "DC=corporateict,DC=domain",
-    ldap.SCOPE_SUBTREE, "(objectClass=group)"
-)
+# AUTH_LDAP_GROUP_SEARCH = LDAPSearch(
+#     "DC=corporateict,DC=domain",
+#     ldap.SCOPE_SUBTREE, "(objectClass=group)"
+# )
 
-AUTH_LDAP_GLOBAL_OPTIONS = {
-    ldap.OPT_X_TLS_REQUIRE_CERT: False,
-    ldap.OPT_REFERRALS: False,
-}
+# AUTH_LDAP_GLOBAL_OPTIONS = {
+#     ldap.OPT_X_TLS_REQUIRE_CERT: False,
+#     ldap.OPT_REFERRALS: False,
+# }
 
-AUTH_LDAP_GROUP_TYPE = GroupOfNamesType(name_attr="cn")
+# AUTH_LDAP_GROUP_TYPE = GroupOfNamesType(name_attr="cn")
 
-AUTH_LDAP_USER_ATTR_MAP = {
-    'first_name': "givenName",
-    'last_name': "sn",
-    'email': "mail",
-}
+# AUTH_LDAP_USER_ATTR_MAP = {
+#     'first_name': "givenName",
+#     'last_name': "sn",
+#     'email': "mail",
+# }
 
 # Misc settings
 EMAIL_HOST = env('EMAIL_HOST', 'smtp')
@@ -323,7 +334,12 @@ try:
 
 
         #sort by active date desc, the active date of the last one shoule be None if have
-        TCD_EXCLUSIONS = sorted(tcd_exclusions,cmp=lambda data1,data2: 0 if data1[0] == data2[0] else (-1 if data1[0] is None else (1 if data2[0] is None else (-1 if data1[0] < data2[0] else 1))),reverse=True)
+        # TCD_EXCLUSIONS = sorted(tcd_exclusions,cmp=lambda data1,data2: 0 if data1[0] == data2[0] else (-1 if data1[0] is None else (1 if data2[0] is None else (-1 if data1[0] < data2[0] else 1))),reverse=True)
+        TCD_EXCLUSIONS = sorted(
+                            tcd_exclusions,
+                            key=lambda data: (data[0] is None, data[0] if data[0] is not None else float('-inf')),
+                            reverse=True
+                        )
     else:
         TCD_EXCLUSIONS = []
 except Exception as ex:

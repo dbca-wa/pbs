@@ -7,12 +7,11 @@ from swingers.models.auth import Audit
 
 from django.db import models
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 
 from pbs.prescription.models import Prescription
 
 
-@python_2_unicode_compatible
+
 class CriticalStakeholder(Audit):
     prescription = models.ForeignKey(Prescription, on_delete=models.PROTECT)
     name = models.CharField(max_length=320)
@@ -42,7 +41,7 @@ class PublicContact(Audit):
         verbose_name_plural = "Public Contacts"
 
 
-@python_2_unicode_compatible
+
 class Notification(Audit):
     ORG_BEEKEEPERS = 1
     ORG_NEIGHBOURS = 2

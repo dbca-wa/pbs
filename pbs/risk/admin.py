@@ -3,9 +3,9 @@ from functools import update_wrapper, partial
 from guardian.shortcuts import assign_perm
 
 from django.contrib.admin import SimpleListFilter
-from django.contrib.admin.util import unquote, quote
+from django.contrib.admin.utils import unquote, quote
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 

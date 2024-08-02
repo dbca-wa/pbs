@@ -5,8 +5,8 @@ from functools import partial, update_wrapper
 
 from django_downloadview import ObjectDownloadView
 from django.contrib import messages
-from django.contrib.admin.util import quote, unquote
-from django.core.urlresolvers import reverse
+from django.contrib.admin.utils import quote, unquote
+from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_text
