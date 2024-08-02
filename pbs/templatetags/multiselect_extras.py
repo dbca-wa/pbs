@@ -15,7 +15,7 @@ by the bootstrap js library.
 from __future__ import print_function, division, unicode_literals, absolute_import
 # Imports
 from django import template
-from urlparse import parse_qs
+from urllib.parse import parse_qs
 register = template.Library()
 # Constants
 

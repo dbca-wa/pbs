@@ -104,18 +104,45 @@ MIDDLEWARE_CLASSES = (
     'pbs.middleware.SSOLoginMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.core.context_processors.request",
-    "django.core.context_processors.csrf",
-    "django.contrib.messages.context_processors.messages",
-    "pbs_project.context_processors.standard",
-)
+# TEMPLATE_CONTEXT_PROCESSORS = (
+#     "django.contrib.auth.context_processors.auth",
+#     "django.core.context_processors.debug",
+#     "django.core.context_processors.i18n",
+#     "django.core.context_processors.media",
+#     "django.core.context_processors.static",
+#     "django.core.context_processors.tz",
+#     "django.core.context_processors.request",
+#     "django.core.context_processors.csrf",
+#     "django.contrib.messages.context_processors.messages",
+#     "pbs_project.context_processors.standard",
+# )
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.core.context_processors.i18n",
+                "django.core.context_processors.media",
+                "django.core.context_processors.static",
+                "django.core.context_processors.tz",
+                "django.core.context_processors.csrf",
+                "pbs_project.context_processors.standard",
+            ],
+            'builtins': [
+                'pbs.prescription.templatetags.texify'
+            ],
+        },
+    },
+]
 
 ROOT_URLCONF = 'pbs_project.urls'
 
@@ -150,9 +177,9 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
-)
+# TEMPLATE_DIRS = (
+#     os.path.join(BASE_DIR, 'templates'),
+# )
 
 TEMPLATE_LOADERS = (
     ('django.template.loaders.cached.Loader', (

@@ -13,7 +13,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import resolve_url
-from django.template import add_to_builtins
+# from django.template import add_to_builtins
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.utils.http import is_safe_url
@@ -509,4 +509,4 @@ site.register(PrescribedBurn, PrescribedBurnAdmin)
 site.register(AircraftBurn, AircraftBurnAdmin)
 
 # add our own texify filter to the builtins here.
-add_to_builtins('pbs.prescription.templatetags.texify')
+# add_to_builtins('pbs.prescription.templatetags.texify')
