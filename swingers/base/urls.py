@@ -1,10 +1,10 @@
 from django.conf import settings
-from django.conf.urls import url, patterns, include
+from django.conf.urls import url, include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from django.views.generic import RedirectView
 
-urlpatterns = patterns(
+urlpatterns = [
     '',
     url(r'^browserid/', include('django_browserid.urls')),
     url(r'^api/persona$', 'django.contrib.auth.views.login',
@@ -20,6 +20,6 @@ urlpatterns = patterns(
     url(r'^favicon\.ico$',
         RedirectView.as_view(url='/static/img/favicon.ico')),
     url(r'^docs/', include('django.contrib.admindocs.urls')),
-)
+]
 
 urlpatterns += staticfiles_urlpatterns()

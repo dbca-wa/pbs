@@ -1,7 +1,7 @@
 from django.conf import settings
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns(
+urlpatterns = [
     'swingers.sauth.views',
     url(r'{0}/request_token'.format(settings.SERVICE_NAME),
         'request_access_token', name="request_access_token"),
@@ -13,4 +13,4 @@ urlpatterns = patterns(
         'validate_token', name="validate_token"),
     url(r'^validate_token/$', 'validate_token'),
     url(r'session', 'session', name="session")
-)
+]

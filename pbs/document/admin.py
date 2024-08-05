@@ -210,7 +210,7 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         """
         request = kwargs.pop('request')
         if self.has_delete_permission(request, obj):
-            info = obj._meta.app_label, obj._meta.module_name
+            info = obj._meta.app_label, obj._meta.model_name
             delete_url = reverse('admin:%s_%s_delete' % info,
                                  args=(quote(obj.pk),
                                        quote(self.prescription.pk)))
@@ -269,16 +269,16 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         Add some extra views for handling the prescription summaries and a page
         to handle selecting Regional Fire Coordinator objectives for a burn.
         """
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns('',
+        urlpatterns = ['',
             url(r'^prescription/(.+)/all/$',
                 wrap(self.changelist_view),
                 {"extra_context": {
@@ -297,6 +297,6 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
             url(r'^prescription/(.+)/tag/(.+)/$',
                 wrap(self.tag_view),
                 name='%s_%s_tag' % info)
-        )
+        ]
 
         return urlpatterns + super(DocumentAdmin, self).get_urls()

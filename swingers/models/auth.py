@@ -95,7 +95,7 @@ class Audit(Model):
         return str(self.pk)
 
     def get_absolute_url(self):
-        opts = self._meta.app_label, self._meta.module_name
+        opts = self._meta.app_label, self._meta.model_name
         return reverse("admin:%s_%s_change" % opts, args=(self.pk, ))
 
     def clean_fields(self, exclude=None):

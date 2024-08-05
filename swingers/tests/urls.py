@@ -1,10 +1,10 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib.auth.views import login
 
 from swingers.tests.views import *
 
 
-urlpatterns = patterns(
+urlpatterns = [
     'swingers.sauth.views',
     url(r'^update_counter/(?P<pk>\d+)/$', CounterView.as_view(),
         name="test-update-counter"),
@@ -24,4 +24,4 @@ urlpatterns = patterns(
         name="delete_access_token"),
     url(r'test/validate_token', 'validate_token', name="validate_token"),
     url(r'session', 'session', name="session")
-)
+]

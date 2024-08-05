@@ -99,14 +99,15 @@ class PrescriptionSite(AuditSite):
         """
         Add a view to clear the current prescription from the session
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
         def wrap(view, cacheable=False):
             def wrapper(*args, **kwargs):
                 return self.admin_view(view, cacheable)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        urlpatterns = patterns(
+        urlpatterns = [
             '',
             url(r'^administration/$',
                 wrap(self.site_admin),
@@ -127,7 +128,7 @@ class PrescriptionSite(AuditSite):
             url(r'^endorse-authorise/export_csv/$',
                 wrap(self.export_to_csv),
                 name='endorse_authorise_exportcsv'),
-        )
+        ]
 
         return urlpatterns + super(PrescriptionSite, self).get_urls()
 

@@ -54,19 +54,19 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
         """
         Add a view to clear the current prescription from the session
         """
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        urlpatterns = patterns(
+        urlpatterns = [
             '',
             url(r'^epfp-review/$',
                 wrap(self.epfp_review_summary),
                 name='epfp_review_summary'),
-        )
+        ]
 
         return urlpatterns + super(BurnStateAdmin, self).get_urls()
 
@@ -236,16 +236,16 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Add an extra view to handle marking a treatment as complete.
         """
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
+        urlpatterns = [
             '',
             url(r'^review/(\d+)/$',
                 wrap(self.changelist_view),
@@ -286,7 +286,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             url(r'^help',
                 wrap(self.help_view),
                 name='help_view'),
-        )
+        ]
         return urlpatterns + super(PrescribedBurnAdmin, self).get_urls()
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -1595,16 +1595,16 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Add an extra view to handle marking a treatment as complete.
         """
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
+        urlpatterns = [
             '',
             url(r'^aircraft-burn-program/$',
                 wrap(self.aircraft_burn_program),
@@ -1619,7 +1619,7 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
                 wrap(self.pdflatex),
                 name='create_aircraftburns_pdf'),
 
-        )
+        ]
         return urlpatterns + super(AircraftBurnAdmin, self).get_urls()
 
     def help_view(self, request, extra_context=None):

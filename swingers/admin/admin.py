@@ -56,16 +56,16 @@ class DetailAdmin(ModelAdmin):
         )
 
     def get_urls(self):
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
+        urlpatterns = [
             '',
             url(r'^$',
                 wrap(self.changelist_view),
@@ -85,7 +85,7 @@ class DetailAdmin(ModelAdmin):
             url(r'^(\d+)/$',
                 wrap(self.detail_view),
                 name='%s_%s_detail' % info),
-        )
+        ]
         return urlpatterns
 
     def detail_view(self, request, object_id, extra_context=None):

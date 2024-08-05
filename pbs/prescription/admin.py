@@ -197,16 +197,16 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         Add some extra views for handling the prescription summaries and a page
         to handle selecting Regional Fire Coordinator objectives for a burn.
         """
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
+        urlpatterns = [
             '',
             url(r'^(\d+)/add/objectives/$',
                 wrap(self.add_objectives),
@@ -256,7 +256,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             url(r'^(\d+)/sitemap/$',
                 wrap(self.sitemap),
                 name='%s_%s_sitemap' % info),
-        )
+        ]
 
         return urlpatterns + super(PrescriptionAdmin, self).get_urls()
 
@@ -1373,16 +1373,16 @@ class PrescriptionMixin(object):
         return super(PrescriptionMixin, self).__init__(model, admin_site)
 
     def get_urls(self):
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
+        urlpatterns = [
             '',
             url(r'^prescription/(\d+)/$',
                 wrap(self.changelist_view),
@@ -1399,7 +1399,7 @@ class PrescriptionMixin(object):
             url(r'^(.+)/prescription/(\d+)/$',
                 wrap(self.change_view),
                 name='%s_%s_change' % info)
-        )
+        ]
         return urlpatterns
 
     def get_changelist(self, request, **kwargs):
@@ -1497,7 +1497,7 @@ class PrescriptionMixin(object):
             return self.add_view(request, prescription_id=prescription.id,
                                  form_url=reverse(
                                      'admin:%s_%s_add' %
-                                     (opts.app_label, opts.module_name),
+                                     (opts.app_label, opts.model_name),
                                      args=[prescription.id],
                                      current_app=self.admin_site.name))
 
@@ -1576,7 +1576,7 @@ class PrescriptionMixin(object):
                 else:
                     post_url = reverse(
                         'admin:%s_%s_changelist' % (opts.app_label,
-                                                    opts.module_name),
+                                                    opts.model_name),
                         args=(quote(self.prescription.pk),),
                         current_app=self.admin_site.name)
             else:
@@ -1654,7 +1654,7 @@ class PrescriptionMixin(object):
         """
         request = kwargs.pop('request')
         if self.has_delete_permission(request, obj):
-            info = obj._meta.app_label, obj._meta.module_name
+            info = obj._meta.app_label, obj._meta.model_name
             delete_url = reverse('admin:%s_%s_delete' % info,
                                  args=(quote(obj.pk),
                                        quote(self.prescription.pk)))
@@ -1688,7 +1688,7 @@ class PrescriptionMixin(object):
             opts = obj._meta
             pk_value = obj._get_pk_val()
             redirect = reverse('admin:%s_%s_change' %
-                               (opts.app_label, opts.module_name),
+                               (opts.app_label, opts.model_name),
                                args=(pk_value, self.prescription.pk),
                                current_app=self.admin_site.name)
 
@@ -1705,7 +1705,7 @@ class PrescriptionMixin(object):
                    ' edit it again below.' % msg_dict)
             self.message_user(request, msg)
             return HttpResponseRedirect(reverse('admin:%s_%s_change' %
-                                        (opts.app_label, opts.module_name),
+                                        (opts.app_label, opts.model_name),
                                         args=(pk_value, self.prescription.pk),
                                         current_app=self.admin_site.name))
         elif "_addanother" in request.POST:
@@ -1713,7 +1713,7 @@ class PrescriptionMixin(object):
                    ' add another %(name)s below.' % msg_dict)
             self.message_user(request, msg)
             return HttpResponseRedirect(reverse('admin:%s_%s_add' %
-                                        (opts.app_label, opts.module_name),
+                                        (opts.app_label, opts.model_name),
                                         args=(self.prescription.pk,),
                                         current_app=self.admin_site.name))
         return super(PrescriptionMixin, self).response_change(request, obj)
@@ -1730,7 +1730,7 @@ class PrescriptionMixin(object):
 
         if self.has_change_permission(request, None):
             post_url = reverse('admin:%s_%s_changelist' %
-                               (opts.app_label, opts.module_name),
+                               (opts.app_label, opts.model_name),
                                args=(quote(self.prescription.pk),),
                                current_app=self.admin_site.name)
         else:
@@ -1751,7 +1751,7 @@ class PrescriptionMixin(object):
 
         if self.has_change_permission(request, None):
             post_url = reverse('admin:%s_%s_changelist' %
-                               (opts.app_label, opts.module_name),
+                               (opts.app_label, opts.model_name),
                                args=(quote(self.prescription.pk),),
                                current_app=self.admin_site.name)
         else:
