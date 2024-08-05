@@ -23,6 +23,7 @@ from pbs.forms import PbsPasswordResetForm
 
 from tastypie.api import Api
 from pbs.review.api import PrescribedBurnResource
+from django.contrib.auth.views import PasswordResetView
 
 handler500 = 'pbs.views.handler500'
 # Define the simplest possible view for Document uploads.
@@ -36,9 +37,11 @@ urlpatterns = urlpatterns + ['',
     url(r'^select2/', include('django_select2.urls')),
     (r'^', include('pbs.registration.urls')),
     # the password reset must come before site.urls, site.urls match all
-    (r'^', include(site.urls)),
-    url(r'^password_reset/$', 'django.contrib.auth.views.password_reset',
-        {'password_reset_form': PbsPasswordResetForm}, name='password_reset'),
+    # (r'^', include(site.urls)),
+    (r'^', include((site.urls, 'site'), namespace='site')),
+    # url(r'^password_reset/$', 'django.contrib.auth.views.password_reset',
+    #     {'password_reset_form': PbsPasswordResetForm}, name='password_reset'),
+    url(r'^password_reset/$', PasswordResetView.as_view(form_class=PbsPasswordResetForm), name='password_reset'),
     url(r'^chaining/', include('smart_selects.urls')),
     url('^documents/(?P<pk>\d+)/download$', document_download, name='document_download'),
     url(r'^favicon\.ico$', favicon_view, name='favicon_view'),

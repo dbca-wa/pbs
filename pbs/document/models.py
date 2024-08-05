@@ -13,6 +13,7 @@ from pbs.document.fields import ContentTypeRestrictedFileField
 from pbs.document.utils import get_dimensions
 from pbs.prescription.models import Prescription
 import datetime
+from functools import reduce
 
 # from south.modelsinspector import add_introspection_rules
 # add_introspection_rules([], ["^pbs\.document\.fields\.ContentTypeRestrictedFileField"])
@@ -57,10 +58,10 @@ class CategoryManager(models.Manager):
                       Q())
 
     def not_tag_names(self, *names):
-        return self.get_query_set().exclude(self._query_by_names(*names))
+        return self.get_queryset().exclude(self._query_by_names(*names))
 
     def tag_names(self, *names):
-        return self.get_query_set().filter(self._query_by_names(*names))
+        return self.get_queryset().filter(self._query_by_names(*names))
 
 
 
@@ -85,14 +86,14 @@ class TagManager(models.Manager):
                       Q())
 
     def not_tag_names(self, *names):
-        return self.get_query_set().exclude(self._query_by_names(*names))
+        return self.get_queryset().exclude(self._query_by_names(*names))
 
     def tag_names(self, *names):
-        return self.get_query_set().filter(self._query_by_names(*names))
+        return self.get_queryset().filter(self._query_by_names(*names))
 
     def __getattr__(self, name):
         if name[:4] == "tag_":
-            qs = self.get_query_set().filter(
+            qs = self.get_queryset().filter(
                 tag__name__iexact=name[4:].replace("_", " "))
             qs.modified = qs.aggregate(Max('modified'))["modified__max"]
             return qs
@@ -104,7 +105,7 @@ class TagManager(models.Manager):
         Return the set of printable documents. This removes any zip files from
         the set of documents.
         """
-        qs = self.get_query_set()
+        qs = self.get_queryset()
         return filter(lambda x: x.filename.endswith('.pdf'), qs)
 
 
