@@ -8,7 +8,8 @@ from swingers.utils.auth import make_nonce
 
 from model_utils import Choices
 
-from reversion import revision
+# from reversion import revision
+import reversion
 
 import threading
 import requests
@@ -90,10 +91,10 @@ class ApplicationLink(models.Audit):
 
 
 class Token(models.Model):
-    link = models.ForeignKey(ApplicationLink)
+    link = models.ForeignKey(ApplicationLink, on_delete=models.PROTECT)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="%(app_label)s_%(class)s_user",
-        help_text="User token authenticates as")
+        help_text="User token authenticates as", on_delete=models.PROTECT)
     url = models.TextField(help_text="Suburl this token is restricted to, "
                            "relative e.g. (/my/single/service/entrypoint)",
                            default="/")
@@ -108,7 +109,7 @@ class Token(models.Model):
 
     def save(self, *args, **kwargs):
         try:
-            revision.unregister(self.__class__)
+            reversion.unregister(self.__class__)
         except:
             pass
         super(Token, self).save(*args, **kwargs)

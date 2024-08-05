@@ -36,7 +36,8 @@ def generate_meta(klass):
 
 class APIResource(ModelResource):
     class Meta:
-        pass
+        #pass
+        object_class=None
 
     def prepend_urls(self):
         return [
@@ -58,6 +59,7 @@ class APIResource(ModelResource):
 class PrescribedBurnResource(APIResource):
     class Meta:
         authorization= ReadOnlyAuthorization()
+        object_class=None
 
     def prepend_urls(self):
         return [
