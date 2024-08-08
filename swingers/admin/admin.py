@@ -56,7 +56,8 @@ class DetailAdmin(ModelAdmin):
         )
 
     def get_urls(self):
-        from django.conf.urls import url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -67,22 +68,22 @@ class DetailAdmin(ModelAdmin):
 
         urlpatterns = [
             '',
-            url(r'^$',
+           re_path(r'^$',
                 wrap(self.changelist_view),
                 name='%s_%s_changelist' % info),
-            url(r'^add/$',
+           re_path(r'^add/$',
                 wrap(self.add_view),
                 name='%s_%s_add' % info),
-            url(r'^(\d+)/history/$',
+           re_path(r'^(\d+)/history/$',
                 wrap(self.history_view),
                 name='%s_%s_history' % info),
-            url(r'^(\d+)/delete/$',
+           re_path(r'^(\d+)/delete/$',
                 wrap(self.delete_view),
                 name='%s_%s_delete' % info),
-            url(r'^(\d+)/change/$',
+           re_path(r'^(\d+)/change/$',
                 wrap(self.change_view),
                 name='%s_%s_change' % info),
-            url(r'^(\d+)/$',
+           re_path(r'^(\d+)/$',
                 wrap(self.detail_view),
                 name='%s_%s_detail' % info),
         ]

@@ -665,7 +665,8 @@ class TreatmentAdmin(PrescriptionMixin, BaseAdmin):
         """
         Add an extra view to handle marking a treatment as complete.
         """
-        from django.conf.urls import url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -676,7 +677,7 @@ class TreatmentAdmin(PrescriptionMixin, BaseAdmin):
 
         urlpatterns = [
             '',
-            url(r'^complete/prescription/(\d+)/$',
+           re_path(r'^complete/prescription/(\d+)/$',
                 wrap(self.mark_as_complete),
                 name='%s_%s_complete' % info),
         ]

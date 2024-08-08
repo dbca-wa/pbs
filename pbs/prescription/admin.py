@@ -197,7 +197,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         Add some extra views for handling the prescription summaries and a page
         to handle selecting Regional Fire Coordinator objectives for a burn.
         """
-        from django.conf.urls import url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -207,53 +208,53 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         urlpatterns = [
-            '',
-            url(r'^(\d+)/add/objectives/$',
+            # '',
+           re_path(r'^(\d+)/add/objectives/$',
                 wrap(self.add_objectives),
                 name='%s_%s_objectives' % info),
-            url(r'^(\d+)/regional_objective/(\d+)/delete$',
+           re_path(r'^(\d+)/regional_objective/(\d+)/delete$',
                 wrap(self.delete_regional_objective),
                 name='%s_%s_delete_regional_objective' % info),
-            url(r'^(\d+)/summary/$',
+           re_path(r'^(\d+)/summary/$',
                 wrap(self.summary),
                 name='%s_%s_summary' % info),
-            url(r'^(\d+)/summary/pre/$',
+           re_path(r'^(\d+)/summary/pre/$',
                 wrap(self.pre_summary),
                 name='%s_%s_pre_summary' % info),
-            url(r'^(\d+)/summary/day/$',
+           re_path(r'^(\d+)/summary/day/$',
                 wrap(self.day_summary),
                 name='%s_%s_day_summary' % info),
-            url(r'^(\d+)/summary/post/$',
+           re_path(r'^(\d+)/summary/post/$',
                 wrap(self.post_summary),
                 name='%s_%s_post_summary' % info),
-            url(r'^(\d+)/summary/pdf/$',
+           re_path(r'^(\d+)/summary/pdf/$',
                 wrap(self.pdf_summary),
                 name='%s_%s_pdf_summary' % info),
-            url(r'^(\d+)/download/$',
+           re_path(r'^(\d+)/download/$',
                 wrap(self.pdflatex),
                 name='%s_%s_download' % info),
-            url(r'^(\d+)/export/$',
+           re_path(r'^(\d+)/export/$',
                 wrap(self.pdflatex),
                 name='%s_%s_export' % info),
-            url(r'^(\d+)/cbas/$',
+           re_path(r'^(\d+)/cbas/$',
                 wrap(self.corporate_approve),
                 name='%s_%s_corporate_approve' % info),
-            url(r'^(\d+)/endorsement/$',
+           re_path(r'^(\d+)/endorsement/$',
                 wrap(self.endorse),
                 name='%s_%s_endorse' % info),
-            url(r'^(\d+)/endorsement/(\d+)/delete$',
+           re_path(r'^(\d+)/endorsement/(\d+)/delete$',
                 wrap(self.delete_endorsement),
                 name='%s_%s_delete_endorsement' % info),
-            url(r'^(\d+)/endorsement/officers$',
+           re_path(r'^(\d+)/endorsement/officers$',
                 wrap(self.endorsing_roles),
                 name='%s_%s_endorsing_roles' % info),
-            url(r'^(\d+)/approval/$',
+           re_path(r'^(\d+)/approval/$',
                 wrap(self.approve),
                 name='%s_%s_approve' % info),
-            url(r'^(\d+)/closure/$',
+           re_path(r'^(\d+)/closure/$',
                 wrap(self.close),
                 name='%s_%s_close' % info),
-            url(r'^(\d+)/sitemap/$',
+           re_path(r'^(\d+)/sitemap/$',
                 wrap(self.sitemap),
                 name='%s_%s_sitemap' % info),
         ]
@@ -1373,7 +1374,8 @@ class PrescriptionMixin(object):
         return super(PrescriptionMixin, self).__init__(model, admin_site)
 
     def get_urls(self):
-        from django.conf.urls import url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -1383,20 +1385,20 @@ class PrescriptionMixin(object):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         urlpatterns = [
-            '',
-            url(r'^prescription/(\d+)/$',
+            # '',
+           re_path(r'^prescription/(\d+)/$',
                 wrap(self.changelist_view),
                 name='%s_%s_changelist' % info),
-            url(r'^add/prescription/(\d+)/$',
+           re_path(r'^add/prescription/(\d+)/$',
                 wrap(self.add_view),
                 name='%s_%s_add' % info),
-            url(r'^(.+)/history/prescription/(\d+)/$',
+           re_path(r'^(.+)/history/prescription/(\d+)/$',
                 wrap(self.history_view),
                 name='%s_%s_history' % info),
-            url(r'^(.+)/delete/prescription/(\d+)/$',
+           re_path(r'^(.+)/delete/prescription/(\d+)/$',
                 wrap(self.delete_view),
                 name='%s_%s_delete' % info),
-            url(r'^(.+)/prescription/(\d+)/$',
+           re_path(r'^(.+)/prescription/(\d+)/$',
                 wrap(self.change_view),
                 name='%s_%s_change' % info)
         ]

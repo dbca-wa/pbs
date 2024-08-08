@@ -1,4 +1,5 @@
-from django.conf.urls import url
+# from django.conf.urls import url
+from django.urls import re_path
 from django.contrib.auth.views import login
 
 from swingers.tests.views import *

@@ -54,7 +54,8 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
         """
         Add a view to clear the current prescription from the session
         """
-        from django.conf.urls import url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -63,7 +64,7 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
 
         urlpatterns = [
             '',
-            url(r'^epfp-review/$',
+           re_path(r'^epfp-review/$',
                 wrap(self.epfp_review_summary),
                 name='epfp_review_summary'),
         ]
@@ -236,7 +237,8 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Add an extra view to handle marking a treatment as complete.
         """
-        from django.conf.urls import url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -247,43 +249,43 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
 
         urlpatterns = [
             '',
-            url(r'^review/(\d+)/$',
+           re_path(r'^review/(\d+)/$',
                 wrap(self.changelist_view),
                 name='review_review_changelist'),
-            url(r'^add/burn/(\d+)/$',
+           re_path(r'^add/burn/(\d+)/$',
                 wrap(self.add_view),
                 name='%s_%s_add' % info),
-            url(r'^daily-burn-program/$',
+           re_path(r'^daily-burn-program/$',
                 wrap(self.daily_burn_program),
                 name='daily_burn_program'),
             #url(r'^district_action/([\w\,]+)/$',
-            url(r'^district_action/$',
+           re_path(r'^district_action/$',
                 wrap(self.district_action_view),
                 name='district_action_view'),
             #url(r'^region_action/([\w\,]+)/$',
-            url(r'^region_action/$',
+           re_path(r'^region_action/$',
                 wrap(self.region_action_view),
                 name='region_action_view'),
-            url(r'^daily-burn-program/fire_action',
+           re_path(r'^daily-burn-program/fire_action',
                 wrap(self.action_view),
                 name='action_view'),
-            url(r'^daily-burn-program/epfp',
+           re_path(r'^daily-burn-program/epfp',
                 wrap(self.prescription_view),
                 name='prescription_view'),
-            url(r'^daily-burn-program/export_csv/$',
+           re_path(r'^daily-burn-program/export_csv/$',
                 wrap(self.export_to_csv),
                 name='daily_burn_program_exportcsv'),
-            url(r'^daily-burn-program/pdf',
+           re_path(r'^daily-burn-program/pdf',
                 wrap(self.pdflatex),
                 name='create_dailyburns_pdf'),
-            url(r'^csv',
+           re_path(r'^csv',
                 wrap(self.csv_view),
                 name='csv_view'),
             #url(r'^bulk_delete/([\w\,]+)/$',
-            url(r'^bulk_delete/$',
+           re_path(r'^bulk_delete/$',
                 wrap(self.bulk_delete),
                 name='bulk_delete'),
-            url(r'^help',
+           re_path(r'^help',
                 wrap(self.help_view),
                 name='help_view'),
         ]
@@ -1595,7 +1597,8 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Add an extra view to handle marking a treatment as complete.
         """
-        from django.conf.urls import url
+        #from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -1606,16 +1609,16 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
 
         urlpatterns = [
             '',
-            url(r'^aircraft-burn-program/$',
+           re_path(r'^aircraft-burn-program/$',
                 wrap(self.aircraft_burn_program),
                 name='aircraft_burn_program'),
-            url(r'^help',
+           re_path(r'^help',
                 wrap(self.help_view),
                 name='help_aircraft_view'),
-            url(r'^bulk_delete/([\w\,]+)/$',
+           re_path(r'^bulk_delete/([\w\,]+)/$',
                 wrap(self.bulk_delete),
                 name='bulk_aircraft_delete'),
-            url(r'^aircraft-burn-program/pdf',
+           re_path(r'^aircraft-burn-program/pdf',
                 wrap(self.pdflatex),
                 name='create_aircraftburns_pdf'),
 

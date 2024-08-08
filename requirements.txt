@@ -40,7 +40,8 @@ django-model-utils==2.0.3
 dj-static==0.0.6
 django-browserid==0.10.1
 #git+https://github.com/parksandwildlife/dpaw-utils.git@0.3a4#egg=dpaw-utils
-#git+https://github.com/dbca-wa/dbca-utils.git@1.1.1#egg=dbca-utils
+git+https://github.com/dbca-wa/dbca-utils.git@1.1.1#egg=dbca-utils
+git+https://github.com/dbca-wa/wagov_utils.git#egg=wagov_utils
 # django-compressor==1.4
 django-compressor==4.4
 # django-tastypie==0.11.0

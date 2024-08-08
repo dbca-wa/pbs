@@ -62,6 +62,7 @@ from pbs.stakeholder.models import (CriticalStakeholder, PublicContact,
                                     Notification)
 from pbs.review.models import (BurnState, PrescribedBurn, AircraftBurn)
 from pbs.review.admin import (BurnStateAdmin, PrescribedBurnAdmin, AircraftBurnAdmin)
+from django.urls import re_path
 
 from swingers.sauth.sites import AuditSite
 
@@ -100,22 +101,24 @@ class PrescriptionSite(AuditSite):
         Add a view to clear the current prescription from the session
         """
         # from django.conf.urls import patterns, url
-        from django.conf.urls import url
+        # from django.conf.urls import url
+        # from django.urls import re_path
 
         def wrap(view, cacheable=False):
             def wrapper(*args, **kwargs):
                 return self.admin_view(view, cacheable)(*args, **kwargs)
             return update_wrapper(wrapper, view)
-
+        
         urlpatterns = [
-            '',
-            url(r'^administration/$',
-                wrap(self.site_admin),
-                name='site_admin'),
-            url(r'^profile/$',
+            # '',
+            # re_path(r'^administration/$',
+            #     wrap(self.site_admin),
+            #     name='site_admin'),
+            #re_path(r'^administration/$',wrap(self.site_admin), name='site_admin'),
+            re_path(r'^profile/$',
                 wrap(self.profile),
                 name='profile'),
-            url(r'^endorse-authorise/$',
+            re_path(r'^endorse-authorise/$',
                 wrap(self.endorse_authorise_summary),
                 name='endorse_authorise_summary'),
 #            url(r'^daily-burn-program/$',
@@ -125,12 +128,13 @@ class PrescriptionSite(AuditSite):
 #                wrap(self.daily_burn_program_add),
 #                name='daily_burn_program_add'),
 
-            url(r'^endorse-authorise/export_csv/$',
+            re_path(r'^endorse-authorise/export_csv/$',
                 wrap(self.export_to_csv),
                 name='endorse_authorise_exportcsv'),
         ]
 
-        return urlpatterns + super(PrescriptionSite, self).get_urls()
+        # return urlpatterns + super(PrescriptionSite, self).get_urls()
+        return urlpatterns + super().get_urls()
 
     def index(self, request):
         try:
@@ -462,7 +466,8 @@ class PrescriptionSite(AuditSite):
     export_to_csv.short_description = ugettext_lazy("Export to CSV")
 
 
-site = PrescriptionSite()
+# site = PrescriptionSite()
+site = PrescriptionSite(name='site')
 
 site.register(User, UserAdmin)
 site.register(Group, GroupAdmin)

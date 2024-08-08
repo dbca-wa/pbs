@@ -390,7 +390,7 @@ class Prescription(Audit):
         help_text="Percentage of the planned area that will be treated (%)")
     location = models.CharField(
         help_text="Example: Nollajup Nature Reserve - 8.5 KM S of Boyup Brook",
-        max_length="320", blank=True, null=True)
+        max_length=320, blank=True, null=True)
     area = models.DecimalField(
         verbose_name="Planned Burn Area", max_digits=12, decimal_places=1,
         help_text="Planned burn area (in ha)",

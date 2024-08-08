@@ -269,7 +269,8 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         Add some extra views for handling the prescription summaries and a page
         to handle selecting Regional Fire Coordinator objectives for a burn.
         """
-        from django.conf.urls import url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -278,8 +279,9 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
 
         info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = ['',
-            url(r'^prescription/(.+)/all/$',
+        urlpatterns = [
+            # '',
+           re_path(r'^prescription/(.+)/all/$',
                 wrap(self.changelist_view),
                 {"extra_context": {
                     "title": "Documents",
@@ -291,10 +293,10 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
                         "Context Map", "Prescribed Burning SMEAC Checklist")
                 }},
                 name='%s_%s_all' % info),
-            url(r'^prescription/(.+)/category/(.+)/$',
+           re_path(r'^prescription/(.+)/category/(.+)/$',
                 wrap(self.category_view),
                 name='%s_%s_category' % info),
-            url(r'^prescription/(.+)/tag/(.+)/$',
+           re_path(r'^prescription/(.+)/tag/(.+)/$',
                 wrap(self.tag_view),
                 name='%s_%s_tag' % info)
         ]

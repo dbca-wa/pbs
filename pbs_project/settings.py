@@ -92,7 +92,19 @@ INSTALLED_APPS = (
 #     'django.contrib.messages.middleware.MessageMiddleware',
 #     'pbs.middleware.SSOLoginMiddleware',
 # )
-MIDDLEWARE_CLASSES = (
+# MIDDLEWARE_CLASSES = (
+#     'pagination.middleware.PaginationMiddleware',
+#     'django.middleware.security.SecurityMiddleware',
+#     'django.contrib.sessions.middleware.SessionMiddleware',
+#     'django.middleware.common.CommonMiddleware',
+#     'django.middleware.csrf.CsrfViewMiddleware',
+#     'django.contrib.auth.middleware.AuthenticationMiddleware',
+#     'django.contrib.messages.middleware.MessageMiddleware',
+#     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+#     'pbs.middleware.SSOLoginMiddleware',
+# )
+
+MIDDLEWARE = (
     'pagination.middleware.PaginationMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -101,9 +113,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'pbs.middleware.SSOLoginMiddleware',
+    # 'pbs.middleware.SSOLoginMiddleware',
+    'pbs.middleware.PBSV2SSOLoginMiddleware',
 )
-
 # TEMPLATE_CONTEXT_PROCESSORS = (
 #     "django.contrib.auth.context_processors.auth",
 #     "django.core.context_processors.debug",
@@ -224,7 +236,8 @@ ANONYMOUS_USER_ID = -1
 # Authentication settings
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'swingers.sauth.backends.EmailBackend',
+    # 'swingers.sauth.backends.EmailBackend',
+    'wagov_utils.components.utils.email_backend.EmailBackend',
 )
 AUTH_PROFILE_MODULE = 'pbs.Profile'
 LOGIN_URL = '/'
