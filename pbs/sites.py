@@ -228,7 +228,8 @@ class PrescriptionSite(AuditSite):
                                 current_app=self.name)
 
     def profile(self, request):
-        profile = request.user.get_profile()
+        # profile = request.user.get_profile()
+        profile = request.user.profile
         if request.method == 'POST':
             form = ProfileForm(request.POST, instance=profile)
             if form.is_valid():
@@ -241,8 +242,8 @@ class PrescriptionSite(AuditSite):
             'title': _('Edit profile'),
             'form': form
         }
-        return TemplateResponse(request, "admin/profile.html", context,
-                                current_app=self.name)
+        request.current_app=self.name
+        return TemplateResponse(request, "admin/profile.html", context)
 
     def endorse_authorise_summary(self, request, extra_context=None):
         """

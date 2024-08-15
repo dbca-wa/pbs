@@ -259,8 +259,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                 name='%s_%s_sitemap' % info),
         ]
 
-        # return urlpatterns + super(PrescriptionAdmin, self).get_urls()
-        return urlpatterns + super().get_urls()
+        return urlpatterns + super(PrescriptionAdmin, self).get_urls()
+        #return urlpatterns + super().get_urls()
 
     def changelist_view(self, request, extra_context=None):
         # figure out how to auto-select current user's region from

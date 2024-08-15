@@ -40,7 +40,8 @@ def multiselect_form(context):
             for k in q.keys():
                 if not k.startswith(spec.field.name):
                     del q[k]
-            for k, v in q.iteritems():
+            # for k, v in q.iteritems():
+            for k, v in q.items():
                 val = None
                 # For each key:value, only use those that end in '__exact'
                 # or equal 'financial_year'
@@ -54,7 +55,8 @@ def multiselect_form(context):
                     choices.append({
                         'value': val,
                         #'value': choice['query_string'],
-                        'name': unicode(choice['display']),
+                        # 'name': unicode(choice['display']),
+                        'name': choice['display'],
                         'selected': choice['query_string'] in selected,
                     })
 

@@ -42,9 +42,9 @@ print(site.urls)
 
 urlpatterns = urlpatterns + [
     # '',
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
     #re_path(r'^', include(site.urls)),
-    path("", site.urls),
+    # re_path("", site.urls),
     # (r'^', include('pbs.registration.urls')),
     re_path(r'^', include('pbs.registration.urls')),
 
@@ -59,4 +59,6 @@ urlpatterns = urlpatterns + [
     re_path('^documents/(?P<pk>\d+)/download$', document_download, name='document_download'),
     re_path(r'^favicon\.ico$', favicon_view, name='favicon_view'),
     re_path(r'^api/', include(v1_api.urls)),
+    #path('', site.urls),
+    re_path(r'^', site.urls),
 ]
