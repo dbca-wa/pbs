@@ -676,7 +676,7 @@ class TreatmentAdmin(PrescriptionMixin, BaseAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         urlpatterns = [
-            '',
+            # '',
            re_path(r'^complete/prescription/(\d+)/$',
                 wrap(self.mark_as_complete),
                 name='%s_%s_complete' % info),

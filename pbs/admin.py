@@ -13,7 +13,8 @@ def get_permission_codename(action, opts):
     """
     Returns the codename of the permission for the specified action.
     """
-    return '%s_%s' % (action, opts.module_name)
+    # return '%s_%s' % (action, opts.module_name)
+    return '%s_%s' % (action, opts.model_name)
 
 
 class BaseAdmin(ModelAdmin):

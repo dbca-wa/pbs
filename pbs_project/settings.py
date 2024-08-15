@@ -142,11 +142,11 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "django.core.context_processors.i18n",
-                "django.core.context_processors.media",
-                "django.core.context_processors.static",
-                "django.core.context_processors.tz",
-                "django.core.context_processors.csrf",
+                # "django.core.context_processors.i18n",
+                # "django.core.context_processors.media",
+                # "django.core.context_processors.static",
+                # "django.core.context_processors.tz",
+                # "django.core.context_processors.csrf",
                 "pbs_project.context_processors.standard",
             ],
             'builtins': [
@@ -233,11 +233,13 @@ TIME_FORMAT = 'H:i'
 ALLOW_ANONYMOUS_ACCESS = False
 ANONYMOUS_USER_ID = -1
 
+EMAIL_BACKEND = 'wagov_utils.components.utils.email_backend.EmailBackend'
+
 # Authentication settings
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     # 'swingers.sauth.backends.EmailBackend',
-    'wagov_utils.components.utils.email_backend.EmailBackend',
+    # 'wagov_utils.components.utils.email_backend.EmailBackend',
 )
 AUTH_PROFILE_MODULE = 'pbs.Profile'
 LOGIN_URL = '/'

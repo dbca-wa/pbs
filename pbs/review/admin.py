@@ -63,7 +63,7 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
             return update_wrapper(wrapper, view)
 
         urlpatterns = [
-            '',
+            # '',
            re_path(r'^epfp-review/$',
                 wrap(self.epfp_review_summary),
                 name='epfp_review_summary'),
@@ -248,7 +248,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         urlpatterns = [
-            '',
+            
            re_path(r'^review/(\d+)/$',
                 wrap(self.changelist_view),
                 name='review_review_changelist'),
@@ -1608,7 +1608,7 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         urlpatterns = [
-            '',
+            # '',
            re_path(r'^aircraft-burn-program/$',
                 wrap(self.aircraft_burn_program),
                 name='aircraft_burn_program'),

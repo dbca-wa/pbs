@@ -67,7 +67,6 @@ class DetailAdmin(ModelAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         urlpatterns = [
-            '',
            re_path(r'^$',
                 wrap(self.changelist_view),
                 name='%s_%s_changelist' % info),

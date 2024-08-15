@@ -1,5 +1,6 @@
 from django.conf.urls import include
-from django.urls import re_path
+from django.urls import re_path, path
+from django.contrib import admin
 
 """
 some import statmement will load some module (directly or indirectly)
@@ -17,7 +18,7 @@ Solution is using two steps to populate urlpatterns
 # ]
 urlpatterns = [
     re_path(r'^docs/', include('django.contrib.admindocs.urls')),
-    re_path(r'^', include('django.contrib.auth.urls'))
+    re_path(r'^', include('django.contrib.auth.urls')),
 ]
 
 from django.views.generic.base import RedirectView
@@ -37,15 +38,19 @@ favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 
 v1_api = Api(api_name='v1')
 v1_api.register(PrescribedBurnResource())
+print(site.urls)
 
 urlpatterns = urlpatterns + [
     # '',
-    re_path(r'^select2/', include('django_select2.urls')),
+    path('admin/', admin.site.urls),
+    #re_path(r'^', include(site.urls)),
+    path("", site.urls),
     # (r'^', include('pbs.registration.urls')),
     re_path(r'^', include('pbs.registration.urls')),
+
     # the password reset must come before site.urls, site.urls match all
-    # (r'^', include(site.urls)),
     #re_path(r'^', include((site.urls, 'site'), namespace='site')),
+    #re_path(r'^',include((site.urls, 'site'), namespace='admin')),
     #re_path(r'^', include(site.urls)),
     #re_path(r'^password_reset/$', 'django.contrib.auth.views.password_reset',
     #     {'password_reset_form': PbsPasswordResetForm}, name='password_reset'),

@@ -390,7 +390,7 @@ class EdgingPlan(Audit):
     # the VegetationType model in the prescription app.
 
     fuel_type = models.ForeignKey(FuelType,
-        verbose_name="Fuel Type", blank=True, null=True, on_delete=models.PROTECT)
+        verbose_name="Fuel Type", blank=True, null=True, on_delete=models.SET_NULL)
     ffdi_min = models.PositiveIntegerField(
         verbose_name="Min FFDI", blank=True, null=True)
     ffdi_max = models.PositiveIntegerField(

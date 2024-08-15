@@ -18,7 +18,7 @@ urlpatterns = [
     #re_path(r'^activate/(?P<activation_key>\w+)/$',
     #     ActivationView.as_view(),
     #     name='registration_activate'),
-    #re_path(r'^register/$',
+    # re_path(r'^register/$',
     #     RegistrationView.as_view(form_class=RegistrationForm),
     #     name='registration_register'),
    re_path(r'^register/complete/$',

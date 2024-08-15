@@ -259,7 +259,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                 name='%s_%s_sitemap' % info),
         ]
 
-        return urlpatterns + super(PrescriptionAdmin, self).get_urls()
+        # return urlpatterns + super(PrescriptionAdmin, self).get_urls()
+        return urlpatterns + super().get_urls()
 
     def changelist_view(self, request, extra_context=None):
         # figure out how to auto-select current user's region from
@@ -1385,7 +1386,6 @@ class PrescriptionMixin(object):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         urlpatterns = [
-            # '',
            re_path(r'^prescription/(\d+)/$',
                 wrap(self.changelist_view),
                 name='%s_%s_changelist' % info),

@@ -73,6 +73,8 @@ from dateutil import tz
 import re
 import itertools
 
+from django.contrib import admin
+
 
 log = logging.getLogger(__name__)
 
@@ -111,10 +113,10 @@ class PrescriptionSite(AuditSite):
         
         urlpatterns = [
             # '',
-            # re_path(r'^administration/$',
-            #     wrap(self.site_admin),
-            #     name='site_admin'),
-            #re_path(r'^administration/$',wrap(self.site_admin), name='site_admin'),
+            re_path(r'^administration/$',
+                wrap(self.site_admin),
+                name='site_admin'),
+            re_path(r'^administration/$',wrap(self.site_admin), name='site_admin'),
             re_path(r'^profile/$',
                 wrap(self.profile),
                 name='profile'),
@@ -133,8 +135,9 @@ class PrescriptionSite(AuditSite):
                 name='endorse_authorise_exportcsv'),
         ]
 
-        # return urlpatterns + super(PrescriptionSite, self).get_urls()
+        #return urlpatterns + super(PrescriptionSite, self).get_urls()
         return urlpatterns + super().get_urls()
+        #return urlpatterns
 
     def index(self, request):
         try:
@@ -319,8 +322,10 @@ class PrescriptionSite(AuditSite):
             'toDate': toDate,
         }
         context.update(extra_context or {})
-        return TemplateResponse(request, "admin/endorse_authorise_summary.html", context,
-                                current_app=self.name)
+        request.current_app=self.name
+        return TemplateResponse(request, "admin/endorse_authorise_summary.html", context)
+        # request.current_app=self.name
+        # return TemplateResponse(request, "admin/endorse_authorise_summary.html", context)
 
     def get_burns(self, fromDate, toDate):
 
@@ -466,8 +471,8 @@ class PrescriptionSite(AuditSite):
     export_to_csv.short_description = ugettext_lazy("Export to CSV")
 
 
-# site = PrescriptionSite()
-site = PrescriptionSite(name='site')
+#site = PrescriptionSite(name='myadmin')
+site = PrescriptionSite()
 
 site.register(User, UserAdmin)
 site.register(Group, GroupAdmin)

@@ -65,9 +65,9 @@ class AuditAdmin(VersionAdmin, GuardedModelAdmin, ModelAdmin):
         return inner
 
 
-# admin.site.register(Job)
-# admin.site.register(ApplicationLink)
-# admin.site.register(Token)
-admin.site.register(Job, AuditAdmin)
-admin.site.register(ApplicationLink, AuditAdmin)
-admin.site.register(Token, AuditAdmin)
+admin.site.register(Job)
+admin.site.register(ApplicationLink)
+admin.site.register(Token)
+# admin.site.register(Job, AuditAdmin)
+# admin.site.register(ApplicationLink, AuditAdmin)
+# admin.site.register(Token, AuditAdmin)
