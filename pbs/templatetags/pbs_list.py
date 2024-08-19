@@ -2,7 +2,8 @@ from django import template
 from django.contrib.admin.templatetags.admin_list import result_hidden_fields
 from django.contrib.admin.views.main import PAGE_VAR
 from django.contrib.auth.models import Group
-from django.utils.encoding import force_text, smart_str
+from django.utils.encoding import force_text, smart_str, force_str
+from django.utils.functional import Promise
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ObjectDoesNotExist
@@ -39,19 +40,30 @@ def paginator_number(cl, i):
     """
     Generates an individual page index link in a paginated list.
     """
-    if i == DOT:
-        return '<li class="disabled"><a href="#" onclick="return false;">..' \
-               '.</a></li>'
+    # if i == DOT:
+    if isinstance(i, Promise):
+        # return '<li class="disabled"><a href="#" onclick="return false;">..' \
+        #        '.</a></li>'
+        return format_html('<li class="disabled"><a href="#" onclick="return false;">...</a></li>')
     elif i == cl.page_num:
+        # return format_html(
+        #     '<li class="active"><a href="">%d</a></li> ' % (i + 1))
         return format_html(
-            '<li class="active"><a href="">%d</a></li> ' % (i + 1))
+            '<li class="active"><a href="">%d</a></li> ' % (i))
     else:
+        # return format_html(
+        #     '<li><a href="%s"%s>%d</a></li> ' % (
+        #         cl.get_query_string({PAGE_VAR: i}),
+        #         mark_safe(' class="end"'
+        #                   if i == cl.paginator.num_pages - 1 else ''),
+        #         i + 1)
+        # )
         return format_html(
             '<li><a href="%s"%s>%d</a></li> ' % (
                 cl.get_query_string({PAGE_VAR: i}),
                 mark_safe(' class="end"'
                           if i == cl.paginator.num_pages - 1 else ''),
-                i + 1)
+                i )
         )
 
 
@@ -242,14 +254,16 @@ def items_for_result(cl, result, form):
                 if isinstance(value, (datetime.date, datetime.time)):
                     row_classes.append("nowrap")
             else:
-                if isinstance(f.rel, models.ManyToOneRel):
+                # if isinstance(f.rel, models.ManyToOneRel):
+                if isinstance(f.remote_field, models.ManyToOneRel):
                     field_val = getattr(result, f.name)
                     if field_val is None:
                         result_repr = EMPTY_CHANGELIST_VALUE
                     else:
                         result_repr = field_val
                 else:
-                    result_repr = display_for_field(value, f)
+                    result_repr = display_for_field(value, f, empty_value_display='')
+                    #result_repr = f.
                 if isinstance(f, (models.DateField, models.TimeField,
                                   models.ForeignKey)):
                     row_classes.append("nowrap")
