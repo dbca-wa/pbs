@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.apps import apps
 from django.forms.widgets import Select
 from django.utils.safestring import mark_safe
+from functools import cmp_to_key
 
 from smart_selects.utils import unicode_sorter
 
@@ -49,7 +50,7 @@ class ChainedSelect(Select):
         elif JQUERY_URL:
             js = [JQUERY_URL]
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, choices=(), renderer=None):
         if len(name.split('-')) > 1:  # formset
             chain_field = '-'.join(name.split('-')[:-1] + [self.chain_field])
         else:
@@ -70,7 +71,8 @@ class ChainedSelect(Select):
             auto_choose = 'true'
         else:
             auto_choose = 'false'
-        empty_label = iter(self.choices).next()[1]  # Hacky way to getting the correct empty_label from the field instead of a hardcoded '--------'
+        # empty_label = iter(self.choices).next()[1]  # Hacky way to getting the correct empty_label from the field instead of a hardcoded '--------'
+        empty_label = next(iter(self.choices))[1]  # Hacky way to getting the correct empty_label from the field instead of a hardcoded '--------'
         js = """
         <script type="text/javascript">
         //<![CDATA[
@@ -180,24 +182,32 @@ class ChainedSelect(Select):
                     except:  # give up
                         filter = {}
             filtered = list(apps.get_model(self.app_name, self.model_name).objects.filter(**filter).distinct())
-            filtered.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(unicode(x)))
+            # filtered.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(unicode(x))) cmp in removed from python3
+            filtered.sort(
+                key=lambda x: cmp_to_key(locale.strcoll)(unicode_sorter(str(x)))
+            )
             for choice in filtered:
-                final_choices.append((choice.pk, unicode(choice)))
+                final_choices.append((choice.pk, str(choice)))
         if len(final_choices) > 1:
             final_choices = [("", (empty_label))] + final_choices
         if self.show_all:
             final_choices.append(("", (empty_label)))
             self.choices = list(self.choices)
-            self.choices.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(x[1]))
+            #self.choices.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(x[1]))
+            self.choices.sort(key=lambda x: cmp_to_key(locale.strcoll)(unicode_sorter(str(x[1]))))
             for ch in self.choices:
                 if not ch in final_choices:
                     final_choices.append(ch)
         self.choices = ()
-        final_attrs = self.build_attrs(attrs, name=name)
+        attrs['name'] = name
+        # final_attrs = self.build_attrs(attrs, name=name)
+        final_attrs = self.build_attrs(attrs)
         if 'class' in final_attrs:
             final_attrs['class'] += ' chained'
         else:
             final_attrs['class'] = 'chained'
-        output = super(ChainedSelect, self).render(name, value, final_attrs, choices=final_choices)
+        self.choices=final_choices
+        # output = super(ChainedSelect, self).render(name, value, final_attrs, choices=final_choices, renderer=renderer)
+        output = super(ChainedSelect, self).render(name, value, final_attrs, renderer=renderer)
         output += js
         return mark_safe(output)
