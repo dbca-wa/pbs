@@ -37,9 +37,13 @@ def multiselect_form(context):
             q = parse_qs(choice['query_string'].lstrip('?'))
             # If any key doesn't start with the field name, pop it out of the dict.
             # We should end up with a single key:value.
-            for k in q.keys():
-                if not k.startswith(spec.field.name):
-                    del q[k]
+            # for k in q.keys():
+            #     if not k.startswith(spec.field.name):
+            #         del q[k]
+            keys_to_remove = [k for k in q.keys() if not k.startswith(spec.field.name)]
+            # Remove the keys after the iteration
+            for k in keys_to_remove:
+                del q[k]
             # for k, v in q.iteritems():
             for k, v in q.items():
                 val = None
