@@ -38,7 +38,6 @@ favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 
 v1_api = Api(api_name='v1')
 v1_api.register(PrescribedBurnResource())
-print(site.urls)
 
 urlpatterns = urlpatterns + [
     # '',

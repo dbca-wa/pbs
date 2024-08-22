@@ -23,10 +23,12 @@ from django.utils.safestring import mark_safe
 
 # This code is from Django 1.5
 class CheckboxSelectMultiple(SelectMultiple):
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, choices=(), renderer=None):
         if value is None: value = []
         has_id = attrs and 'id' in attrs
-        final_attrs = self.build_attrs(attrs, name=name)
+        # final_attrs = self.build_attrs(attrs, name=name)
+        attrs['name'] = name
+        final_attrs = self.build_attrs(attrs)
         output = []
         # Normalize to strings
         str_values = set([force_text(v) for v in value])

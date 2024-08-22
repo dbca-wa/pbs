@@ -130,8 +130,10 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
         ).exclude(Q(non_calm_tenure=True) & ~Q(non_calm_tenure_approved=True)).order_by('burn_id')
 
         # Use the region from the request.
-        if request.REQUEST.has_key('region'):
-            region = request.REQUEST.get('region', None)
+        # if request.REQUEST.has_key('region'):
+        #     region = request.REQUEST.get('region', None)
+        if 'region' in request.GET:
+            region = request.GET.get('region', None)
         else:
             region = None
         # If no region in the request, use the user's profile.
@@ -1032,17 +1034,22 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Display a list of the current day's planned burns
         """
+        #import ipdb; ipdb.set_trace()
         report_set = {'epfp_planned', 'epfp_fireload', 'epfp_summary'}
         report = request.GET.get('report', 'epfp_planned')
         if report not in report_set:
             report = 'epfp_planned'
 
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        # if request.REQUEST.has_key('report'):
+        #     report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
         dt = None
-        if request.REQUEST.has_key('date'):
-            dt = request.REQUEST.get('date', None)
+        # if request.REQUEST.has_key('date'):
+        #     dt = request.REQUEST.get('date', None)
+        if 'date' in request.GET:
+            dt = request.GET.get('date', None)
             if dt:
                 dt = datetime.strptime(dt, '%Y-%m-%d')
         if not dt:

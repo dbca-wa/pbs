@@ -564,7 +564,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         """
         Populate some of the foreign keys with initial data.
         """
-        profile = request.user.get_profile()
+        # profile = request.user.get_profile()
+        profile = request.user.profile
         if db_field.name == 'region' and profile.region is not None:
             kwargs['initial'] = profile.region.pk
             return db_field.formfield(**kwargs)
@@ -602,7 +603,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         Returns a Form class for use in the admin add view. This is used by
         add_view and change_view.
         """
-        if self.declared_fieldsets:
+        # if self.declared_fieldsets:
+        if hasattr(self, 'declared_fieldsets'):
             fields = flatten_fieldsets(self.get_fieldsets(request, obj))
         else:
             fields = None
@@ -631,6 +633,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             "formfield_callback": partial(self.formfield_for_dbfield,
                                           request=request),
         }
+        kwargs.pop('change', None)
         defaults.update(kwargs)
 
         try:
