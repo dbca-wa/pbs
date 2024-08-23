@@ -162,6 +162,7 @@ WSGI_APPLICATION = 'pbs_project.wsgi.application'
 
 # Database
 DATABASES = {'default': dj_database_url.config()}
+DEFAULT_AUTO_FIELD='django.db.models.AutoField' 
      
 CONN_MAX_AGE = None
 
