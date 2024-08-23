@@ -4,15 +4,16 @@ from functools import update_wrapper
 
 from django.conf import settings
 from django.contrib.admin import ModelAdmin
-from django.contrib.admin.validation import ImproperlyConfigured
+# from django.contrib.admin.validation import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth import REDIRECT_FIELD_NAME, login
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin, GroupAdmin
-from django.contrib.sites.models import get_current_site
-from django.core.urlresolvers import reverse
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import resolve_url
-from django.template import add_to_builtins
+# from django.template import add_to_builtins
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
 from django.utils.http import is_safe_url
@@ -61,6 +62,7 @@ from pbs.stakeholder.models import (CriticalStakeholder, PublicContact,
                                     Notification)
 from pbs.review.models import (BurnState, PrescribedBurn, AircraftBurn)
 from pbs.review.admin import (BurnStateAdmin, PrescribedBurnAdmin, AircraftBurnAdmin)
+from django.urls import re_path
 
 from swingers.sauth.sites import AuditSite
 
@@ -70,6 +72,8 @@ import datetime
 from dateutil import tz
 import re
 import itertools
+
+from django.contrib import admin
 
 
 log = logging.getLogger(__name__)
@@ -98,22 +102,25 @@ class PrescriptionSite(AuditSite):
         """
         Add a view to clear the current prescription from the session
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        # from django.urls import re_path
 
         def wrap(view, cacheable=False):
             def wrapper(*args, **kwargs):
                 return self.admin_view(view, cacheable)(*args, **kwargs)
             return update_wrapper(wrapper, view)
-
-        urlpatterns = patterns(
-            '',
-            url(r'^administration/$',
+        
+        urlpatterns = [
+            # '',
+            re_path(r'^administration/$',
                 wrap(self.site_admin),
                 name='site_admin'),
-            url(r'^profile/$',
+            re_path(r'^administration/$',wrap(self.site_admin), name='site_admin'),
+            re_path(r'^profile/$',
                 wrap(self.profile),
                 name='profile'),
-            url(r'^endorse-authorise/$',
+            re_path(r'^endorse-authorise/$',
                 wrap(self.endorse_authorise_summary),
                 name='endorse_authorise_summary'),
 #            url(r'^daily-burn-program/$',
@@ -123,12 +130,14 @@ class PrescriptionSite(AuditSite):
 #                wrap(self.daily_burn_program_add),
 #                name='daily_burn_program_add'),
 
-            url(r'^endorse-authorise/export_csv/$',
+            re_path(r'^endorse-authorise/export_csv/$',
                 wrap(self.export_to_csv),
                 name='endorse_authorise_exportcsv'),
-        )
+        ]
 
-        return urlpatterns + super(PrescriptionSite, self).get_urls()
+        #return urlpatterns + super(PrescriptionSite, self).get_urls()
+        return urlpatterns + super().get_urls()
+        #return urlpatterns
 
     def index(self, request):
         try:
@@ -219,7 +228,8 @@ class PrescriptionSite(AuditSite):
                                 current_app=self.name)
 
     def profile(self, request):
-        profile = request.user.get_profile()
+        # profile = request.user.get_profile()
+        profile = request.user.profile
         if request.method == 'POST':
             form = ProfileForm(request.POST, instance=profile)
             if form.is_valid():
@@ -232,8 +242,8 @@ class PrescriptionSite(AuditSite):
             'title': _('Edit profile'),
             'form': form
         }
-        return TemplateResponse(request, "admin/profile.html", context,
-                                current_app=self.name)
+        request.current_app=self.name
+        return TemplateResponse(request, "admin/profile.html", context)
 
     def endorse_authorise_summary(self, request, extra_context=None):
         """
@@ -313,8 +323,10 @@ class PrescriptionSite(AuditSite):
             'toDate': toDate,
         }
         context.update(extra_context or {})
-        return TemplateResponse(request, "admin/endorse_authorise_summary.html", context,
-                                current_app=self.name)
+        request.current_app=self.name
+        return TemplateResponse(request, "admin/endorse_authorise_summary.html", context)
+        # request.current_app=self.name
+        # return TemplateResponse(request, "admin/endorse_authorise_summary.html", context)
 
     def get_burns(self, fromDate, toDate):
 
@@ -460,6 +472,7 @@ class PrescriptionSite(AuditSite):
     export_to_csv.short_description = ugettext_lazy("Export to CSV")
 
 
+#site = PrescriptionSite(name='myadmin')
 site = PrescriptionSite()
 
 site.register(User, UserAdmin)
@@ -508,4 +521,4 @@ site.register(PrescribedBurn, PrescribedBurnAdmin)
 site.register(AircraftBurn, AircraftBurnAdmin)
 
 # add our own texify filter to the builtins here.
-add_to_builtins('pbs.prescription.templatetags.texify')
+# add_to_builtins('pbs.prescription.templatetags.texify')

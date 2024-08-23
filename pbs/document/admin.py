@@ -5,8 +5,8 @@ from functools import partial, update_wrapper
 
 from django_downloadview import ObjectDownloadView
 from django.contrib import messages
-from django.contrib.admin.util import quote, unquote
-from django.core.urlresolvers import reverse
+from django.contrib.admin.utils import quote, unquote
+from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_text
@@ -210,7 +210,7 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         """
         request = kwargs.pop('request')
         if self.has_delete_permission(request, obj):
-            info = obj._meta.app_label, obj._meta.module_name
+            info = obj._meta.app_label, obj._meta.model_name
             delete_url = reverse('admin:%s_%s_delete' % info,
                                  args=(quote(obj.pk),
                                        quote(self.prescription.pk)))
@@ -269,17 +269,19 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         Add some extra views for handling the prescription summaries and a page
         to handle selecting Regional Fire Coordinator objectives for a burn.
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns('',
-            url(r'^prescription/(.+)/all/$',
+        urlpatterns = [
+            # '',
+           re_path(r'^prescription/(.+)/all/$',
                 wrap(self.changelist_view),
                 {"extra_context": {
                     "title": "Documents",
@@ -291,12 +293,12 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
                         "Context Map", "Prescribed Burning SMEAC Checklist")
                 }},
                 name='%s_%s_all' % info),
-            url(r'^prescription/(.+)/category/(.+)/$',
+           re_path(r'^prescription/(.+)/category/(.+)/$',
                 wrap(self.category_view),
                 name='%s_%s_category' % info),
-            url(r'^prescription/(.+)/tag/(.+)/$',
+           re_path(r'^prescription/(.+)/tag/(.+)/$',
                 wrap(self.tag_view),
                 name='%s_%s_tag' % info)
-        )
+        ]
 
         return urlpatterns + super(DocumentAdmin, self).get_urls()

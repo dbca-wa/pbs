@@ -83,16 +83,38 @@ MIDDLEWARE_CLASSES = (
     'swingers.middleware.auth.AuthenticationMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django_browserid.context_processors.browserid',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.media',
-    'django.core.context_processors.request',
-    'django.core.context_processors.csrf',
-    'django.core.context_processors.static',
-    'swingers.base.context_processors.standard',
-)
+# TEMPLATE_CONTEXT_PROCESSORS = (
+#     'django.contrib.auth.context_processors.auth',
+#     'django_browserid.context_processors.browserid',
+#     'django.contrib.messages.context_processors.messages',
+#     'django.core.context_processors.media',
+#     'django.core.context_processors.request',
+#     'django.core.context_processors.csrf',
+#     'django.core.context_processors.static',
+#     'swingers.base.context_processors.standard',
+# )
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # os.path.join(BASE_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'swingers.base.context_processors.standard',
+                'django.core.context_processors.media',
+                'django.core.context_processors.request',
+                'django.core.context_processors.csrf',
+                'django.core.context_processors.static',
+            ],
+        },
+    },
+]
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',

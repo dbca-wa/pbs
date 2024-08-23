@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.conf import settings
 
-from django_auth_ldap.backend import LDAPBackend, _LDAPUser
+# from django_auth_ldap.backend import LDAPBackend, _LDAPUser
 
 import hashlib
 import warnings
@@ -44,27 +44,28 @@ def get_or_create_local_user(user):
 
     # instantiate the LDAPBackend model class
     # magically finds the LDAP server from settings.py
-    ldap_backend = LDAPBackend()
+    # ldap_backend = LDAPBackend()
 
-    if user.find('@') != -1:
-        ldap_user = _LDAPUser(ldap_backend, username="")
+    # if user.find('@') != -1:
+    #     ldap_user = _LDAPUser(ldap_backend, username="")
 
-        result = ldap_user.connection.search_s(
-            "dc=corporateict,dc=domain", scope=ldap_backend.ldap.SCOPE_SUBTREE,
-            filterstr='(mail=' + user + ')',
-            attrlist=[str("sAMAccountName").encode('ASCII')]
-        )
-        if result:
-            user = result[0][1]["sAMAccountName"][0].lower()
-        else:
-            return None
+    #     result = ldap_user.connection.search_s(
+    #         "dc=corporateict,dc=domain", scope=ldap_backend.ldap.SCOPE_SUBTREE,
+    #         filterstr='(mail=' + user + ')',
+    #         attrlist=[str("sAMAccountName").encode('ASCII')]
+    #     )
+    #     if result:
+    #         user = result[0][1]["sAMAccountName"][0].lower()
+    #     else:
+    #         return None
 
-    try:
-        user = User.objects.get(username=user)
-    except User.DoesNotExist:
-        user = ldap_backend.populate_user(user)
+    # try:
+    #     user = User.objects.get(username=user)
+    # except User.DoesNotExist:
+    #     user = ldap_backend.populate_user(user)
 
-    return user
+    # return user
+    return None
 
 
 def validate_request(data, expires=600):
@@ -72,46 +73,47 @@ def validate_request(data, expires=600):
     validates a dictionary of request data and returns a User,
     ApplicationLink and token expiry time
     """
-    from swingers.sauth.models import ApplicationLink
-    # sanity check the dictionary
-    for key in ["client_id", "client_secret", "user_id"]:
-        if not key in data:
-            raise Exception("Missing Input")
+    # from swingers.sauth.models import ApplicationLink
+    # # sanity check the dictionary
+    # for key in ["client_id", "client_secret", "user_id"]:
+    #     if not key in data:
+    #         raise Exception("Missing Input")
 
-    # set default expiry to 10 mins unless specified
-    # 0 means never expires
-    if "expires" in data:
-        expires = int(data["expires"])
+    # # set default expiry to 10 mins unless specified
+    # # 0 means never expires
+    # if "expires" in data:
+    #     expires = int(data["expires"])
 
-    # Try and find the user for the user_id
-    ldapbackend = LDAPBackend()
-    user = data["user_id"]
-    if User.objects.filter(username=user):
-        user = User.objects.get(username=user)
-    else:
-        try:
-            ldapbackend.populate_user(user)
-            user = User.objects.get(username=user)
-        except:
-            raise Exception("Invalid user_id")
-    # Try and find the client_id
-    try:
-        link = ApplicationLink.objects.get(client_name=data["client_id"],
-                                           server_name=settings.SERVICE_NAME)
-    except ApplicationLink.DoesNotExist:
-        raise Exception("Application link does not exist")
-    # Validate the secret
-    if link.auth_method == ApplicationLink.AUTH_METHOD.basic:
-        client_secret = link.secret
-    elif "nonce" in data:
-        if cache.get(link.secret) == data["nonce"]:
-            raise Exception("No you can't reuse nonce's!")
-        cache.set(link.secret, data["nonce"], expires)
-        # client_secret should be hexdigest, hash algorithm selected based on
-        # application link
-        client_secret = link.get_client_secret(data["user_id"], data["nonce"])
-    else:
-        raise Exception("Missing nonce")
-    if not client_secret == data["client_secret"]:
-        raise Exception("Invalid client_secret")
-    return user, link, expires
+    # # Try and find the user for the user_id
+    # ldapbackend = LDAPBackend()
+    # user = data["user_id"]
+    # if User.objects.filter(username=user):
+    #     user = User.objects.get(username=user)
+    # else:
+    #     try:
+    #         ldapbackend.populate_user(user)
+    #         user = User.objects.get(username=user)
+    #     except:
+    #         raise Exception("Invalid user_id")
+    # # Try and find the client_id
+    # try:
+    #     link = ApplicationLink.objects.get(client_name=data["client_id"],
+    #                                        server_name=settings.SERVICE_NAME)
+    # except ApplicationLink.DoesNotExist:
+    #     raise Exception("Application link does not exist")
+    # # Validate the secret
+    # if link.auth_method == ApplicationLink.AUTH_METHOD.basic:
+    #     client_secret = link.secret
+    # elif "nonce" in data:
+    #     if cache.get(link.secret) == data["nonce"]:
+    #         raise Exception("No you can't reuse nonce's!")
+    #     cache.set(link.secret, data["nonce"], expires)
+    #     # client_secret should be hexdigest, hash algorithm selected based on
+    #     # application link
+    #     client_secret = link.get_client_secret(data["user_id"], data["nonce"])
+    # else:
+    #     raise Exception("Missing nonce")
+    # if not client_secret == data["client_secret"]:
+    #     raise Exception("Invalid client_secret")
+    # return user, link, expires
+    return None

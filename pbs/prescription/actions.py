@@ -2,10 +2,10 @@ import os
 import shutil
 
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.admin import helpers
-from django.contrib.admin.util import model_ngettext
+from django.contrib.admin.utils import model_ngettext
 from django.db import router
 from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse

@@ -182,6 +182,7 @@ class PrescriptionEditForm(PrescriptionFormBase):
             "non_calm_tenure_value":forms.widgets.Textarea(attrs={"style":"width:90%;"}),
             "non_calm_tenure_risks":forms.widgets.Textarea(attrs={"style":"width:90%;"})
         }
+        fields='__all__'
 
 
 class PrescriptionSummaryForm(forms.ModelForm):
@@ -363,6 +364,7 @@ class AddApprovalForm(forms.ModelForm):
 
     class Meta:
         model = Approval
+        fields='__all__'
 
 
 class BriefingChecklistForm(forms.ModelForm):

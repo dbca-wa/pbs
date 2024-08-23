@@ -1,4 +1,4 @@
-from django.contrib.admin.util import NestedObjects
+from django.contrib.admin.utils import NestedObjects
 from django.contrib.auth.models import Group
 from django.utils.text import capfirst
 from django.utils.encoding import force_text

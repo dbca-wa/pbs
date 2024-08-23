@@ -16,7 +16,7 @@ from __future__ import print_function, division, unicode_literals, absolute_impo
 # Imports
 import os
 from django.test.client import Client, RequestFactory
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from nose.tools import *
 from bs4 import BeautifulSoup
 

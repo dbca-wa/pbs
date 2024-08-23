@@ -1,7 +1,7 @@
 from django.test import TestCase, SimpleTestCase
 from django.test.client import RequestFactory
 from django.test.utils import override_settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.admin.tests import AdminSeleniumWebDriverTestCase
 from django.db.models.base import ModelBase
 

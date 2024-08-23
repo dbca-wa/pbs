@@ -14,7 +14,7 @@ logger = logging.getLogger("log." + __name__)
 class Profile(models.Model):
     DEFAULT_GROUP = "Users"
 
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
     region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.PROTECT)
     district = ChainedForeignKey(District,
         chained_field="region", chained_model_field="region",

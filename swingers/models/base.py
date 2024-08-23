@@ -3,7 +3,7 @@ from __future__ import (division, print_function, unicode_literals,
 
 from django.contrib.gis.db import models as geo_models
 from django.core.exceptions import ImproperlyConfigured
-from django.utils import timezone, six
+from django.utils import timezone
 from django.db import router, models
 from django.db.models import signals
 from django.db.models.deletion import Collector
@@ -80,13 +80,15 @@ class ActiveModel(models.Model):
             # delete batches
             # be compatible with django>=1.6
             if hasattr(collector, 'batches'):
-                for model, batches in six.iteritems(collector.batches):
-                    for field, instances in six.iteritems(batches):
+                # for model, batches in six.iteritems(collector.batches):
+                for model, batches in collector.batches.items():
+                    # for field, instances in six.iteritems(batches):
+                    for field, instances in batches.items():
                         for instance in instances:
                             self._delete(instance)
 
             # "delete" instances
-            for model, instances in six.iteritems(collector.data):
+            for model, instances in collector.data.items():
                 for instance in instances:
                     self._delete(instance)
 
@@ -115,7 +117,8 @@ class ActiveModel(models.Model):
 class ActiveGeoModel(ActiveModel):
     objects = ActiveGeoModelManager()
     # Return all objects, including deleted ones, the default manager.
-    objects_all = geo_models.GeoManager()
+    # objects_all = geo_models.GeoManager()
+    objects_all = models.Manager()
 
     def __init__(self, *args, **kwargs):
         if not issubclass(type(type(self).objects), ActiveGeoModelManager):

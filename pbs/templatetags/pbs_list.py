@@ -2,16 +2,19 @@ from django import template
 from django.contrib.admin.templatetags.admin_list import result_hidden_fields
 from django.contrib.admin.views.main import PAGE_VAR
 from django.contrib.auth.models import Group
-from django.utils.encoding import force_text, smart_str
+from django.utils.encoding import force_text, smart_str, force_str
+from django.utils.functional import Promise
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.admin.util import (lookup_field, display_for_field,
+from django.contrib.admin.utils import (lookup_field, display_for_field,
                                        display_for_value, label_for_field)
-from django.contrib.admin.views.main import (EMPTY_CHANGELIST_VALUE,
-                                             ORDER_VAR)
+# from django.contrib.admin.views.main import (EMPTY_CHANGELIST_VALUE,
+#                                              ORDER_VAR)
+# from django.contrib.admin import EMPTY_CHANGELIST_VALUE
 from django.db import models
-from django.template import resolve_variable, NodeList
+# from django.template import resolve_variable, NodeList
+from django.template import NodeList
 
 import datetime
 import json
@@ -23,6 +26,8 @@ from swingers.utils import shorthash
 register = template.Library()
 
 DOT = '.'
+ORDER_PARAM = 'o'
+EMPTY_CHANGELIST_VALUE = '---'
 
 
 @register.simple_tag
@@ -35,19 +40,30 @@ def paginator_number(cl, i):
     """
     Generates an individual page index link in a paginated list.
     """
-    if i == DOT:
-        return '<li class="disabled"><a href="#" onclick="return false;">..' \
-               '.</a></li>'
+    # if i == DOT:
+    if isinstance(i, Promise):
+        # return '<li class="disabled"><a href="#" onclick="return false;">..' \
+        #        '.</a></li>'
+        return format_html('<li class="disabled"><a href="#" onclick="return false;">...</a></li>')
     elif i == cl.page_num:
+        # return format_html(
+        #     '<li class="active"><a href="">%d</a></li> ' % (i + 1))
         return format_html(
-            '<li class="active"><a href="">%d</a></li> ' % (i + 1))
+            '<li class="active"><a href="">%d</a></li> ' % (i))
     else:
+        # return format_html(
+        #     '<li><a href="%s"%s>%d</a></li> ' % (
+        #         cl.get_query_string({PAGE_VAR: i}),
+        #         mark_safe(' class="end"'
+        #                   if i == cl.paginator.num_pages - 1 else ''),
+        #         i + 1)
+        # )
         return format_html(
             '<li><a href="%s"%s>%d</a></li> ' % (
                 cl.get_query_string({PAGE_VAR: i}),
                 mark_safe(' class="end"'
                           if i == cl.paginator.num_pages - 1 else ''),
-                i + 1)
+                i )
         )
 
 
@@ -76,13 +92,16 @@ def setvar(parser, token):
         # Splitting by None == splitting by spaces.
         tag_name, arg = token.contents.split(None, 1)
     except ValueError:
-        raise template.TemplateSyntaxError, "%r tag requires arguments" % token.contents.split()[0]
+        # raise template.TemplateSyntaxError, "%r tag requires arguments" % token.contents.split()[0]
+        raise template.TemplateSyntaxError(f"{token.contents.split()[0]!r} tag requires arguments")
     m = re.search(r'(.*?) as (\w+)', arg)
     if not m:
-        raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
+        # raise template.TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
+        raise template.TemplateSyntaxError(f"{tag_name!r} tag had invalid arguments")
     new_val, var_name = m.groups()
     if not (new_val[0] == new_val[-1] and new_val[0] in ('"', "'")):
-        raise template.TemplateSyntaxError, "%r tag's argument should be in quotes" % tag_name
+        # raise template.TemplateSyntaxError, "%r tag's argument should be in quotes" % tag_name
+        raise template.TemplateSyntaxError(f"{tag_name!r} tag's argument should be in quotes")
     return SetVarNode(new_val[1:-1], var_name)
 
 
@@ -196,11 +215,11 @@ def result_headers(cl):
             "ascending": order_type == "asc",
             "sort_priority": sort_priority,
             "url_primary": cl.get_query_string(
-                {ORDER_VAR: '.'.join(o_list_primary)}),
+                {ORDER_PARAM: '.'.join(o_list_primary)}),
             "url_remove": cl.get_query_string(
-                {ORDER_VAR: '.'.join(o_list_remove)}),
+                {ORDER_PARAM: '.'.join(o_list_remove)}),
             "url_toggle": cl.get_query_string(
-                {ORDER_VAR: '.'.join(o_list_toggle)}),
+                {ORDER_PARAM: '.'.join(o_list_toggle)}),
             "classes": ' '.join(th_classes) if th_classes else '',
             "column": 'column-%s' % field_name,
         }
@@ -235,14 +254,16 @@ def items_for_result(cl, result, form):
                 if isinstance(value, (datetime.date, datetime.time)):
                     row_classes.append("nowrap")
             else:
-                if isinstance(f.rel, models.ManyToOneRel):
+                # if isinstance(f.rel, models.ManyToOneRel):
+                if isinstance(f.remote_field, models.ManyToOneRel):
                     field_val = getattr(result, f.name)
                     if field_val is None:
                         result_repr = EMPTY_CHANGELIST_VALUE
                     else:
                         result_repr = field_val
                 else:
-                    result_repr = display_for_field(value, f)
+                    result_repr = display_for_field(value, f, empty_value_display='')
+                    #result_repr = f.
                 if isinstance(f, (models.DateField, models.TimeField,
                                   models.ForeignKey)):
                     row_classes.append("nowrap")
@@ -412,7 +433,8 @@ class GroupCheckNode(template.Node):
         self.nodelist_false = nodelist_false
 
     def render(self, context):
-        user = resolve_variable('user', context)
+        # user = resolve_variable('user', context)
+        user = context.get('user')
 
         if not user.is_authenticated():
             return self.nodelist_false.render(context)

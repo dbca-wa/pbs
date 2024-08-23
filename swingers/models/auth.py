@@ -7,29 +7,30 @@ import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
+#from django.utils.encoding import python_2_unicode_compatible
 
 # we can't do `from swingers import models` because that causes circular import
 from swingers.models import Model, ForeignKey, DateTimeField
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 
 
 logger = logging.getLogger("log." + __name__)
 
 
-@python_2_unicode_compatible
+
 class Audit(Model):
     class Meta:
         abstract = True
 
     creator = ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='%(app_label)s_%(class)s_created', editable=False)
+        related_name='%(app_label)s_%(class)s_created', editable=False, on_delete=models.PROTECT)
     modifier = ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='%(app_label)s_%(class)s_modified', editable=False)
+        related_name='%(app_label)s_%(class)s_modified', editable=False, on_delete=models.PROTECT)
     created = DateTimeField(default=timezone.now, editable=False)
     modified = DateTimeField(auto_now=True, editable=False)
 
@@ -94,7 +95,7 @@ class Audit(Model):
         return str(self.pk)
 
     def get_absolute_url(self):
-        opts = self._meta.app_label, self._meta.module_name
+        opts = self._meta.app_label, self._meta.model_name
         return reverse("admin:%s_%s_change" % opts, args=(self.pk, ))
 
     def clean_fields(self, exclude=None):

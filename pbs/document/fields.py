@@ -8,7 +8,7 @@ from django.template.defaultfilters import filesizeformat
 
 from io import BytesIO
 import tempfile
-from south.modelsinspector import add_introspection_rules
+# from south.modelsinspector import add_introspection_rules
 
 
 class ContentTypeRestrictedFileField(FileField):
@@ -66,5 +66,5 @@ class ContentTypeRestrictedFileField(FileField):
                                   '{0})'.format(', '.join(ext)))
         return data
 
-add_introspection_rules(
-    [], ["^pbs\.document\.models\.ContentTypeRestrictedFileField"])
+# add_introspection_rules(
+#     [], ["^pbs\.document\.models\.ContentTypeRestrictedFileField"])

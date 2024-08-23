@@ -11,14 +11,15 @@ import logging
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+# from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Q, Max, Sum
 from django.db.models.signals import post_save, m2m_changed,pre_save
 from django.dispatch import receiver
 from django.forms import ValidationError
 from django.template.defaultfilters import truncatewords
-from django.utils.encoding import python_2_unicode_compatible
+#from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils import timezone
 
@@ -31,7 +32,7 @@ from pbs.risk.models import Register, Risk, Action, Complexity, Context, Treatme
 logger = logging.getLogger("log." + __name__)
 
 
-@python_2_unicode_compatible
+
 class Season(Audit):
     #SEASON_SPRING = 1
     #SEASON_SUMMER = 2
@@ -73,7 +74,7 @@ class RegionManager(models.Manager):
         return self.get(name=name)
 
 
-@python_2_unicode_compatible
+
 class Region(models.Model):
     """
     """
@@ -101,7 +102,7 @@ class DistrictManager(models.Manager):
         return self.get(name=name, region=region)
 
 
-@python_2_unicode_compatible
+
 class District(models.Model):
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     name = models.CharField(max_length=200, unique=True)
@@ -127,7 +128,7 @@ class ShireManager(models.Manager):
         return self.get(name=name, district=district)
 
 
-@python_2_unicode_compatible
+
 class Shire(models.Model):
     district = models.ForeignKey(District, on_delete=models.PROTECT)
     name = models.CharField(max_length=200)
@@ -149,7 +150,7 @@ class Shire(models.Model):
         unique_together = ('name', 'district')
 
 
-@python_2_unicode_compatible
+
 class FuelType(models.Model):
     """
     Note that this model type is now referred to as "fuel type" in
@@ -165,7 +166,7 @@ class FuelType(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
+
 class Tenure(models.Model):
     name = models.CharField(max_length=200)
 
@@ -176,7 +177,7 @@ class Tenure(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
+
 class Purpose(models.Model):
     name = models.CharField(max_length=200)
     display_order = models.PositiveIntegerField(default=1)
@@ -188,7 +189,7 @@ class Purpose(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
+
 class ForecastArea(models.Model):
     districts = models.ManyToManyField(District)
     name = models.CharField(max_length=200)
@@ -205,7 +206,7 @@ class EndorsingRoleManager(models.Manager):
         return self.get(name=name)
 
 
-@python_2_unicode_compatible
+
 class EndorsingRole(models.Model):
     name = models.CharField(max_length=320)
     index = models.PositiveSmallIntegerField()
@@ -223,7 +224,7 @@ class EndorsingRole(models.Model):
         ordering = ['index']
 
 
-@python_2_unicode_compatible
+
 class Prescription(Audit):
     """
     A Prescription is the core object in the system. It should contain all the
@@ -389,7 +390,7 @@ class Prescription(Audit):
         help_text="Percentage of the planned area that will be treated (%)")
     location = models.CharField(
         help_text="Example: Nollajup Nature Reserve - 8.5 KM S of Boyup Brook",
-        max_length="320", blank=True, null=True)
+        max_length=320, blank=True, null=True)
     area = models.DecimalField(
         verbose_name="Planned Burn Area", max_digits=12, decimal_places=1,
         help_text="Planned burn area (in ha)",
@@ -1225,10 +1226,9 @@ class Prescription(Audit):
         context_map_modified = self.document_set.tag_names(
             "Context Map").aggregate(Max('modified'))["modified__max"]
         return max([modified for modified in
-                    self.priorities.modified, self.context_statements.modified,
+                    [self.priorities.modified, self.context_statements.modified,
                     critical_stakeholders_modified, context_map_modified,
-                    self.created
-                    if modified is not None])
+                    self.created] if modified is not None])
 
     def sectiona3_modified(self):
         objectives_modified = self.objective_set.aggregate(
@@ -1236,8 +1236,8 @@ class Prescription(Audit):
         successcriteria_modified = self.successcriteria_set.aggregate(
             Max('modified'))["modified__max"]
         return max([modified for modified in
-                    objectives_modified, successcriteria_modified,
-                    self.created
+                    [objectives_modified, successcriteria_modified,
+                    self.created]
                     if modified is not None])
 
     def sectionb5_modified(self):
@@ -1250,9 +1250,9 @@ class Prescription(Audit):
         ea_modified = self.exclusionarea_set.aggregate(
             Max('modified'))["modified__max"]
         return max([modified for modified in
-                    bp_modified, ep_modified,
+                    [bp_modified, ep_modified,
                     ls_modified, ea_modified,
-                    self.created
+                    self.created]
                     if modified is not None])
 
     @property
@@ -1313,7 +1313,7 @@ class Prescription(Audit):
         )
 
 
-@python_2_unicode_compatible
+
 class FundingAllocation(models.Model):
     """
     Allow multiple funding allocations for a Prescription.
@@ -1370,7 +1370,7 @@ class FundingAllocation(models.Model):
         super(FundingAllocation, self).save(*args, **kwargs)
 
 
-@python_2_unicode_compatible
+
 class PriorityJustification(Audit):
     PRIORITY_UNRATED = 0
     PRIORITY_LOW = 1
@@ -1415,7 +1415,7 @@ class PriorityJustification(Audit):
                                   'it has been given a rationale.')
 
 
-@python_2_unicode_compatible
+
 class RegionalObjective(Audit):
     """
     """
@@ -1446,7 +1446,7 @@ class RegionalObjective(Audit):
         verbose_name_plural = 'Regional Fire Management Plan Objectives'
 
 
-@python_2_unicode_compatible
+
 class Objective(Audit):
     """
     """
@@ -1465,7 +1465,7 @@ class Objective(Audit):
         ordering = ["created"]
 
 
-@python_2_unicode_compatible
+
 class SuccessCriteria(Audit):
     """
     """
@@ -1486,7 +1486,7 @@ class SuccessCriteria(Audit):
         ordering = ["created"]
 
 
-@python_2_unicode_compatible
+
 class SMEAC(models.Model):
     category = models.CharField(max_length=200)
 
@@ -1499,7 +1499,7 @@ class DefaultBriefingChecklist(models.Model):
     title = models.CharField(max_length=200)
 
 
-@python_2_unicode_compatible
+
 class BriefingChecklist(Audit):
     title = models.TextField(verbose_name="Topic")
     prescription = models.ForeignKey(Prescription, on_delete=models.PROTECT)
@@ -1516,7 +1516,7 @@ class BriefingChecklist(Audit):
         return '{0}|{1}'.format(self.smeac, truncatewords(self.title, 8))
 
 
-@python_2_unicode_compatible
+
 class Endorsement(Audit):
     ENDORSED_CHOICES = (
         (None, ''),
@@ -1538,7 +1538,7 @@ class Endorsement(Audit):
         ordering = ['role']
 
 
-@python_2_unicode_compatible
+
 class Approval(Audit):
     prescription = models.ForeignKey(Prescription, on_delete=models.PROTECT)
     initial_valid_to = models.DateField(

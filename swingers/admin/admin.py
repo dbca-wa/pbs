@@ -3,7 +3,8 @@ from __future__ import absolute_import, unicode_literals
 from functools import update_wrapper
 
 from django.contrib.admin import ModelAdmin
-from django.contrib.admin.util import unquote
+# from django.contrib.admin.util import unquote
+from django.contrib.admin.utils import unquote
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.template.response import TemplateResponse
@@ -55,36 +56,36 @@ class DetailAdmin(ModelAdmin):
         )
 
     def get_urls(self):
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^$',
+        urlpatterns = [
+           re_path(r'^$',
                 wrap(self.changelist_view),
                 name='%s_%s_changelist' % info),
-            url(r'^add/$',
+           re_path(r'^add/$',
                 wrap(self.add_view),
                 name='%s_%s_add' % info),
-            url(r'^(\d+)/history/$',
+           re_path(r'^(\d+)/history/$',
                 wrap(self.history_view),
                 name='%s_%s_history' % info),
-            url(r'^(\d+)/delete/$',
+           re_path(r'^(\d+)/delete/$',
                 wrap(self.delete_view),
                 name='%s_%s_delete' % info),
-            url(r'^(\d+)/change/$',
+           re_path(r'^(\d+)/change/$',
                 wrap(self.change_view),
                 name='%s_%s_change' % info),
-            url(r'^(\d+)/$',
+           re_path(r'^(\d+)/$',
                 wrap(self.detail_view),
                 name='%s_%s_detail' % info),
-        )
+        ]
         return urlpatterns
 
     def detail_view(self, request, object_id, extra_context=None):

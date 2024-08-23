@@ -77,6 +77,7 @@ class AreaAchievementForm(forms.ModelForm):
 
     class Meta:
         model = AreaAchievement
+        fields ='__all__'
 
 
 class PostBurnChecklistForm(forms.ModelForm):
@@ -88,3 +89,4 @@ class PostBurnChecklistForm(forms.ModelForm):
 
     class Meta:
         model = PostBurnChecklist
+        fields='__all__'

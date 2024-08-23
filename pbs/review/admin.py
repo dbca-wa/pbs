@@ -14,9 +14,9 @@ from pbs.report.models import AreaAchievement
 from datetime import datetime, date, timedelta
 from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import itertools
-from django.contrib.admin.util import quote, unquote, flatten_fieldsets
+from django.contrib.admin.utils import quote, unquote, flatten_fieldsets
 from django.conf import settings
 from pbs.admin import BaseAdmin
 from pbs.prescription.admin import PrescriptionMixin
@@ -54,19 +54,20 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
         """
         Add a view to clear the current prescription from the session
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        urlpatterns = patterns(
-            '',
-            url(r'^epfp-review/$',
+        urlpatterns = [
+            # '',
+           re_path(r'^epfp-review/$',
                 wrap(self.epfp_review_summary),
                 name='epfp_review_summary'),
-        )
+        ]
 
         return urlpatterns + super(BurnStateAdmin, self).get_urls()
 
@@ -129,8 +130,10 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
         ).exclude(Q(non_calm_tenure=True) & ~Q(non_calm_tenure_approved=True)).order_by('burn_id')
 
         # Use the region from the request.
-        if request.REQUEST.has_key('region'):
-            region = request.REQUEST.get('region', None)
+        # if request.REQUEST.has_key('region'):
+        #     region = request.REQUEST.get('region', None)
+        if 'region' in request.GET:
+            region = request.GET.get('region', None)
         else:
             region = None
         # If no region in the request, use the user's profile.
@@ -236,57 +239,58 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Add an extra view to handle marking a treatment as complete.
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^review/(\d+)/$',
+        urlpatterns = [
+            
+           re_path(r'^review/(\d+)/$',
                 wrap(self.changelist_view),
                 name='review_review_changelist'),
-            url(r'^add/burn/(\d+)/$',
+           re_path(r'^add/burn/(\d+)/$',
                 wrap(self.add_view),
                 name='%s_%s_add' % info),
-            url(r'^daily-burn-program/$',
+           re_path(r'^daily-burn-program/$',
                 wrap(self.daily_burn_program),
                 name='daily_burn_program'),
             #url(r'^district_action/([\w\,]+)/$',
-            url(r'^district_action/$',
+           re_path(r'^district_action/$',
                 wrap(self.district_action_view),
                 name='district_action_view'),
             #url(r'^region_action/([\w\,]+)/$',
-            url(r'^region_action/$',
+           re_path(r'^region_action/$',
                 wrap(self.region_action_view),
                 name='region_action_view'),
-            url(r'^daily-burn-program/fire_action',
+           re_path(r'^daily-burn-program/fire_action',
                 wrap(self.action_view),
                 name='action_view'),
-            url(r'^daily-burn-program/epfp',
+           re_path(r'^daily-burn-program/epfp',
                 wrap(self.prescription_view),
                 name='prescription_view'),
-            url(r'^daily-burn-program/export_csv/$',
+           re_path(r'^daily-burn-program/export_csv/$',
                 wrap(self.export_to_csv),
                 name='daily_burn_program_exportcsv'),
-            url(r'^daily-burn-program/pdf',
+           re_path(r'^daily-burn-program/pdf',
                 wrap(self.pdflatex),
                 name='create_dailyburns_pdf'),
-            url(r'^csv',
+           re_path(r'^csv',
                 wrap(self.csv_view),
                 name='csv_view'),
             #url(r'^bulk_delete/([\w\,]+)/$',
-            url(r'^bulk_delete/$',
+           re_path(r'^bulk_delete/$',
                 wrap(self.bulk_delete),
                 name='bulk_delete'),
-            url(r'^help',
+           re_path(r'^help',
                 wrap(self.help_view),
                 name='help_view'),
-        )
+        ]
         return urlpatterns + super(PrescribedBurnAdmin, self).get_urls()
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -1030,17 +1034,22 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Display a list of the current day's planned burns
         """
+        #import ipdb; ipdb.set_trace()
         report_set = {'epfp_planned', 'epfp_fireload', 'epfp_summary'}
         report = request.GET.get('report', 'epfp_planned')
         if report not in report_set:
             report = 'epfp_planned'
 
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        # if request.REQUEST.has_key('report'):
+        #     report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
         dt = None
-        if request.REQUEST.has_key('date'):
-            dt = request.REQUEST.get('date', None)
+        # if request.REQUEST.has_key('date'):
+        #     dt = request.REQUEST.get('date', None)
+        if 'date' in request.GET:
+            dt = request.GET.get('date', None)
             if dt:
                 dt = datetime.strptime(dt, '%Y-%m-%d')
         if not dt:
@@ -1595,31 +1604,32 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Add an extra view to handle marking a treatment as complete.
         """
-        from django.conf.urls import patterns, url
+        #from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^aircraft-burn-program/$',
+        urlpatterns = [
+            # '',
+           re_path(r'^aircraft-burn-program/$',
                 wrap(self.aircraft_burn_program),
                 name='aircraft_burn_program'),
-            url(r'^help',
+           re_path(r'^help',
                 wrap(self.help_view),
                 name='help_aircraft_view'),
-            url(r'^bulk_delete/([\w\,]+)/$',
+           re_path(r'^bulk_delete/([\w\,]+)/$',
                 wrap(self.bulk_delete),
                 name='bulk_aircraft_delete'),
-            url(r'^aircraft-burn-program/pdf',
+           re_path(r'^aircraft-burn-program/pdf',
                 wrap(self.pdflatex),
                 name='create_aircraftburns_pdf'),
 
-        )
+        ]
         return urlpatterns + super(AircraftBurnAdmin, self).get_urls()
 
     def help_view(self, request, extra_context=None):

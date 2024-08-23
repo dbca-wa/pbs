@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n staticfiles %}
+{% load i18n static %}
 
 {% block extrahead %}
 <link rel="stylesheet" href="{% static 'pbs/css/login.css' %}">
@@ -86,6 +86,6 @@ $.backstretch("{% static 'pbs/img/login_background.jpg' %}");
 {% block footer %}
 <footer class="white navbar-fixed-bottom">
     Don't have an account yet?
-    <a class="btn btn-black" href="{% url 'registration_register' %}">Register</a> <em>(FPC users only)</em>
+    <a class="btn btn-black" href="">Register</a> <em>(FPC users only)</em>
 </footer>
 {% endblock %}

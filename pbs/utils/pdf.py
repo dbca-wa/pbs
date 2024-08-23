@@ -145,7 +145,7 @@ def pdflatex(prescription,template="pfp",downloadname=None,embed=True,headers=Tr
         result.template_file = texpath
 
         logger.info("Starting PDF rendering process ...")
-        print texpath
+        print(texpath)
         cmd = ['latexmk', '-f', '-silent', '-pdf', '-outdir={}'.format(directory), texpath]
         logger.info("Running: {0}".format(" ".join(cmd)))
         subprocess.call(cmd)

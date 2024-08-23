@@ -20,11 +20,11 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin import helpers
-from django.contrib.admin.util import quote, unquote, flatten_fieldsets
+from django.contrib.admin.utils import quote, unquote, flatten_fieldsets
 from django.contrib.auth.models import Group
 from django.core.exceptions import (FieldError, ValidationError,
                                     PermissionDenied)
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction, router
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.forms.models import modelform_factory
@@ -197,68 +197,70 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         Add some extra views for handling the prescription summaries and a page
         to handle selecting Regional Fire Coordinator objectives for a burn.
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^(\d+)/add/objectives/$',
+        urlpatterns = [
+            # '',
+           re_path(r'^(\d+)/add/objectives/$',
                 wrap(self.add_objectives),
                 name='%s_%s_objectives' % info),
-            url(r'^(\d+)/regional_objective/(\d+)/delete$',
+           re_path(r'^(\d+)/regional_objective/(\d+)/delete$',
                 wrap(self.delete_regional_objective),
                 name='%s_%s_delete_regional_objective' % info),
-            url(r'^(\d+)/summary/$',
+           re_path(r'^(\d+)/summary/$',
                 wrap(self.summary),
                 name='%s_%s_summary' % info),
-            url(r'^(\d+)/summary/pre/$',
+           re_path(r'^(\d+)/summary/pre/$',
                 wrap(self.pre_summary),
                 name='%s_%s_pre_summary' % info),
-            url(r'^(\d+)/summary/day/$',
+           re_path(r'^(\d+)/summary/day/$',
                 wrap(self.day_summary),
                 name='%s_%s_day_summary' % info),
-            url(r'^(\d+)/summary/post/$',
+           re_path(r'^(\d+)/summary/post/$',
                 wrap(self.post_summary),
                 name='%s_%s_post_summary' % info),
-            url(r'^(\d+)/summary/pdf/$',
+           re_path(r'^(\d+)/summary/pdf/$',
                 wrap(self.pdf_summary),
                 name='%s_%s_pdf_summary' % info),
-            url(r'^(\d+)/download/$',
+           re_path(r'^(\d+)/download/$',
                 wrap(self.pdflatex),
                 name='%s_%s_download' % info),
-            url(r'^(\d+)/export/$',
+           re_path(r'^(\d+)/export/$',
                 wrap(self.pdflatex),
                 name='%s_%s_export' % info),
-            url(r'^(\d+)/cbas/$',
+           re_path(r'^(\d+)/cbas/$',
                 wrap(self.corporate_approve),
                 name='%s_%s_corporate_approve' % info),
-            url(r'^(\d+)/endorsement/$',
+           re_path(r'^(\d+)/endorsement/$',
                 wrap(self.endorse),
                 name='%s_%s_endorse' % info),
-            url(r'^(\d+)/endorsement/(\d+)/delete$',
+           re_path(r'^(\d+)/endorsement/(\d+)/delete$',
                 wrap(self.delete_endorsement),
                 name='%s_%s_delete_endorsement' % info),
-            url(r'^(\d+)/endorsement/officers$',
+           re_path(r'^(\d+)/endorsement/officers$',
                 wrap(self.endorsing_roles),
                 name='%s_%s_endorsing_roles' % info),
-            url(r'^(\d+)/approval/$',
+           re_path(r'^(\d+)/approval/$',
                 wrap(self.approve),
                 name='%s_%s_approve' % info),
-            url(r'^(\d+)/closure/$',
+           re_path(r'^(\d+)/closure/$',
                 wrap(self.close),
                 name='%s_%s_close' % info),
-            url(r'^(\d+)/sitemap/$',
+           re_path(r'^(\d+)/sitemap/$',
                 wrap(self.sitemap),
                 name='%s_%s_sitemap' % info),
-        )
+        ]
 
         return urlpatterns + super(PrescriptionAdmin, self).get_urls()
+        #return urlpatterns + super().get_urls()
 
     def changelist_view(self, request, extra_context=None):
         # figure out how to auto-select current user's region from
@@ -562,7 +564,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         """
         Populate some of the foreign keys with initial data.
         """
-        profile = request.user.get_profile()
+        # profile = request.user.get_profile()
+        profile = request.user.profile
         if db_field.name == 'region' and profile.region is not None:
             kwargs['initial'] = profile.region.pk
             return db_field.formfield(**kwargs)
@@ -600,7 +603,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         Returns a Form class for use in the admin add view. This is used by
         add_view and change_view.
         """
-        if self.declared_fieldsets:
+        # if self.declared_fieldsets:
+        if hasattr(self, 'declared_fieldsets'):
             fields = flatten_fieldsets(self.get_fieldsets(request, obj))
         else:
             fields = None
@@ -629,6 +633,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             "formfield_callback": partial(self.formfield_for_dbfield,
                                           request=request),
         }
+        kwargs.pop('change', None)
         defaults.update(kwargs)
 
         try:
@@ -1373,33 +1378,33 @@ class PrescriptionMixin(object):
         return super(PrescriptionMixin, self).__init__(model, admin_site)
 
     def get_urls(self):
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^prescription/(\d+)/$',
+        urlpatterns = [
+           re_path(r'^prescription/(\d+)/$',
                 wrap(self.changelist_view),
                 name='%s_%s_changelist' % info),
-            url(r'^add/prescription/(\d+)/$',
+           re_path(r'^add/prescription/(\d+)/$',
                 wrap(self.add_view),
                 name='%s_%s_add' % info),
-            url(r'^(.+)/history/prescription/(\d+)/$',
+           re_path(r'^(.+)/history/prescription/(\d+)/$',
                 wrap(self.history_view),
                 name='%s_%s_history' % info),
-            url(r'^(.+)/delete/prescription/(\d+)/$',
+           re_path(r'^(.+)/delete/prescription/(\d+)/$',
                 wrap(self.delete_view),
                 name='%s_%s_delete' % info),
-            url(r'^(.+)/prescription/(\d+)/$',
+           re_path(r'^(.+)/prescription/(\d+)/$',
                 wrap(self.change_view),
                 name='%s_%s_change' % info)
-        )
+        ]
         return urlpatterns
 
     def get_changelist(self, request, **kwargs):
@@ -1497,7 +1502,7 @@ class PrescriptionMixin(object):
             return self.add_view(request, prescription_id=prescription.id,
                                  form_url=reverse(
                                      'admin:%s_%s_add' %
-                                     (opts.app_label, opts.module_name),
+                                     (opts.app_label, opts.model_name),
                                      args=[prescription.id],
                                      current_app=self.admin_site.name))
 
@@ -1526,7 +1531,7 @@ class PrescriptionMixin(object):
             request, object_id, extra_context=context)
 
     @csrf_protect_m
-    @transaction.commit_on_success
+    @transaction.atomic
     def delete_view(self, request, object_id, prescription_id,
                     extra_context=None):
         "The 'delete' admin view for this model."
@@ -1576,7 +1581,7 @@ class PrescriptionMixin(object):
                 else:
                     post_url = reverse(
                         'admin:%s_%s_changelist' % (opts.app_label,
-                                                    opts.module_name),
+                                                    opts.model_name),
                         args=(quote(self.prescription.pk),),
                         current_app=self.admin_site.name)
             else:
@@ -1654,7 +1659,7 @@ class PrescriptionMixin(object):
         """
         request = kwargs.pop('request')
         if self.has_delete_permission(request, obj):
-            info = obj._meta.app_label, obj._meta.module_name
+            info = obj._meta.app_label, obj._meta.model_name
             delete_url = reverse('admin:%s_%s_delete' % info,
                                  args=(quote(obj.pk),
                                        quote(self.prescription.pk)))
@@ -1688,7 +1693,7 @@ class PrescriptionMixin(object):
             opts = obj._meta
             pk_value = obj._get_pk_val()
             redirect = reverse('admin:%s_%s_change' %
-                               (opts.app_label, opts.module_name),
+                               (opts.app_label, opts.model_name),
                                args=(pk_value, self.prescription.pk),
                                current_app=self.admin_site.name)
 
@@ -1705,7 +1710,7 @@ class PrescriptionMixin(object):
                    ' edit it again below.' % msg_dict)
             self.message_user(request, msg)
             return HttpResponseRedirect(reverse('admin:%s_%s_change' %
-                                        (opts.app_label, opts.module_name),
+                                        (opts.app_label, opts.model_name),
                                         args=(pk_value, self.prescription.pk),
                                         current_app=self.admin_site.name))
         elif "_addanother" in request.POST:
@@ -1713,7 +1718,7 @@ class PrescriptionMixin(object):
                    ' add another %(name)s below.' % msg_dict)
             self.message_user(request, msg)
             return HttpResponseRedirect(reverse('admin:%s_%s_add' %
-                                        (opts.app_label, opts.module_name),
+                                        (opts.app_label, opts.model_name),
                                         args=(self.prescription.pk,),
                                         current_app=self.admin_site.name))
         return super(PrescriptionMixin, self).response_change(request, obj)
@@ -1730,7 +1735,7 @@ class PrescriptionMixin(object):
 
         if self.has_change_permission(request, None):
             post_url = reverse('admin:%s_%s_changelist' %
-                               (opts.app_label, opts.module_name),
+                               (opts.app_label, opts.model_name),
                                args=(quote(self.prescription.pk),),
                                current_app=self.admin_site.name)
         else:
@@ -1751,7 +1756,7 @@ class PrescriptionMixin(object):
 
         if self.has_change_permission(request, None):
             post_url = reverse('admin:%s_%s_changelist' %
-                               (opts.app_label, opts.module_name),
+                               (opts.app_label, opts.model_name),
                                args=(quote(self.prescription.pk),),
                                current_app=self.admin_site.name)
         else:

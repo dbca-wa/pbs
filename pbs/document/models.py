@@ -5,7 +5,6 @@ import os
 
 from swingers.models.auth import Audit
 from swingers import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils import timezone
 from django.db.models import Max, Q
 from smart_selects.db_fields import ChainedForeignKey
@@ -14,9 +13,10 @@ from pbs.document.fields import ContentTypeRestrictedFileField
 from pbs.document.utils import get_dimensions
 from pbs.prescription.models import Prescription
 import datetime
+from functools import reduce
 
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ["^pbs\.document\.fields\.ContentTypeRestrictedFileField"])
+# from south.modelsinspector import add_introspection_rules
+# add_introspection_rules([], ["^pbs\.document\.fields\.ContentTypeRestrictedFileField"])
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ def content_file_name(self, filename):
         extension)
 
 
-@python_2_unicode_compatible
+
 class DocumentCategory(models.Model):
     name = models.CharField(max_length=200)
     order = models.PositiveSmallIntegerField(default=0)
@@ -58,13 +58,13 @@ class CategoryManager(models.Manager):
                       Q())
 
     def not_tag_names(self, *names):
-        return self.get_query_set().exclude(self._query_by_names(*names))
+        return self.get_queryset().exclude(self._query_by_names(*names))
 
     def tag_names(self, *names):
-        return self.get_query_set().filter(self._query_by_names(*names))
+        return self.get_queryset().filter(self._query_by_names(*names))
 
 
-@python_2_unicode_compatible
+
 class DocumentTag(models.Model):
     name = models.CharField(verbose_name="Document Tag", max_length=200)
     category = models.ForeignKey(DocumentCategory, on_delete=models.PROTECT)
@@ -86,14 +86,14 @@ class TagManager(models.Manager):
                       Q())
 
     def not_tag_names(self, *names):
-        return self.get_query_set().exclude(self._query_by_names(*names))
+        return self.get_queryset().exclude(self._query_by_names(*names))
 
     def tag_names(self, *names):
-        return self.get_query_set().filter(self._query_by_names(*names))
+        return self.get_queryset().filter(self._query_by_names(*names))
 
     def __getattr__(self, name):
         if name[:4] == "tag_":
-            qs = self.get_query_set().filter(
+            qs = self.get_queryset().filter(
                 tag__name__iexact=name[4:].replace("_", " "))
             qs.modified = qs.aggregate(Max('modified'))["modified__max"]
             return qs
@@ -105,11 +105,11 @@ class TagManager(models.Manager):
         Return the set of printable documents. This removes any zip files from
         the set of documents.
         """
-        qs = self.get_query_set()
+        qs = self.get_queryset()
         return filter(lambda x: x.filename.endswith('.pdf'), qs)
 
 
-@python_2_unicode_compatible
+
 class Document(Audit):
     prescription = models.ForeignKey(
         Prescription, null=True,
@@ -179,7 +179,7 @@ class Document(Audit):
     class Meta:
         ordering = ['tag', 'document']
         permissions = (
-            ("archive_document", "Can archive documents")
+            ("archive_document", "Can archive documents"),
         )
 
     def __str__(self):

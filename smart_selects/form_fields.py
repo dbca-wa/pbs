@@ -1,4 +1,5 @@
-from django.db.models import get_model
+# from django.db.models import get_model
+from django.apps import apps
 from django.forms.models import ModelChoiceField
 from django.forms import ChoiceField
 
@@ -18,7 +19,7 @@ class ChainedModelChoiceField(ModelChoiceField):
         }
         defaults.update(kwargs)
         if not 'queryset' in kwargs:
-            queryset = get_model(app_name, model_name).objects.all()
+            queryset = apps.get_model(app_name, model_name).objects.all()
             super(ChainedModelChoiceField, self).__init__(queryset=queryset, initial=initial, *args, **defaults)
         else:
             super(ChainedModelChoiceField, self).__init__(initial=initial, *args, **defaults)
