@@ -1,6 +1,6 @@
 {
 	"name": "PBSV1 Development",
-	"image": "dbcawa/docker_app_dev:pbs_dev_latest",
+	"image": "dbcawa/docker_app_dev:pbs_dev_pbs_django_3_latest",
 	"remoteUser": "container",
 	"workspaceFolder": "/data/data/projects/pbs",
 	"mounts": ["type=bind,source=/data/,target=/data/",
