@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- master
+- pbs_django_3
 
 resources:
 - repo: self
@@ -11,7 +11,7 @@ resources:
 variables:
   tag: '$(Build.BuildId)'
   tagDate: $[ format('{0:yyyy}.{0:MM}.{0:dd}.{0:HH}.{0:mm}{0:ss}', pipeline.startTime) ]
-  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/pbs_django_3')]
   
 stages:
 - stage: Build
@@ -29,8 +29,8 @@ stages:
         command: buildAndPush
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: | 
-              latest
-              $(tagDate)
+              pbs_django_3_latest
+              pbs_django_3_$(tagDate)
         containerRegistry: DockerHub
         repository: dbcawa/pbs
     - task: Docker@2
@@ -39,7 +39,7 @@ stages:
         command: buildAndPush
         dockerfile: '$(Build.SourcesDirectory)/dockerdev/Dockerfile'
         tags: | 
-              pbs_dev_latest
-              pbs_dev_$(tagDate)              
+              pbs_dev_pbs_django_3_latest
+              pbs_dev_pbs_django_3_$(tagDate)              
         containerRegistry: DockerHub
         repository: dbcawa/docker_app_dev    
