@@ -1,5 +1,5 @@
 # Prepare the base environment.
-FROM dbcawa/ubuntu:18.04-latexmk as builder_base_pbs
+FROM ubuntu:22.04 as builder_base_pbs
 MAINTAINER asi@dbca.wa.gov.au
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SECRET_KEY="ThisisNotRealKey"
@@ -10,18 +10,20 @@ ENV FROM_EMAIL="no-reply@dbca.wa.gov.au"
 ENV KMI_DOWNLOAD_URL="https://localhost/"
 ENV CSV_DOWNLOAD_URL="https://localhost/"
 ENV SHP_DOWNLOAD_URL="https://localhost/"
+ENV DATABASE_URL="sqlite://memory"
 
-RUN apt-get update \
-  && apt-get upgrade -y \
-  && apt-get install -yq git mercurial gcc gdal-bin libsasl2-dev libpq-dev \
-  python python-setuptools python-dev python-pip \
-  fex-utils imagemagick poppler-utils \
-  libldap2-dev libssl-dev wget build-essential vim
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -yq git mercurial gcc gdal-bin libsasl2-dev libpq-dev
+RUN apt-get install -y python3-setuptools python3-dev python3-pip
+RUN apt-get install -y fex-utils imagemagick poppler-utils
+RUN apt-get install -y libldap2-dev libssl-dev wget build-essential vim virtualenv libmagic-dev  
 # RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Install Python libs from requirements.txt.
 FROM builder_base_pbs as python_libs_pbs
 WORKDIR /app
+
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt 
   # Update the Django <1.11 bug in django/contrib/gis/geos/libgeos.py
@@ -47,7 +49,8 @@ COPY templates ./templates
 
 #COPY .env ./.env
 RUN touch .env
-RUN python3 manage.py collectstatic --noinput
+#RUN python3 manage.py migrate
+#RUN python3 manage.py collectstatic --noinput
 RUN rm .env
 
 # Health checks for kubernetes 
