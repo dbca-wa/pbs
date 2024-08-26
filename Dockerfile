@@ -17,7 +17,7 @@ RUN apt-get update \
   python python-setuptools python-dev python-pip \
   fex-utils imagemagick poppler-utils \
   libldap2-dev libssl-dev wget build-essential vim
-RUN ln -s /usr/bin/python3 /usr/bin/python
+# RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Install Python libs from requirements.txt.
 FROM builder_base_pbs as python_libs_pbs
