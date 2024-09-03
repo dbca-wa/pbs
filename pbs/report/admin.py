@@ -6,6 +6,8 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
+from django.contrib import admin
+from django.contrib.admin.views.main import ChangeList
 
 from pbs.admin import BaseAdmin
 from pbs.prescription.admin import PrescriptionMixin, SavePrescriptionMixin
@@ -14,13 +16,32 @@ from pbs.report.forms import AreaAchievementForm, PostBurnChecklistForm
 
 csrf_protect_m = method_decorator(csrf_protect)
 
+
+
 class AreaAchievementAdmin(SavePrescriptionMixin, PrescriptionMixin,
                            BaseAdmin):
-    list_display = ("ignition", "ignition_types", "area_estimate",
+    form = AreaAchievementForm
+    @admin.display(description='Ignition types')
+    def display_ignition_types(self, obj):
+       return ", ".join([str(item) for item in obj.ignition_types.all()])
+    form = AreaAchievementForm
+    list_display = ("ignition", "display_ignition_types", "area_estimate",
                     "area_treated", "edging_length",
                     "edging_depth_estimate", "date_escaped",
                     "dpaw_fire_no", "dfes_fire_no")
-    list_editable = ("ignition", "ignition_types", "area_estimate",
+    # list_display = ("ignition", "ignition_types", "area_estimate",
+    #                 "area_treated", "edging_length",
+    #                 "edging_depth_estimate", "date_escaped",
+    #                 "dpaw_fire_no", "dfes_fire_no")
+    # list_editable = ("ignition", "display_ignition_types", "area_estimate",
+    #                  "area_treated", "edging_length",
+    #                  "edging_depth_estimate", "date_escaped",
+    #                  "dpaw_fire_no", "dfes_fire_no")
+    # list_editable = ("ignition","ignition_types","area_estimate",
+    #                  "area_treated", "edging_length",
+    #                  "edging_depth_estimate", "date_escaped",
+    #                  "dpaw_fire_no", "dfes_fire_no")
+    list_editable = ("ignition","area_estimate",
                      "area_treated", "edging_length",
                      "edging_depth_estimate", "date_escaped",
                      "dpaw_fire_no", "dfes_fire_no")
@@ -28,11 +49,13 @@ class AreaAchievementAdmin(SavePrescriptionMixin, PrescriptionMixin,
     list_display_links = (None,)
     list_empty_form = True
     actions = None
-    form = AreaAchievementForm
+    # form = AreaAchievementForm
     ignition_form = PrescriptionIgnitionCompletedForm
     can_delete = True
     lock_after = 'closure'
 
+    
+    
     @csrf_protect_m
     def changelist_view(self, request, prescription_id, extra_context=None):
         """ Add an extra ModelForm to the view, to allow updates to the

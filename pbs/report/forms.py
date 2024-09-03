@@ -52,10 +52,11 @@ class BurnClosureStateForm(PatchedModelForm):
 class AreaAchievementForm(forms.ModelForm):
 
     ignition_types = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
-
+    
     def __init__(self, *args, **kwargs):
         super(AreaAchievementForm, self).__init__(*args, **kwargs)
-        if self.fields.has_key('ignition'):
+        # if self.fields.has_key('ignition'):
+        if 'ignition' in self.fields:
             self.fields['ignition'].widget.attrs.update({'class': 'vDateField input-small'})
             self.fields['date_escaped'].widget.attrs.update({'class': 'vDateField input-small'})
 
