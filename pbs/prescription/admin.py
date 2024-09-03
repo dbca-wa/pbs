@@ -1425,8 +1425,12 @@ class PrescriptionMixin(object):
 
             def url_for_result(self, result):
                 pk = getattr(result, self.pk_attname)
+                # return reverse('admin:%s_%s_change' % (self.opts.app_label,
+                #                                        self.opts.module_name),
+                #                args=(quote(pk), quote(admin.prescription.pk)),
+                #                current_app=self.model_admin.admin_site.name)
                 return reverse('admin:%s_%s_change' % (self.opts.app_label,
-                                                       self.opts.module_name),
+                                                       self.opts.model_name),
                                args=(quote(pk), quote(admin.prescription.pk)),
                                current_app=self.model_admin.admin_site.name)
 
@@ -1491,6 +1495,7 @@ class PrescriptionMixin(object):
 
     def change_view(self, request, object_id, prescription_id,
                     extra_context=None):
+        print('in change view')
         prescription = self.get_prescription(request, unquote(prescription_id))
 
         if prescription is None:
@@ -1606,13 +1611,14 @@ class PrescriptionMixin(object):
             "protected": protected,
             "opts": opts,
             "app_label": app_label,
+            "current_app": self.admin_site.name,
         }
         context.update(extra_context or {})
 
         return TemplateResponse(request, self.delete_confirmation_template or [
             "admin/%s/delete_confirmation.html" % app_label,
             "admin/delete_confirmation.html"
-        ], context, current_app=self.admin_site.name)
+        ], context)
 
     def get_readonly_fields(self, request, obj=None):
         """
@@ -1687,16 +1693,36 @@ class PrescriptionMixin(object):
         inner.short_description = related.opts.verbose_name_plural.title()
         return inner
 
+    # def response_add(self, request, obj, post_url_continue=None):
+    #     redirect = request.GET['next'] if "next" in request.GET else None
+    #     if redirect is None:
+    #         opts = obj._meta
+    #         pk_value = obj._get_pk_val()            
+    #         redirect = reverse('admin:%s_%s_change' %
+    #                            (opts.app_label, opts.model_name),
+    #                            args=(pk_value, self.prescription.pk),
+    #                            current_app=self.admin_site.name)
+    #     return super(PrescriptionMixin, self).response_add(
+    #         request, obj, post_url_continue=redirect)
+
     def response_add(self, request, obj, post_url_continue=None):
         redirect = request.GET['next'] if "next" in request.GET else None
+        if redirect:
+            return HttpResponseRedirect(request.GET['next'])
+        opts = obj._meta
+        msg_dict = {'name': force_text(opts.verbose_name),
+                    'obj': force_text(obj)}
         if redirect is None:
-            opts = obj._meta
-            pk_value = obj._get_pk_val()
+            # opts = obj._meta
+            pk_value = obj._get_pk_val()            
             redirect = reverse('admin:%s_%s_change' %
                                (opts.app_label, opts.model_name),
                                args=(pk_value, self.prescription.pk),
                                current_app=self.admin_site.name)
-
+        if '_save' in request.POST:
+            msg = ('The %(name)s "%(obj)s" was added successfully.' % msg_dict)
+            self.message_user(request, msg, messages.SUCCESS)
+            return self.response_post_save_add(request, obj)
         return super(PrescriptionMixin, self).response_add(
             request, obj, post_url_continue=redirect)
 
