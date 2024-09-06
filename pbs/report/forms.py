@@ -5,6 +5,7 @@ from select2.fields import ModelMultipleChoiceField
 from pbs.report.models import (SummaryCompletionState, BurnImplementationState,
                                BurnClosureState, AreaAchievement, IgnitionType,
                                PostBurnChecklist)
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 
 class SummaryCompletionStateForm(forms.ModelForm):
@@ -52,6 +53,8 @@ class BurnClosureStateForm(PatchedModelForm):
 class AreaAchievementForm(forms.ModelForm):
 
     ignition_types = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
+    # ignition_types = forms.ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), widget=FilteredSelectMultiple("Ignition Types", is_stacked=False))
+    #ignition_types = forms.ModelMultipleChoiceField(queryset=IgnitionType.objects.all())
     
     def __init__(self, *args, **kwargs):
         super(AreaAchievementForm, self).__init__(*args, **kwargs)
@@ -59,6 +62,11 @@ class AreaAchievementForm(forms.ModelForm):
         if 'ignition' in self.fields:
             self.fields['ignition'].widget.attrs.update({'class': 'vDateField input-small'})
             self.fields['date_escaped'].widget.attrs.update({'class': 'vDateField input-small'})
+        #self.fields['ignition_types'] = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
+        # if(self.instance and self.instance.id):
+        #     self.fields['ignition_types'].initial= self.instance.ignition_types.all()
+            #print(self.instance.id, self.instance.ignition_types.all())
+        # self.fields['ignition_types'].widget.attrs.update({'style': 'width: 400px; height: 150 px;'})
 
     def clean(self):
         """

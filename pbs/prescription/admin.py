@@ -1327,9 +1327,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'current': obj,
             'form': form,
+            'current_app':self.admin_site.name,
         }
+        # return TemplateResponse(request, self.day_summary_template,
+        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.day_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def post_summary(self, request, object_id):
         """
@@ -1422,6 +1425,16 @@ class PrescriptionMixin(object):
                     return qs.filter(**fields)
                 else:
                     return qs
+                
+            def get_queryset(self, request):
+                qs = super(PrescriptionChangeList, self).get_queryset(request)
+                if admin.prescription is not None:
+                    fields = {
+                        admin.prescription_filter_field: admin.prescription
+                    }
+                    return qs.filter(**fields)
+                else:
+                    return qs
 
             def url_for_result(self, result):
                 pk = getattr(result, self.pk_attname)
@@ -1474,6 +1487,7 @@ class PrescriptionMixin(object):
             'editable': editable,
         }
         context.update(extra_context or {})
+        #import ipdb; ipdb.set_trace()
         return super(PrescriptionMixin, self).changelist_view(
             request, extra_context=context)
 

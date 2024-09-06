@@ -16,32 +16,37 @@ from pbs.report.forms import AreaAchievementForm, PostBurnChecklistForm
 
 csrf_protect_m = method_decorator(csrf_protect)
 
+class AreaAchievementChangeList(ChangeList):
 
+    def __init__(self, request, model, list_display, list_display_links, list_filter,
+                date_hierarchy, search_fields, list_select_related, list_per_page,
+                list_max_show_all, list_editable, model_admin, sortable_by,):
+
+        super().__init__(
+           request, model, list_display, list_display_links, list_filter,
+           date_hierarchy, search_fields, list_select_related, list_per_page,
+           list_max_show_all, list_editable, model_admin, sortable_by
+       )
+        # self.list_display = ["ignition", "ignition_types", "area_estimate",
+        #             "area_treated", "edging_length",
+        #             "edging_depth_estimate", "date_escaped",
+        #             "dpaw_fire_no", "dfes_fire_no"]
+        print('in changelist')
+        self.list_display = ["ignition_types"] + self.list_display
+        # self.list_editable = ["ignition","ignition_types","area_estimate",
+        #              "area_treated", "edging_length",
+        #              "edging_depth_estimate", "date_escaped",
+        #              "dpaw_fire_no", "dfes_fire_no"]
+        self.list_editable = ["ignition_types"] + self.list_editable
+        self.list_display_links = (None,)
 
 class AreaAchievementAdmin(SavePrescriptionMixin, PrescriptionMixin,
                            BaseAdmin):
-    form = AreaAchievementForm
-    @admin.display(description='Ignition types')
-    def display_ignition_types(self, obj):
-       return ", ".join([str(item) for item in obj.ignition_types.all()])
-    form = AreaAchievementForm
-    list_display = ("ignition", "display_ignition_types", "area_estimate",
+    list_display = ("ignition", "area_estimate",
                     "area_treated", "edging_length",
                     "edging_depth_estimate", "date_escaped",
                     "dpaw_fire_no", "dfes_fire_no")
-    # list_display = ("ignition", "ignition_types", "area_estimate",
-    #                 "area_treated", "edging_length",
-    #                 "edging_depth_estimate", "date_escaped",
-    #                 "dpaw_fire_no", "dfes_fire_no")
-    # list_editable = ("ignition", "display_ignition_types", "area_estimate",
-    #                  "area_treated", "edging_length",
-    #                  "edging_depth_estimate", "date_escaped",
-    #                  "dpaw_fire_no", "dfes_fire_no")
-    # list_editable = ("ignition","ignition_types","area_estimate",
-    #                  "area_treated", "edging_length",
-    #                  "edging_depth_estimate", "date_escaped",
-    #                  "dpaw_fire_no", "dfes_fire_no")
-    list_editable = ("ignition","area_estimate",
+    list_editable = ("ignition", "area_estimate",
                      "area_treated", "edging_length",
                      "edging_depth_estimate", "date_escaped",
                      "dpaw_fire_no", "dfes_fire_no")
@@ -49,18 +54,16 @@ class AreaAchievementAdmin(SavePrescriptionMixin, PrescriptionMixin,
     list_display_links = (None,)
     list_empty_form = True
     actions = None
-    # form = AreaAchievementForm
+    form = AreaAchievementForm
     ignition_form = PrescriptionIgnitionCompletedForm
     can_delete = True
     lock_after = 'closure'
 
-    
-    
     @csrf_protect_m
     def changelist_view(self, request, prescription_id, extra_context=None):
         """ Add an extra ModelForm to the view, to allow updates to the
         ignition completion date.
-        """
+        """        
         p = self.get_prescription(request, unquote(prescription_id))
 
         ignition_latest = None
@@ -137,6 +140,8 @@ class AreaAchievementAdmin(SavePrescriptionMixin, PrescriptionMixin,
             return self.list_ignition_types
 
         return self.list_editable
+
+
 
 
 class ProposedActionAdmin(PrescriptionMixin, SavePrescriptionMixin,
