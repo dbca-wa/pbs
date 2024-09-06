@@ -1831,6 +1831,7 @@ class SavePrescriptionMixin(object):
         Save the model and assign delete permissions to particular objects.
         Also save user to object if an audit object
         """
+        #import ipdb; ipdb.set_trace()
         try:
             obj.prescription = self.prescription
         except AttributeError:

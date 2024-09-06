@@ -65,8 +65,7 @@ class AreaAchievementForm(forms.ModelForm):
         #self.fields['ignition_types'] = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
         # if(self.instance and self.instance.id):
         #     self.fields['ignition_types'].initial= self.instance.ignition_types.all()
-            #print(self.instance.id, self.instance.ignition_types.all())
-        # self.fields['ignition_types'].widget.attrs.update({'style': 'width: 400px; height: 150 px;'})
+        self.fields['ignition_types'].widget.attrs.update({'style': 'width: 400px; height: 150 px;'})
 
     def clean(self):
         """
@@ -83,6 +82,7 @@ class AreaAchievementForm(forms.ModelForm):
                                       "ignition type.")
 
         return cleaned_data
+    
 
     class Meta:
         model = AreaAchievement
