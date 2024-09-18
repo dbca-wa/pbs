@@ -10,7 +10,8 @@ django-wsgiserver==0.8.0rc1
 # django-registration==1.0
 # django-registration==3.2
 django-dtpanel-htmltidy==0.1.1
-django-chosen==0.1
+#django-chosen==0.1
+django-chosen-mega==0.1.6
 django-appconf==1.0.3
 django-confy==1.0.4
 # Django-Select2==4.2.2
