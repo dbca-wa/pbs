@@ -1156,9 +1156,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'current': obj,
             'form': form,
+            'current_app':self.admin_site.name,
         }
+        # return TemplateResponse(request, self.summary_template,
+        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def pre_summary(self, request, object_id):
         """
@@ -1166,6 +1169,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         """
         obj = self.get_object(request, unquote(object_id))
         AdminPrescriptionSummaryForm = self.get_form(request, obj)
+        print(AdminPrescriptionSummaryForm)
 
         funding_choices = FundingAllocation._meta.get_field('allocation').choices
         # I have not been able to pass this queryset in as a keyword param to FundingAllocationFormSet
@@ -1174,16 +1178,25 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         FundingAllocationFormSet = inlineformset_factory(
             parent_model=Prescription, model=FundingAllocation,
             formset=FundingAllocationInlineFormSet,
+            fields='__all__',
             extra=len(funding_choices) - initial_queryset.count())
+        # FundingAllocationFormSet = inlineformset_factory(
+        #     parent_model=Prescription, model=FundingAllocation,
+        #     formset=FundingAllocationInlineFormSet,
+        #     extra=len(funding_choices) - initial_queryset.count(),
+        #     form=AdminPrescriptionSummaryForm)
         # Top up initial data with missing allocations
         existing_allocations = {fa.id: (fa.allocation, fa.proportion) for fa in initial_queryset}
         initial_choices_dict = {k: 0 for k, v in funding_choices}
-        for i, (a, p) in existing_allocations.iteritems():
+        # for i, (a, p) in existing_allocations.iteritems():
+        for i, (a, p) in existing_allocations.items():
             if a in initial_choices_dict:
                 initial_choices_dict.pop(a)
         # initial_choices_dict.update(existing_allocations)
+        # initial_choices = [
+        #     {'prescription': obj.pk, 'allocation': k, 'proportion': v} for k, v in initial_choices_dict.iteritems()]
         initial_choices = [
-            {'prescription': obj.pk, 'allocation': k, 'proportion': v} for k, v in initial_choices_dict.iteritems()]
+            {'prescription': obj.pk, 'allocation': k, 'proportion': v} for k, v in initial_choices_dict.items()]
 
         if request.method == "POST":
             data = request.POST
@@ -1232,10 +1245,13 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'media': media,
             'max_risk': obj.get_maximum_risk,
             'max_complexity': obj.get_maximum_complexity,
-            'purposes': [p.name for p in obj.purposes.all()]
+            'purposes': [p.name for p in obj.purposes.all()],
+            'current_app': self.admin_site.name
         }
+        # return TemplateResponse(request, self.pre_summary_template,
+        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.pre_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def pdf_summary(self, request, object_id, extra_context=None):
         """
