@@ -248,6 +248,7 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         Wraps the change list with some extra tag related information.
         """
         tag = unquote(tag_name.replace("_", " "))
+        opts = DocumentCategory._meta
 
         try:
             document_tag = DocumentTag.objects.get(name__iexact=tag)
