@@ -1121,9 +1121,11 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'current': obj,
             'objectives': objectives,
+            'current_app': self.admin_site.name,
         }
-        return TemplateResponse(request, self.objectives_template,
-                                context, current_app=self.admin_site.name)
+        # return TemplateResponse(request, self.objectives_template,
+        #                         context, current_app=self.admin_site.name)
+        return TemplateResponse(request, self.objectives_template, context)
 
     def summary(self, request, object_id):
         """
@@ -1442,11 +1444,16 @@ class PrescriptionMixin(object):
                 else:
                     return qs
                 
+            def get_filters(self, request):
+                if self.list_filter is None:
+                    self.list_filter = []
+                return super().get_filters(request)
+                
             def get_queryset(self, request):
                 qs = super(PrescriptionChangeList, self).get_queryset(request)
                 if admin.prescription is not None:
                     fields = {
-                        admin.prescription_filter_field: admin.prescription
+                        admin.prescription_filter_field: admin.prescription,
                     }
                     return qs.filter(**fields)
                 else:

@@ -12,6 +12,6 @@ register = template.Library()
 @stringfilter
 def markdownify(value):
     extensions = ["nl2br"]
-    return mark_safe(markdown.markdown(str(value), extensions,
+    return mark_safe(markdown.markdown(str(value), extensions=extensions,
                                        safe_mode=True,
                                        enable_attributes=False))
