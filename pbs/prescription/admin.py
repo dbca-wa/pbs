@@ -1121,9 +1121,11 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'current': obj,
             'objectives': objectives,
+            'current_app': self.admin_site.name,
         }
-        return TemplateResponse(request, self.objectives_template,
-                                context, current_app=self.admin_site.name)
+        # return TemplateResponse(request, self.objectives_template,
+        #                         context, current_app=self.admin_site.name)
+        return TemplateResponse(request, self.objectives_template, context)
 
     def summary(self, request, object_id):
         """
@@ -1156,9 +1158,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'current': obj,
             'form': form,
+            'current_app':self.admin_site.name,
         }
+        # return TemplateResponse(request, self.summary_template,
+        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def pre_summary(self, request, object_id):
         """
@@ -1174,16 +1179,25 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         FundingAllocationFormSet = inlineformset_factory(
             parent_model=Prescription, model=FundingAllocation,
             formset=FundingAllocationInlineFormSet,
+            fields='__all__',
             extra=len(funding_choices) - initial_queryset.count())
+        # FundingAllocationFormSet = inlineformset_factory(
+        #     parent_model=Prescription, model=FundingAllocation,
+        #     formset=FundingAllocationInlineFormSet,
+        #     extra=len(funding_choices) - initial_queryset.count(),
+        #     form=AdminPrescriptionSummaryForm)
         # Top up initial data with missing allocations
         existing_allocations = {fa.id: (fa.allocation, fa.proportion) for fa in initial_queryset}
         initial_choices_dict = {k: 0 for k, v in funding_choices}
-        for i, (a, p) in existing_allocations.iteritems():
+        # for i, (a, p) in existing_allocations.iteritems():
+        for i, (a, p) in existing_allocations.items():
             if a in initial_choices_dict:
                 initial_choices_dict.pop(a)
         # initial_choices_dict.update(existing_allocations)
+        # initial_choices = [
+        #     {'prescription': obj.pk, 'allocation': k, 'proportion': v} for k, v in initial_choices_dict.iteritems()]
         initial_choices = [
-            {'prescription': obj.pk, 'allocation': k, 'proportion': v} for k, v in initial_choices_dict.iteritems()]
+            {'prescription': obj.pk, 'allocation': k, 'proportion': v} for k, v in initial_choices_dict.items()]
 
         if request.method == "POST":
             data = request.POST
@@ -1232,10 +1246,13 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'media': media,
             'max_risk': obj.get_maximum_risk,
             'max_complexity': obj.get_maximum_complexity,
-            'purposes': [p.name for p in obj.purposes.all()]
+            'purposes': [p.name for p in obj.purposes.all()],
+            'current_app': self.admin_site.name
         }
+        # return TemplateResponse(request, self.pre_summary_template,
+        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.pre_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def pdf_summary(self, request, object_id, extra_context=None):
         """
@@ -1327,9 +1344,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'current': obj,
             'form': form,
+            'current_app':self.admin_site.name,
         }
+        # return TemplateResponse(request, self.day_summary_template,
+        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.day_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def post_summary(self, request, object_id):
         """
@@ -1362,9 +1382,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'current': obj,
             'form': form,
+            'current_app': self.admin_site.name,
         }
+        # return TemplateResponse(request, self.post_summary_template,
+        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.post_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def pdflatex(self, request, object_id):
         prescription = self.get_object(request, unquote(object_id))
@@ -1422,11 +1445,30 @@ class PrescriptionMixin(object):
                     return qs.filter(**fields)
                 else:
                     return qs
+                
+            def get_filters(self, request):
+                if self.list_filter is None:
+                    self.list_filter = []
+                return super().get_filters(request)
+                
+            def get_queryset(self, request):
+                qs = super(PrescriptionChangeList, self).get_queryset(request)
+                if admin.prescription is not None:
+                    fields = {
+                        admin.prescription_filter_field: admin.prescription,
+                    }
+                    return qs.filter(**fields)
+                else:
+                    return qs
 
             def url_for_result(self, result):
                 pk = getattr(result, self.pk_attname)
+                # return reverse('admin:%s_%s_change' % (self.opts.app_label,
+                #                                        self.opts.module_name),
+                #                args=(quote(pk), quote(admin.prescription.pk)),
+                #                current_app=self.model_admin.admin_site.name)
                 return reverse('admin:%s_%s_change' % (self.opts.app_label,
-                                                       self.opts.module_name),
+                                                       self.opts.model_name),
                                args=(quote(pk), quote(admin.prescription.pk)),
                                current_app=self.model_admin.admin_site.name)
 
@@ -1470,6 +1512,7 @@ class PrescriptionMixin(object):
             'editable': editable,
         }
         context.update(extra_context or {})
+        #import ipdb; ipdb.set_trace()
         return super(PrescriptionMixin, self).changelist_view(
             request, extra_context=context)
 
@@ -1606,13 +1649,14 @@ class PrescriptionMixin(object):
             "protected": protected,
             "opts": opts,
             "app_label": app_label,
+            "current_app": self.admin_site.name,
         }
         context.update(extra_context or {})
 
         return TemplateResponse(request, self.delete_confirmation_template or [
             "admin/%s/delete_confirmation.html" % app_label,
             "admin/delete_confirmation.html"
-        ], context, current_app=self.admin_site.name)
+        ], context)
 
     def get_readonly_fields(self, request, obj=None):
         """
@@ -1687,16 +1731,36 @@ class PrescriptionMixin(object):
         inner.short_description = related.opts.verbose_name_plural.title()
         return inner
 
+    # def response_add(self, request, obj, post_url_continue=None):
+    #     redirect = request.GET['next'] if "next" in request.GET else None
+    #     if redirect is None:
+    #         opts = obj._meta
+    #         pk_value = obj._get_pk_val()            
+    #         redirect = reverse('admin:%s_%s_change' %
+    #                            (opts.app_label, opts.model_name),
+    #                            args=(pk_value, self.prescription.pk),
+    #                            current_app=self.admin_site.name)
+    #     return super(PrescriptionMixin, self).response_add(
+    #         request, obj, post_url_continue=redirect)
+
     def response_add(self, request, obj, post_url_continue=None):
         redirect = request.GET['next'] if "next" in request.GET else None
+        if redirect:
+            return HttpResponseRedirect(request.GET['next'])
+        opts = obj._meta
+        msg_dict = {'name': force_text(opts.verbose_name),
+                    'obj': force_text(obj)}
         if redirect is None:
-            opts = obj._meta
-            pk_value = obj._get_pk_val()
+            # opts = obj._meta
+            pk_value = obj._get_pk_val()            
             redirect = reverse('admin:%s_%s_change' %
                                (opts.app_label, opts.model_name),
                                args=(pk_value, self.prescription.pk),
                                current_app=self.admin_site.name)
-
+        if '_save' in request.POST:
+            msg = ('The %(name)s "%(obj)s" was added successfully.' % msg_dict)
+            self.message_user(request, msg, messages.SUCCESS)
+            return self.response_post_save_add(request, obj)
         return super(PrescriptionMixin, self).response_add(
             request, obj, post_url_continue=redirect)
 
@@ -1791,6 +1855,7 @@ class SavePrescriptionMixin(object):
         Save the model and assign delete permissions to particular objects.
         Also save user to object if an audit object
         """
+        #import ipdb; ipdb.set_trace()
         try:
             obj.prescription = self.prescription
         except AttributeError:

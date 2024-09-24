@@ -141,7 +141,8 @@ def pdflatex(prescription,template="pfp",downloadname=None,embed=True,headers=Tr
         texpath = os.path.join(directory, texname)
         with open(texpath, "w") as f:
             logger.info('Writing to {}'.format(texpath))
-            f.write(output.encode('utf-8'))
+            # f.write(output.encode('utf-8'))
+            f.write(output)
         result.template_file = texpath
 
         logger.info("Starting PDF rendering process ...")

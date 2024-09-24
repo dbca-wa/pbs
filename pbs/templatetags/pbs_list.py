@@ -436,7 +436,8 @@ class GroupCheckNode(template.Node):
         # user = resolve_variable('user', context)
         user = context.get('user')
 
-        if not user.is_authenticated():
+        # if not user.is_authenticated():
+        if not user.is_authenticated:
             return self.nodelist_false.render(context)
 
         allowed = False

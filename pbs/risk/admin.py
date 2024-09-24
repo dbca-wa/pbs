@@ -47,6 +47,9 @@ class RiskRegisterFilter(SimpleListFilter):
 class RegisterAdmin(PrescriptionMixin, SavePrescriptionMixin,
                     BaseAdmin):
     prescription_filter_field = "prescription"
+    list_display = ("description", "draft_consequence",
+                     "draft_likelihood", "alarp", "final_consequence",
+                     "final_likelihood")
     list_editable = ("description", "draft_consequence",
                      "draft_likelihood", "alarp", "final_consequence",
                      "final_likelihood")
@@ -488,8 +491,8 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
     prescription_filter_field = "risk__prescription"
     list_group_by = 'risk_category'
     list_display_links = ('__str__',)
-    list_editable = ("relevant", "pre_burn", "day_of_burn", "post_burn",
-                     "context_statement", "details", "pre_burn_responsible",
+    list_display = ("relevant", "pre_burn", "day_of_burn", "post_burn",
+                     "context_statement", "details",
                      "pre_burn_resolved", "pre_burn_explanation",
                      "pre_burn_completed", "pre_burn_completer",
                      "day_of_burn_situation", "day_of_burn_mission",
@@ -498,6 +501,27 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                      "day_of_burn_completed", "day_of_burn_completer",
                      "post_burn_completed", "post_burn_completer",
                      "day_of_burn_include")
+    # list_editable = ("relevant", "pre_burn", "day_of_burn", "post_burn",
+    #                  "context_statement", "details", "pre_burn_responsible",
+    #                  "pre_burn_resolved", "pre_burn_explanation",
+    #                  "pre_burn_completed", "pre_burn_completer",
+    #                  "day_of_burn_situation", "day_of_burn_mission",
+    #                  "day_of_burn_execution", "day_of_burn_administration",
+    #                  "day_of_burn_command", "day_of_burn_safety",
+    #                  "day_of_burn_completed", "day_of_burn_completer",
+    #                  "post_burn_completed", "post_burn_completer",
+    #                  "day_of_burn_include")
+    list_editable = ("relevant", "pre_burn", "day_of_burn", "post_burn",
+                     "context_statement", "details",
+                     "pre_burn_resolved", "pre_burn_explanation",
+                     "pre_burn_completed", "pre_burn_completer",
+                     "day_of_burn_situation", "day_of_burn_mission",
+                     "day_of_burn_execution", "day_of_burn_administration",
+                     "day_of_burn_command", "day_of_burn_safety",
+                     "day_of_burn_completed", "day_of_burn_completer",
+                     "post_burn_completed", "post_burn_completer",
+                     "day_of_burn_include")
+
     fieldsets = (
         (None, {
             "fields": ('details', 'pre_burn', 'day_of_burn',

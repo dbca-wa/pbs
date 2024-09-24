@@ -1032,7 +1032,18 @@ class Prescription(Audit):
         or extension.
         """
 
-        return ((self.get_maximum_risk.final_risk_level !=
+        # return ((self.get_maximum_risk.final_risk_level !=
+        #          self.get_maximum_risk.LEVEL_VERY_HIGH) and
+        #         # draft
+        #         (self.can_approve and
+        #          self.approval_status == self.APPROVAL_DRAFT) or
+        #         # submitted
+        #         self.approval_status == self.APPROVAL_SUBMITTED or
+        #         # extension
+        #         (self.approval_status == self.APPROVAL_APPROVED and
+        #          self.current_approval and
+        #          self.current_approval.extension_count < 3))
+        return ((self.get_maximum_risk and self.get_maximum_risk.final_risk_level !=
                  self.get_maximum_risk.LEVEL_VERY_HIGH) and
                 # draft
                 (self.can_approve and

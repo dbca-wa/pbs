@@ -34,7 +34,8 @@ class ContentTypeRestrictedFileField(FileField):
         fname = os.path.basename(data.path)
         workdir = tempfile.mkdtemp()
         zip_types = ['application/zip', 'application/x-zip-compressed']
-        with open(os.path.join(workdir, fname), "w") as fin:
+        # with open(os.path.join(workdir, fname), "w") as fin:
+        with open(os.path.join(workdir, fname), "wb") as fin:
             fin.write(data.read())
         if ((content_type in self.content_types and
              content_type not in zip_types)):
@@ -56,7 +57,8 @@ class ContentTypeRestrictedFileField(FileField):
             except subprocess.CalledProcessError:
                 raise ValidationError("File {0} appears to be corrupt, please "
                                       "check and try again.".format(fname))
-            data.file = BytesIO(open(os.path.join(workdir, fname), "r").read())
+            # data.file = BytesIO(open(os.path.join(workdir, fname), "r").read())
+            data.file = BytesIO(open(os.path.join(workdir, fname), "rb").read())
             data.file.size = os.path.getsize(os.path.join(workdir, fname))
             shutil.rmtree(workdir)
         elif content_type not in zip_types:

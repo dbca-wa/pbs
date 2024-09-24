@@ -106,19 +106,27 @@ class DetailAdmin(ModelAdmin):
             'title': _('Detail %s') % force_text(opts.verbose_name),
             'object_id': object_id,
             'original': obj,
-            'is_popup': "_popup" in request.REQUEST,
+            # 'is_popup': "_popup" in request.REQUEST,
+            'is_popup': "_popup" in request.GET,
             'media': self.media,
             'app_label': opts.app_label,
             'opts': opts,
             'has_change_permission': self.has_change_permission(request, obj),
+            'current_app': self.admin_site.name
         }
         context.update(extra_context or {})
+        # return TemplateResponse(request, self.detail_template or [
+        #     "admin/%s/%s/detail.html" % (opts.app_label,
+        #                                  opts.object_name.lower()),
+        #     "admin/%s/detail.html" % opts.app_label,
+        #     "admin/detail.html"
+        # ], context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.detail_template or [
             "admin/%s/%s/detail.html" % (opts.app_label,
                                          opts.object_name.lower()),
             "admin/%s/detail.html" % opts.app_label,
             "admin/detail.html"
-        ], context, current_app=self.admin_site.name)
+        ], context)
 
     def queryset(self, request):
         qs = super(DetailAdmin, self).queryset(request)

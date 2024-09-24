@@ -195,7 +195,8 @@ class PbsModelForm(forms.models.ModelForm):
         field.to_python() instead of datetime.strptime() but I guess we'll
         wait for django 1.6 :)
         """
-        if self._changed_data is None:
+        self._changed_data=self.changed_data
+        if self.changed_data:
             self._changed_data = self.changed_data
             if bool(self._changed_data):
                 for index, name in enumerate(self._changed_data):
