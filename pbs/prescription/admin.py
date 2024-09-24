@@ -1171,7 +1171,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         """
         obj = self.get_object(request, unquote(object_id))
         AdminPrescriptionSummaryForm = self.get_form(request, obj)
-        print(AdminPrescriptionSummaryForm)
 
         funding_choices = FundingAllocation._meta.get_field('allocation').choices
         # I have not been able to pass this queryset in as a keyword param to FundingAllocationFormSet
@@ -1383,9 +1382,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'current': obj,
             'form': form,
+            'current_app': self.admin_site.name,
         }
+        # return TemplateResponse(request, self.post_summary_template,
+        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.post_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def pdflatex(self, request, object_id):
         prescription = self.get_object(request, unquote(object_id))
@@ -1532,7 +1534,6 @@ class PrescriptionMixin(object):
 
     def change_view(self, request, object_id, prescription_id,
                     extra_context=None):
-        print('in change view')
         prescription = self.get_prescription(request, unquote(prescription_id))
 
         if prescription is None:

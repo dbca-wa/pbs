@@ -130,8 +130,8 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
         ).exclude(Q(non_calm_tenure=True) & ~Q(non_calm_tenure_approved=True)).order_by('burn_id')
 
         # Use the region from the request.
-        # if request.REQUEST.has_key('region'):
-        #     region = request.REQUEST.get('region', None)
+        # if request.GET.has_key('region'):
+        #     region = request.GET.get('region', None)
         if 'region' in request.GET:
             region = request.GET.get('region', None)
         else:
@@ -179,19 +179,33 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         return True if request.user.is_superuser else False
 
     def get_form(self, request, obj=None, **kwargs):
-        if request.GET.has_key('form'):
+        # if request.GET.has_key('form'):
+        #import ipdb; ipdb.set_trace()
+        if 'form' in request.GET:
             self.form = None
-            if request.REQUEST.get('form')=='add_fire':
+            # if request.REQUEST.get('form')=='add_fire':
+            #     self.form = FireForm
+            # if request.REQUEST.get('form')=='edit_fire':
+            #     self.form = FireEditForm
+            # if request.REQUEST.get('form')=='add_burn':
+            #     self.form = PrescribedBurnForm
+            # if request.REQUEST.get('form')=='add_active_burn':
+            #     self.form = PrescribedBurnActiveForm
+            # if request.REQUEST.get('form')=='edit_active_burn':
+            #     self.form = PrescribedBurnEditActiveForm
+            # if request.REQUEST.get('form')=='edit_burn':
+            #     self.form = PrescribedBurnEditForm
+            if request.GET.get('form')=='add_fire':
                 self.form = FireForm
-            if request.REQUEST.get('form')=='edit_fire':
+            if request.GET.get('form')=='edit_fire':
                 self.form = FireEditForm
-            if request.REQUEST.get('form')=='add_burn':
+            if request.GET.get('form')=='add_burn':
                 self.form = PrescribedBurnForm
-            if request.REQUEST.get('form')=='add_active_burn':
+            if request.GET.get('form')=='add_active_burn':
                 self.form = PrescribedBurnActiveForm
-            if request.REQUEST.get('form')=='edit_active_burn':
+            if request.GET.get('form')=='edit_active_burn':
                 self.form = PrescribedBurnEditActiveForm
-            if request.REQUEST.get('form')=='edit_burn':
+            if request.GET.get('form')=='edit_burn':
                 self.form = PrescribedBurnEditForm
 
             if self.form:
@@ -209,9 +223,9 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         Override the redirect url after successful save of an existing PrescribedBurn
         """
         if 'edit_fire' in request.META.get('HTTP_REFERER') or 'edit_active_burn' in request.META.get('HTTP_REFERER'):
-            url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.REQUEST['date'])
+            url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.GET['date'])
         elif 'edit_burn' in request.META.get('HTTP_REFERER'):
-            url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.REQUEST['date'])
+            url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.GET['date'])
         else:
             url = reverse('admin:daily_burn_program')
 
@@ -223,11 +237,11 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Override the redirect url after successful save of a new PrescribedBurn
         """
-        if request.REQUEST.has_key('form'):
-            if 'add_fire' in request.REQUEST['form'] or 'add_active_burn' in request.REQUEST['form']:
-                url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.REQUEST['date'])
-            if 'add_burn' in request.REQUEST['form']:
-                url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.REQUEST['date'])
+        if 'form' in request.GET:
+            if 'add_fire' in request.GET['form'] or 'add_active_burn' in request.GET['form']:
+                url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.POST['date'])
+            if 'add_burn' in request.GET['form']:
+                url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.POST['date'])
         else:
             url = reverse('admin:daily_burn_program')
 
@@ -386,8 +400,10 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         also for calculating and returning the bushfire_id string for the FireForm
         """
         if request.is_ajax():
-            if request.REQUEST.has_key('burn_id'):
-                burn_id = str( request.REQUEST.get('burn_id') )
+            # if request.REQUEST.has_key('burn_id'):
+            if 'burn_id' in request.GET:
+                # burn_id = str( request.REQUEST.get('burn_id') )
+                burn_id = str( request.GET.get('burn_id') )
                 #logger.info('burn_id {}'.format(burn_id))
                 p = Prescription.objects.filter(burn_id=burn_id)[0]
                 tenures = ', '.join([i.name for i in p.tenures.all()])
@@ -418,7 +434,8 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
                     }
                 return HttpResponse(json.dumps(d))
 
-            if request.REQUEST.has_key('district_id') and request.REQUEST.get('form_name')=='add_fire':
+            # if request.REQUEST.has_key('district_id') and request.REQUEST.get('form_name')=='add_fire':
+            if 'district_id' in request.GET and request.GET.get('form_name')=='add_fire':
                 try:
                     bfrs_base_url = settings.BFRS_URL if settings.BFRS_URL.endswith('/') else settings.BFRS_URL + os.sep
                     params = '&district_id={}'.format(request.GET.get('district_id'))
@@ -432,8 +449,9 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
                     resp = [{u'fire_number': u'BFRS lookup Failed', u'name': u'', u'tenure__name': u'', u'other_tenure': u''}]
                 return HttpResponse(json.dumps({'fire_numbers': resp}))
 
-            if request.REQUEST.has_key('region') and request.REQUEST.get('region') and request.REQUEST.has_key('form_name') and request.REQUEST.get('form_name'):
-                if request.REQUEST.get('form_name') == 'add_burn':
+            # if request.REQUEST.has_key('region') and request.REQUEST.get('region') and request.REQUEST.has_key('form_name') and request.REQUEST.get('form_name'):
+            if 'region' in request.GET and request.GET.get('region') and 'form_name' in request.GET and request.GET.get('form_name'):
+                if request.GET.get('form_name') == 'add_burn':
                     # Display prescriptions that have a current approval and
                     #have been reviewed since last approval creation date
                     presc_ids = [a.prescription.pk for a in Approval.objects.filter(valid_to__gte=date.today()) if a.prescription.current_fmsb_record.count() > 0]  #and a.prescription.current_drfms_record.count() > 0]
@@ -452,7 +470,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
                     presc_ids = list(set([a.prescription.pk for a in AreaAchievement.objects.filter(ignition__gte=lastyear)]))
                     qs = Prescription.objects.filter(pk__in=presc_ids).exclude(ignition_status=Prescription.IGNITION_NOT_STARTED).distinct()
 
-                qs = qs.filter(region=request.REQUEST.get('region')).order_by('-burn_id')
+                qs = qs.filter(region=request.GET.get('region')).order_by('-burn_id')
 
                 #burn_ids = ["<option value={}>{}</option>".format(p.id, p.burn_id) for p in qs]
                 burn_ids = ModelChoiceField(queryset=qs).widget.render(value="pk_prescription", name="prescription")
@@ -464,20 +482,20 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Separated into own method to allow further validation at specifically - District level
         """
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
-        if request.REQUEST.has_key('action'):
-            action = request.REQUEST.get('action', None)
+        if 'action' in request.GET:
+            action = request.GET.get('action', None)
 
-        if request.REQUEST.has_key('date'):
-            dt = datetime.strptime(request.REQUEST.get('date'), '%Y-%m-%d').date()
+        if 'date' in request.GET:
+            dt = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
 
         referrer_url = request.META.get('HTTP_REFERER')
-        if request.REQUEST.has_key('object_ids'):
-            object_ids = request.REQUEST.get('object_ids', None)
+        if 'object_ids' in request.GET:
+            object_ids = request.GET.get('object_ids', None)
             if not object_ids:
                 message = "No rows were selected"
                 self.message_user(request, message, level=messages.ERROR)
@@ -490,7 +508,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
 
         objects = PrescribedBurn.objects.filter(id__in=object_ids)
 
-        if not request.POST.has_key('multiple_approval'):
+        if not 'multiple_approval' in request.POST:
             # if key not present, request is not from multiple_confirm.html template, then
             # we must check if we have distinct districts > 1, and get confirmation to proceed
             distinct = objects.distinct('district')
@@ -634,20 +652,20 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Separated into own method to allow further validation at Region level
         """
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
-        if request.REQUEST.has_key('action'):
-            action = request.REQUEST.get('action', None)
+        if 'action' in request.GET:
+            action = request.GET.get('action', None)
 
-        if request.REQUEST.has_key('date'):
-            dt = datetime.strptime(request.REQUEST.get('date'), '%Y-%m-%d').date()
+        if 'date' in request.GET:
+            dt = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
 
         referrer_url = request.META.get('HTTP_REFERER')
-        if request.REQUEST.has_key('object_ids'):
-            object_ids = request.REQUEST.get('object_ids', None)
+        if 'object_ids' in request.GET:
+            object_ids = request.GET.get('object_ids', None)
             if not object_ids:
                 message = "No rows were selected"
                 self.message_user(request, message, level=messages.ERROR)
@@ -660,7 +678,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
 
         objects = PrescribedBurn.objects.filter(id__in=object_ids)
 
-        if not request.POST.has_key('multiple_approval'):
+        if not 'multiple_approval' in request.POST:
             # if key not present, request is not from multiple_confirm.html template, then
             # we must check if we have distinct regions > 1, and get confirmation to proceed
             distinct = objects.distinct('region')
@@ -810,7 +828,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             msg_type = "danger"
             return HttpResponse(json.dumps({"redirect": referrer_url, "message": message, "type": msg_type}))
 
-        if request.POST.has_key('action'):
+        if 'action' in request.POST:
             action = request.POST['action']
         else:
             raise Http404('Could not get Update Action command')
@@ -819,15 +837,15 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             BurnProgramLink.populate() # update the BurnProgramLink links
             return HttpResponse(json.dumps({"redirect": referrer_url, "message": "Updated Daily Burn Links", "type": "info"}))
 
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
-        if request.POST.has_key('date'):
+        if 'date' in request.POST:
             dt = datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
 
-        if request.POST.has_key('data') :
+        if 'data' in request.POST:
             if len(request.POST['data']) == 0: # and action != "Copy Records":
                 message = "No rows were selected"
                 msg_type = "danger"
@@ -988,8 +1006,8 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             )
             return HttpResponseRedirect(referrer_url)
 
-        if request.REQUEST.has_key('object_ids'):
-            object_ids = request.REQUEST.get('object_ids', None)
+        if 'object_ids' in request.GET:
+            object_ids = request.GET.get('object_ids', None)
             if not object_ids:
                 message = "No rows were selected"
                 self.message_user(request, message, level=messages.ERROR)
@@ -1324,12 +1342,12 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         return unset_objects
 
     def export_to_csv(self, request, extra_context=None):
-        if request.GET.has_key('toDate') and request.GET.has_key('fromDate'):
+        if 'toDate' in request.GET and 'fromDate' in request.GET:
             fromDate = datetime.strptime(request.GET.get('fromDate'), '%Y-%m-%d').date()
             toDate = datetime.strptime(request.GET.get('toDate'), '%Y-%m-%d').date()
             burns = PrescribedBurn.objects.filter(date__range=[fromDate, toDate])
             filename = 'export_daily_burn_program_{0}-{1}.csv'.format(fromDate.strftime('%d%b%Y'), toDate.strftime('%d%b%Y'))
-        elif request.GET.has_key('date'):
+        elif 'date' in request.GET:
             report_date = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
             burns = PrescribedBurn.objects.filter(date=report_date)
             filename = 'export_daily_burn_program_{0}.csv'.format(report_date.strftime('%d%b%Y'))
@@ -1425,13 +1443,13 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         logger.info("_________________________ START ____________________________")
         logger.info("Starting a PDF output: {}".format(request.get_full_path()))
 
-        if request.GET.has_key('date'):
+        if 'date' in request.GET:
             report_date = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
         prescribed_burns = PrescribedBurn.objects.filter(date=report_date).distinct()
 
-        if request.GET.has_key('region'):
+        if 'region' in request.GET:
             region = request.GET.get('region', None)
             prescribed_burns = prescribed_burns.filter(region=region)
             region_name = Region.objects.get(id=int(region)).name
@@ -1567,10 +1585,10 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         return Group.objects.get(name='State Aviation Officer')
 
     def get_form(self, request, obj=None, **kwargs):
-        if request.GET.has_key('form'):
-            if request.REQUEST.get('form')=='add_aircraft_burn':
+        if 'form' in request.GET:
+            if request.GET.get('form')=='add_aircraft_burn':
                 return AircraftBurnForm
-            if request.REQUEST.get('form')=='edit_aircraft_burn':
+            if request.GET.get('form')=='edit_aircraft_burn':
                 return AircraftBurnEditForm
 
 #    def response_post_save_change(self, request, obj):
@@ -1675,11 +1693,11 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         report_set = {'epfp_aircraft'}
         report = request.GET.get('report', 'epfp_aircraft')
 
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
-        if request.REQUEST.has_key('date'):
-            dt = request.REQUEST.get('date', None)
+        if 'date' in request.GET:
+            dt = request.GET.get('date', None)
             if dt:
                 dt = datetime.strptime(dt, '%Y-%m-%d')
         else:
@@ -1697,8 +1715,8 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
             #qs_burn = qs_burn.filter(form_name=PrescribedBurn.FORM_268A)
             form = AircraftBurnFilterForm(request.GET)
 
-        if request.REQUEST.has_key('region'):
-            region = request.REQUEST.get('region', None)
+        if 'region' in request.GET:
+            region = request.GET.get('region', None)
             if region:
                 qs_aircraft = qs_aircraft.filter(prescription__region=region)
 
@@ -1714,19 +1732,19 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         return TemplateResponse(request, "admin/epfp_daily_burn_program.html", context)
 
     def action_view(self, request, extra_context=None):
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
-        if request.POST.has_key('date'):
+        if 'date' in request.POST:
             dt = datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
 
         referrer_url = request.META.get('HTTP_REFERER')
-        if request.POST.has_key('action'):
+        if 'action' in request.POST:
             action = request.POST['action']
 
-            if request.POST.has_key('data'):
+            if 'data' in request.POST:
                 if len(request.POST['data']) == 0: # and action != "Copy Records":
                     message = "No rows were selected"
                     msg_type = "danger"
@@ -1942,7 +1960,7 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
 
     def pdflatex(self, request):
         #import ipdb; ipdb.set_trace()
-        if request.GET.has_key('date'):
+        if 'date' in request.GET:
             report_date = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
