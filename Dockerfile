@@ -17,7 +17,7 @@ RUN apt-get upgrade -y
 RUN apt-get install -yq git mercurial gcc gdal-bin libsasl2-dev libpq-dev
 RUN apt-get install -y python3-setuptools python3-dev python3-pip
 RUN apt-get install -y fex-utils imagemagick poppler-utils
-RUN apt-get install -y libldap2-dev libssl-dev wget build-essential vim virtualenv libmagic-dev  
+RUN apt-get install -y libldap2-dev libssl-dev wget build-essential vim virtualenv libmagic-dev latexmk
 # RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Install Python libs from requirements.txt.
