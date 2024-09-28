@@ -1,7 +1,7 @@
 from django.contrib.admin.utils import NestedObjects
 from django.contrib.auth.models import Group
 from django.utils.text import capfirst
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from guardian.shortcuts import remove_perm
 
@@ -29,7 +29,7 @@ def get_deleted_objects(objs, opts, user, admin_site, using):
         opts = obj._meta
 
         return '%s: %s' % (capfirst(opts.verbose_name),
-                           force_text(obj))
+                           force_str(obj))
 
     to_delete = collector.nested(format_callback)
 

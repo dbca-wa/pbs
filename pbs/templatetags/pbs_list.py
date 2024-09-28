@@ -2,7 +2,7 @@ from django import template
 from django.contrib.admin.templatetags.admin_list import result_hidden_fields
 from django.contrib.admin.views.main import PAGE_VAR
 from django.contrib.auth.models import Group
-from django.utils.encoding import force_text, smart_str, force_str
+from django.utils.encoding import force_str, smart_str, force_str
 from django.utils.functional import Promise
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -229,7 +229,7 @@ def items_for_result(cl, result, form):
     # majority copied from
     # django.contrib.admin.templatetags.admin_list.items_for_result
     # we only customize the order of error fields - error comes after field
-    #     result_repr = mark_safe(force_text(bf.errors) + force_text(bf))
+    #     result_repr = mark_safe(force_str(bf.errors) + force_str(bf))
     first = True
     pk = cl.lookup_opts.pk.attname
     for field_name in cl.list_display:
@@ -267,7 +267,7 @@ def items_for_result(cl, result, form):
                 if isinstance(f, (models.DateField, models.TimeField,
                                   models.ForeignKey)):
                     row_classes.append("nowrap")
-        if force_text(result_repr) == '':
+        if force_str(result_repr) == '':
             result_repr = mark_safe('&nbsp;')
 
         # If list_display_links not defined, add the link tag to the first
@@ -284,7 +284,7 @@ def items_for_result(cl, result, form):
             else:
                 attr = pk
             value = result.serializable_value(attr)
-            result_id = repr(force_text(value))[1:]
+            result_id = repr(force_str(value))[1:]
             yield format_html('<{0}{1}><a href="{2}"{3}>{4}</a></{5}>',
                               table_tag,
                               mark_safe(len(row_classes) and
@@ -303,14 +303,14 @@ def items_for_result(cl, result, form):
                     field_name == cl.model._meta.pk.name and
                     form[cl.model._meta.pk.name].is_hidden)):
                 bf = form[field_name]
-                result_repr = mark_safe(force_text(bf) + force_text(bf.errors))
+                result_repr = mark_safe(force_str(bf) + force_str(bf.errors))
             row_class = (len(row_classes) and
                          ' class="{0}"'.format(" ".join(row_classes)) or '')
             yield format_html('<td{0}>{1}</td>', mark_safe(row_class),
                               mark_safe(smart_str(result_repr)))
     if form and not form[cl.model._meta.pk.name].is_hidden:
         yield format_html('<td>{0}</td>',
-                          force_text(form[cl.model._meta.pk.name]))
+                          force_str(form[cl.model._meta.pk.name]))
 
 
 def results(cl):
@@ -348,7 +348,7 @@ def results(cl):
             for field_name in cl.list_display:
                 if field_name in form.fields:
                     bf = form[field_name]
-                    result_repr = mark_safe(force_text(form[field_name]))
+                    result_repr = mark_safe(force_str(form[field_name]))
                     # If the field has errors, alter the <td> class and prepend
                     # a paragraph containing the error messages.
                     if bf.errors:

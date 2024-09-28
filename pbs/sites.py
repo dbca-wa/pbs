@@ -16,8 +16,9 @@ from django.shortcuts import resolve_url
 # from django.template import add_to_builtins
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
-from django.utils.http import is_safe_url
-from django.utils.translation import ugettext as _, ugettext_lazy
+# from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext as _, gettext_lazy
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
 
@@ -180,7 +181,9 @@ class PrescriptionSite(AuditSite):
             if form.is_valid():
 
                 # Ensure the user-originating redirection url is safe.
-                if not is_safe_url(url=redirect_to, host=request.get_host()):
+                # if not is_safe_url(url=redirect_to, host=request.get_host()):
+                #     redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
+                if not url_has_allowed_host_and_scheme(url=redirect_to, host=request.get_host()):
                     redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
 
                 # If this is the user's first login, redirect them to
@@ -469,7 +472,7 @@ class PrescriptionSite(AuditSite):
             writer.writerow([unicode(s).encode("utf-8") for s in burn])
 
         return response
-    export_to_csv.short_description = ugettext_lazy("Export to CSV")
+    export_to_csv.short_description = gettext_lazy("Export to CSV")
 
 
 #site = PrescriptionSite(name='myadmin')
