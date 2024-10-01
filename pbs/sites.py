@@ -225,10 +225,13 @@ class PrescriptionSite(AuditSite):
         return logout(request, reverse('admin:index', current_app=self.name))
 
     def site_admin(self, request, extra_context=None):
-        context = {}
+        context = {
+            'current_app': self.name
+        }
         context.update(extra_context or {})
-        return TemplateResponse(request, "admin/site_admin.html", context,
-                                current_app=self.name)
+        # return TemplateResponse(request, "admin/site_admin.html", context,
+        #                         current_app=self.name)
+        return TemplateResponse(request, "admin/site_admin.html", context)
 
     def profile(self, request):
         # profile = request.user.get_profile()

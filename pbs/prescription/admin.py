@@ -1112,7 +1112,9 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             else:
                 message = "were not changed."
             self.message_user(request, "Regional objectives " + message)
-            url = request.REQUEST.get('next', reverse(
+            # url = request.REQUEST.get('next', reverse(
+            #     'admin:prescription_prescription_detail', args=[str(obj.id)]))
+            url = request.POST.get('next', reverse(
                 'admin:prescription_prescription_detail', args=[str(obj.id)]))
             return HttpResponseRedirect(url)
 
