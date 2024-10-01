@@ -565,10 +565,12 @@ class Prescription(Audit):
         if not self.pk:
             prescriptions = Prescription.objects.filter(
                 district=self.district).order_by('burn_id')
-            values = map(lambda burn_id: int(burn_id.split('_')[1]),
+            mapped_obj = map(lambda burn_id: int(burn_id.split('_')[1]),
                          prescriptions.values_list('burn_id', flat=True))
+            values=list(mapped_obj)
 
             # Don't recycle values because its a really bad idea.
+            # count=sum(1 for _ in values)
             if len(values) == 0:
                 burn_id = 1
             else:
@@ -581,7 +583,8 @@ class Prescription(Audit):
             self.ignition_status = self.IGNITION_COMPLETE
             self.ignition_status_modified = timezone.now()
         else:
-            if self.areaachievement_set.all().count() > 0:
+            # if self.areaachievement_set.all().count() > 0:
+            if self.pk and self.areaachievement_set.all().count() > 0:
                 self.ignition_status = self.IGNITION_COMMENCED
                 self.ignition_status_modified = timezone.now()
             else:
@@ -592,11 +595,12 @@ class Prescription(Audit):
         # for all child Contingency objects.
         # If both are True, mark the contingencies_migrated field as True
         # otherwise mark it False.
-        for c in self.contingencies.all():
-            if c.actions_migrated and c.notifications_migrated:
-                self.contingencies_migrated = True
-            else:
-                self.contingencies_migrated = False
+        if self.pk:
+            for c in self.contingencies.all():
+                if c.actions_migrated and c.notifications_migrated:
+                    self.contingencies_migrated = True
+                else:
+                    self.contingencies_migrated = False
 
         # for consistency - migration from year to financial_year
         if self.financial_year:
