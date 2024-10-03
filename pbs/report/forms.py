@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from select2.fields import ModelMultipleChoiceField
-
+#from select2.fields import ModelMultipleChoiceField
+from django_select2.forms import Select2MultipleWidget
 from pbs.report.models import (SummaryCompletionState, BurnImplementationState,
                                BurnClosureState, AreaAchievement, IgnitionType,
                                PostBurnChecklist)
@@ -52,7 +52,11 @@ class BurnClosureStateForm(PatchedModelForm):
 
 class AreaAchievementForm(forms.ModelForm):
 
-    ignition_types = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
+    #ignition_types = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
+    ignition_types = forms.ModelMultipleChoiceField(queryset=IgnitionType.objects.all(),
+                                                    widget=Select2MultipleWidget,
+                                                    label="Ignition Types",
+                                                    )
     # ignition_types = forms.ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), widget=FilteredSelectMultiple("Ignition Types", is_stacked=False))
     #ignition_types = forms.ModelMultipleChoiceField(queryset=IgnitionType.objects.all())
     
