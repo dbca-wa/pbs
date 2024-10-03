@@ -4,6 +4,7 @@
 {% if current.is_approved %}
 {% block extrahead %}
 {{ block.super }}
+
   <style type="text/css">
     #s2id_id_form-0-ignition_types { width: 40px; }
   </style>
@@ -11,7 +12,7 @@
   {% if not current.is_closed and current.is_approved or perms.prescription.can_admin %}
   (function($) {
     $(function() {
-      $("#result_list tbody tr").tabularFormset({
+      $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
         addText: '<i class="icon-plus"></i> Add another ignition'
@@ -87,6 +88,8 @@
     });
 
   </script>
+  {{form.media}} 
+  {{ form.media.js }}
 {% endblock %}
 {% endif %}
 
