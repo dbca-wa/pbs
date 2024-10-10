@@ -26,7 +26,7 @@ from django.core.exceptions import (FieldError, ValidationError,
                                     PermissionDenied)
 from django.forms.models import modelform_factory
 from django.contrib.admin import helpers
-from django.utils.translation import ugettext as _, ugettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy
 import unicodecsv
 import json
 import os
@@ -1436,7 +1436,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             writer.writerow([unicode(s).encode("utf-8") for s in row])
 
         return response
-    export_to_csv.short_description = ugettext_lazy("Export to CSV")
+    export_to_csv.short_description = gettext_lazy("Export to CSV")
 
     def pdflatex(self, request):
         logger = logging.getLogger('pdf_debugging')

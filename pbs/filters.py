@@ -134,7 +134,7 @@ class IntChoicesFieldListFilter(filters.ChoicesFieldListFilter):
 
 
 
-class RelatedFieldListFilter(filters.RelatedFieldListFilter):
+class RelatedFieldListFilterOriginal(filters.RelatedFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
         other_model = get_model_from_relation(field)
         if hasattr(field, 'rel'):
@@ -188,6 +188,52 @@ class RelatedFieldListFilter(filters.RelatedFieldListFilter):
 
     def expected_parameters(self):
         return [self.lookup_kwarg,self.lookup_kwarg1,self.lookup_kwarg2, self.lookup_kwarg_isnull]
+    
+class RelatedFieldListFilter(filters.RelatedFieldListFilter):
+    def __init__(self, field, request, params, model, model_admin, field_path):
+        other_model = get_model_from_relation(field)
+        if hasattr(field, 'rel'):
+            rel_name = field.rel.get_related_field().name
+        else:
+            rel_name = other_model._meta.pk.name
+        self.lookup_kwarg1 = '%s__%s' % (field_path, rel_name)
+        self.lookup_val1 = request.GET.get(self.lookup_kwarg1, None)
+        self.lookup_kwarg2 = '%s__%s__in' % (field_path, rel_name)
+        self.lookup_val2 = request.GET.get(self.lookup_kwarg2, None)
+        super(RelatedFieldListFilter, self).__init__(field, request, params, model, model_admin, field_path)
+        # Lambda to convert value to int or None if it's invalid and handle list values
+        to_int = lambda v: None if v in (None, "", False) else int(v[0]) if isinstance(v, list) else int(v)
+        # Handle single value filters (non-__in lookups)
+        for kwarg in (self.lookup_kwarg, self.lookup_kwarg1):
+            if kwarg in self.used_parameters:
+                val = to_int(self.used_parameters[kwarg])
+                if val is None:
+                    del self.used_parameters[kwarg]
+                else:
+                    self.used_parameters[kwarg] = [val]  # Keep the value as an integer
+        # Handle __in lookups (multiple values)
+        if self.lookup_kwarg2 in self.used_parameters:
+            if isinstance(self.used_parameters[self.lookup_kwarg2], (list, tuple)):
+                vals = [to_int(v) for v in self.used_parameters[self.lookup_kwarg2] if to_int(v) is not None]
+                if not vals:
+                    del self.used_parameters[self.lookup_kwarg2]
+                elif len(vals) == 1:
+                    self.used_parameters[self.lookup_kwarg] = vals[0]
+                    del self.used_parameters[self.lookup_kwarg2]
+                else:
+                    self.used_parameters[self.lookup_kwarg2] = vals
+            else:
+                val = to_int(self.used_parameters[self.lookup_kwarg2])
+                if val is None:
+                    del self.used_parameters[self.lookup_kwarg2]
+                else:
+                    self.used_parameters[self.lookup_kwarg] = [val]  # Wrap the single value in a list
+                    del self.used_parameters[self.lookup_kwarg2]
+
+
+    def expected_parameters(self):
+        return [self.lookup_kwarg,self.lookup_kwarg1,self.lookup_kwarg2, self.lookup_kwarg_isnull]
+
 
 class IntValuesFieldListFilter(filters.AllValuesFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):

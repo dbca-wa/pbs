@@ -55,6 +55,7 @@ urlpatterns = urlpatterns + [
     #     {'password_reset_form': PbsPasswordResetForm}, name='password_reset'),
     re_path(r'^password_reset/$', PasswordResetView.as_view(form_class=PbsPasswordResetForm), name='password_reset'),
     re_path(r'^chaining/', include('smart_selects.urls')),
+    re_path(r'^select2/', include("django_select2.urls")),
     re_path('^documents/(?P<pk>\d+)/download$', document_download, name='document_download'),
     re_path(r'^favicon\.ico$', favicon_view, name='favicon_view'),
     re_path(r'^api/', include(v1_api.urls)),

@@ -119,12 +119,12 @@ class AreaAchievementAdmin(SavePrescriptionMixin, PrescriptionMixin,
         class AreaAchievementChangeListIn(ChangeList):
             def __init__(self, request, model, list_display, list_display_links, list_filter,
                     date_hierarchy, search_fields, list_select_related, list_per_page,
-                    list_max_show_all, list_editable, model_admin, sortable_by,):
+                    list_max_show_all, list_editable, model_admin, sortable_by,search_help_text,):
 
                 super().__init__(
                 request, model, list_display, list_display_links, list_filter,
                 date_hierarchy, search_fields, list_select_related, list_per_page,
-                list_max_show_all, list_editable, model_admin, sortable_by
+                list_max_show_all, list_editable, model_admin, sortable_by, search_help_text,
                 )
                 # self.list_display = ["ignition_types"] + self.list_display
                 self.list_display.insert(1,"ignition_types")

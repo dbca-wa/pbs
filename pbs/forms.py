@@ -7,8 +7,10 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
 from django.utils.html import format_html_join, format_html
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+# from django.utils.encoding import force_text
+from django.utils.encoding import force_str
+# from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 from datetime import date
@@ -166,7 +168,7 @@ class PbsErrorList(forms.utils.ErrorList):
         return format_html(
             '<ul class="errorlist alert alert-block alert-error fade in">'
             '{0}</ul>', format_html_join('', '<li>{0}</li>',
-                                         ((force_text(e),) for e in self)
+                                         ((force_str(e),) for e in self)
                                          )
         )
 

@@ -7,7 +7,7 @@ from django.contrib.admin.utils import unquote, quote
 from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from pbs.admin import BaseAdmin, get_permission_codename
 from pbs.prescription.models import Prescription

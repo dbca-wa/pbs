@@ -9,8 +9,10 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.html import escape
-from django.utils.translation import ugettext as _
-from django.utils.encoding import force_text
+# from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _
+# from django.utils.encoding import force_str
+from django.utils.encoding import force_str
 
 
 class RegionAdmin(ModelAdmin):
@@ -99,11 +101,11 @@ class DetailAdmin(ModelAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key %(key)r does '
                             'not exist.') % {
-                                'name': force_text(opts.verbose_name),
+                                'name': force_str(opts.verbose_name),
                                 'key': escape(object_id)})
 
         context = {
-            'title': _('Detail %s') % force_text(opts.verbose_name),
+            'title': _('Detail %s') % force_str(opts.verbose_name),
             'object_id': object_id,
             'original': obj,
             # 'is_popup': "_popup" in request.REQUEST,

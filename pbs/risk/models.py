@@ -13,7 +13,8 @@ from django.db.models.query import QuerySet
 from django.dispatch import receiver
 from django.template.defaultfilters import truncatewords
 # from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext_lazy as _
+# from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from unidecode import unidecode
 
 
