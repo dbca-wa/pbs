@@ -54,7 +54,7 @@ class AreaAchievementForm(forms.ModelForm):
 
     #ignition_types = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
     ignition_types = forms.ModelMultipleChoiceField(queryset=IgnitionType.objects.all(),
-                                                    widget=Select2MultipleWidget,
+                                                    widget=Select2MultipleWidget(attrs={'class': 'select2-field'}),
                                                     label="Ignition Types",
                                                     )
     # ignition_types = forms.ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), widget=FilteredSelectMultiple("Ignition Types", is_stacked=False))

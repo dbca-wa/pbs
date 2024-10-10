@@ -4,6 +4,9 @@
 
 {% block extrastyle %}
   {{ block.super }}
+  {{ media }}
+  {{ media.css }}
+  
   <!--<link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}" />-->
   {% if cl.formset %}
   <!-- <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />-->
@@ -19,7 +22,7 @@
   {% endif %}
 
   <link rel="stylesheet" type="text/css" href="{% static "admin/css/widgets.css" %}" />
-  {{ media.css }}
+
   <style>
     @media only screen and (max-width: 760px),
     (min-device-width: 768px) and (max-device-width: 1024px)  {
@@ -102,27 +105,38 @@ $ = jQuery;
             hasChanged = false;
             return true;
         });
+
+            $('body').on('click', 'tr.add-row a', function(o) {
+          // not sure why .prev().prev() but it seems to work
+          var $addedRow = $(o.target).parents('tr.add-row').siblings(
+              'tr#form-empty').prev();
+
+          //Destroy and rebuild select2 controls.
+          $addedRow.find('ul.select2-selection__rendered').remove()
+          $addedRow.find('span.select2-container').remove();
+          $addedRow.find('.select2-field').select2()
+        });
     });
 })(django.jQuery);
-$(document).ready(function() {
-    // reinit the chosen() widgets (so that the event is bound to a
-    // correct select element)
-    //
-    // Now select2 widgets because chosen is actually terrible.
-    //
-    $('body').on('click', 'tr.add-row a', function(o) {
-      // not sure why .prev().prev() but it seems to work
-      var $addedRow = $(o.target).parents('tr.add-row').siblings(
-          'tr#form-empty').prev();
+// $(document).ready(function() {
+//     // reinit the chosen() widgets (so that the event is bound to a
+//     // correct select element)
+//     //
+//     // Now select2 widgets because chosen is actually terrible.
+//     //
+//     $('body').on('click', 'tr.add-row a', function(o) {
+//       // not sure why .prev().prev() but it seems to work
+//       var $addedRow = $(o.target).parents('tr.add-row').siblings(
+//           'tr#form-empty').prev();
 
-      //Destroy and rebuild select2 controls.
-      $('select.django-select2').select2('destroy');
-      $('input.select2-input').remove()
-      $('ul.select2-choices').remove()
-      $('div.select2-container').remove();
-      $('select.django-select2').select2();
+//       //Destroy and rebuild select2 controls.
+//       $('select.django-select2').select2('destroy');
+//       $('input.select2-input').remove()
+//       $('ul.select2-choices').remove()
+//       $('div.select2-container').remove();
+//       $('select.django-select2').select2();
 
-  });
+//   });
   // make empty changelists say so
   // have to use setTimeout as some pages include this before
   // injecting add links =/
