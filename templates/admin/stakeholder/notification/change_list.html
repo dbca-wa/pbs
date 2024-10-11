@@ -14,7 +14,7 @@
 
   (function($) {
     $(function() {
-      $("#result_list tbody tr").tabularFormset({
+      $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
         addText: '<i class="icon-plus"></i> Add another notification'

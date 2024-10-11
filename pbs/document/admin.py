@@ -9,10 +9,10 @@ from django.contrib.admin.utils import quote, unquote
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from .models import Document, DocumentTag, DocumentCategory
 from .forms import DocumentForm
@@ -177,8 +177,8 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
             extra_context = extra_context or {}
             extra_context.update({
                 'title': (_('Add %s %s') %
-                         (force_text(tag.name),
-                          force_text(opts.verbose_name)))
+                         (force_str(tag.name),
+                          force_str(opts.verbose_name)))
             })
 
         # I think the approach is to capture and validate the form on post,
@@ -233,7 +233,7 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         except DocumentCategory.DoesNotExist:
             raise Http404(
                 _('%(name)s object with primary key %(key)r does not exist.') %
-                {'name': force_text(opts.verbose_name), 'key': escape(category_name)}
+                {'name': force_str(opts.verbose_name), 'key': escape(category_name)}
             )
 
         context = {
@@ -255,7 +255,7 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         except DocumentTag.DoesNotExist:
             raise Http404(
                 _('%(name)s object with primary key %(key)r does not exist.') %
-                {'name': force_text(opts.verbose_name), 'key': escape(tag)}
+                {'name': force_str(opts.verbose_name), 'key': escape(tag)}
             )
 
         context = {

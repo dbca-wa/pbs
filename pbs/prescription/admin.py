@@ -34,9 +34,9 @@ from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import escape
-from django.utils.translation import ugettext as _, ugettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy
 from django.views.decorators.csrf import csrf_protect
 
 from pbs.admin import BaseAdmin, get_permission_codename
@@ -309,7 +309,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             ])
 
         return response
-    burn_summary_to_csv.short_description = ugettext_lazy("Export Burn Summary to CSV")
+    burn_summary_to_csv.short_description = gettext_lazy("Export Burn Summary to CSV")
 
     def export_to_csv(self, request, queryset):
         # TODO: fix up the date/time formatting to use the default template
@@ -467,7 +467,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             ])
 
         return response
-    export_to_csv.short_description = ugettext_lazy("Export to CSV")
+    export_to_csv.short_description = gettext_lazy("Export to CSV")
 
     def response_post_save_add(self, request, obj):
         """
@@ -805,7 +805,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key (%key)r'
                             ' does not exist.') %
-                          {'name': force_text(self.opts.verbose_name),
+                          {'name': force_str(self.opts.verbose_name),
                            'key': object_id})
 
         endorsement = obj.endorsement_set.get(pk=unquote(endorsement_id))
@@ -849,7 +849,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key (%key)r'
                             ' does not exist.') %
-                          {'name': force_text(self.opts.verbose_name),
+                          {'name': force_str(self.opts.verbose_name),
                            'key': object_id})
 
         if request.method == 'POST':
@@ -892,7 +892,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key (%key)r'
                             ' does not exist.') %
-                          {'name': force_text(self.opts.verbose_name),
+                          {'name': force_str(self.opts.verbose_name),
                            'key': object_id})
 
         regional_objective = obj.regional_objectives.get(pk=unquote(objective_id))
@@ -1112,7 +1112,9 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             else:
                 message = "were not changed."
             self.message_user(request, "Regional objectives " + message)
-            url = request.REQUEST.get('next', reverse(
+            # url = request.REQUEST.get('next', reverse(
+            #     'admin:prescription_prescription_detail', args=[str(obj.id)]))
+            url = request.POST.get('next', reverse(
                 'admin:prescription_prescription_detail', args=[str(obj.id)]))
             return HttpResponseRedirect(url)
 
@@ -1136,7 +1138,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key %(key)r'
                             ' does not exist.') %
-                          {'name': force_text(self.opts.verbose_name),
+                          {'name': force_str(self.opts.verbose_name),
                            'key': object_id})
 
         if request.method == "POST":
@@ -1321,7 +1323,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key (%key)r'
                             ' does not exist.') % {
-                                'name': force_text(self.opts.verbose_name),
+                                'name': force_str(self.opts.verbose_name),
                                 'key': object_id})
 
         if request.method == "POST":
@@ -1360,7 +1362,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key (%key)r'
                             ' does not exist.') % {
-                                'name': force_text(self.opts.verbose_name),
+                                'name': force_str(self.opts.verbose_name),
                                 'key': object_id})
 
         if request.method == "POST":
@@ -1590,7 +1592,7 @@ class PrescriptionMixin(object):
         if obj is None:
             raise Http404(
                 _('%(name)s object with primary key %(key)r does '
-                  'not exist.') % {'name': force_text(opts.verbose_name),
+                  'not exist.') % {'name': force_str(opts.verbose_name),
                                    'key': escape(object_id)})
 
         if prescription is None:
@@ -1608,14 +1610,14 @@ class PrescriptionMixin(object):
         if request.POST:    # The user has already confirmed the deletion.
             if perms_needed:
                 raise PermissionDenied
-            obj_display = force_text(obj)
+            obj_display = force_str(obj)
             self.log_deletion(request, obj, obj_display)
             self.delete_model(request, obj)
 
             self.message_user(request, _(
                 'The %(name)s "%(obj)s" was deleted successfully.') % {
-                    'name': force_text(opts.verbose_name),
-                    'obj': force_text(obj_display)},
+                    'name': force_str(opts.verbose_name),
+                    'obj': force_str(obj_display)},
                 messages.SUCCESS)
 
             if self.has_change_permission(request, None):
@@ -1632,7 +1634,7 @@ class PrescriptionMixin(object):
                                    current_app=self.admin_site.name)
             return HttpResponseRedirect(post_url)
 
-        object_name = force_text(opts.verbose_name)
+        object_name = force_str(opts.verbose_name)
 
         if perms_needed or protected:
             title = _("Cannot delete %(name)s") % {"name": object_name}
@@ -1748,8 +1750,8 @@ class PrescriptionMixin(object):
         if redirect:
             return HttpResponseRedirect(request.GET['next'])
         opts = obj._meta
-        msg_dict = {'name': force_text(opts.verbose_name),
-                    'obj': force_text(obj)}
+        msg_dict = {'name': force_str(opts.verbose_name),
+                    'obj': force_str(obj)}
         if redirect is None:
             # opts = obj._meta
             pk_value = obj._get_pk_val()            
@@ -1767,8 +1769,8 @@ class PrescriptionMixin(object):
     def response_change(self, request, obj):
         opts = self.model._meta
         pk_value = obj._get_pk_val()
-        msg_dict = {'name': force_text(opts.verbose_name),
-                    'obj': force_text(obj)}
+        msg_dict = {'name': force_str(opts.verbose_name),
+                    'obj': force_str(obj)}
         if "_saveasnew" in request.POST:
             msg = ('The %(name)s "%(obj)s" was added successfully. You may ' +
                    ' edit it again below.' % msg_dict)

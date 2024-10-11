@@ -362,9 +362,13 @@ class Prescription(Audit):
         default=False, verbose_name="Last Season Unknown?")
     last_year_unknown = models.BooleanField(
         default=False, verbose_name="Last Year Unknown?")
-    contentious = models.NullBooleanField(
+    # contentious = models.NullBooleanField(
+    #     choices=YES_NO_NULL_CHOICES,
+    #     default=None, help_text="Is this burn contentious?")
+    contentious = models.BooleanField(
         choices=YES_NO_NULL_CHOICES,
-        default=None, help_text="Is this burn contentious?")
+        default=None, help_text="Is this burn contentious?",
+        null=True)
     contentious_rationale = models.TextField(
         help_text="If this burn is contentious, a short explanation of why",
         verbose_name="Rationale", null=True, blank=True)
@@ -466,8 +470,10 @@ class Prescription(Audit):
     #       Can the burn be completed safely without the inclusion of other tenure? : (Yes or No selection)
     #       Risk based issues if other tenure not included (free text field)
     #   If 'No' selected, additional fields are greyed out, and left blank as not applicable
-    non_calm_tenure = models.NullBooleanField(verbose_name="Non-CALM Act Tenure")
-    non_calm_tenure_approved = models.NullBooleanField(verbose_name="Cross Tenure Approved?")
+    # non_calm_tenure = models.NullBooleanField(verbose_name="Non-CALM Act Tenure")
+    # non_calm_tenure_approved = models.NullBooleanField(verbose_name="Cross Tenure Approved?")
+    non_calm_tenure = models.BooleanField(verbose_name="Non-CALM Act Tenure", null=True)
+    non_calm_tenure_approved = models.BooleanField(verbose_name="Cross Tenure Approved?", null=True)
     non_calm_tenure_included = models.TextField(verbose_name="Non-CALM Act Tenure Included", blank=True,null=True)
     non_calm_tenure_value = models.TextField(verbose_name="Public Value in Burn", blank=True,null=True)
     non_calm_tenure_complete = models.PositiveSmallIntegerField(
@@ -559,10 +565,12 @@ class Prescription(Audit):
         if not self.pk:
             prescriptions = Prescription.objects.filter(
                 district=self.district).order_by('burn_id')
-            values = map(lambda burn_id: int(burn_id.split('_')[1]),
+            mapped_obj = map(lambda burn_id: int(burn_id.split('_')[1]),
                          prescriptions.values_list('burn_id', flat=True))
+            values=list(mapped_obj)
 
             # Don't recycle values because its a really bad idea.
+            # count=sum(1 for _ in values)
             if len(values) == 0:
                 burn_id = 1
             else:
@@ -575,7 +583,8 @@ class Prescription(Audit):
             self.ignition_status = self.IGNITION_COMPLETE
             self.ignition_status_modified = timezone.now()
         else:
-            if self.areaachievement_set.all().count() > 0:
+            # if self.areaachievement_set.all().count() > 0:
+            if self.pk and self.areaachievement_set.all().count() > 0:
                 self.ignition_status = self.IGNITION_COMMENCED
                 self.ignition_status_modified = timezone.now()
             else:
@@ -586,11 +595,12 @@ class Prescription(Audit):
         # for all child Contingency objects.
         # If both are True, mark the contingencies_migrated field as True
         # otherwise mark it False.
-        for c in self.contingencies.all():
-            if c.actions_migrated and c.notifications_migrated:
-                self.contingencies_migrated = True
-            else:
-                self.contingencies_migrated = False
+        if self.pk:
+            for c in self.contingencies.all():
+                if c.actions_migrated and c.notifications_migrated:
+                    self.contingencies_migrated = True
+                else:
+                    self.contingencies_migrated = False
 
         # for consistency - migration from year to financial_year
         if self.financial_year:
@@ -1536,7 +1546,8 @@ class Endorsement(Audit):
     )
     prescription = models.ForeignKey(Prescription, on_delete=models.PROTECT)
     role = models.ForeignKey(EndorsingRole, on_delete=models.PROTECT)
-    endorsed = models.NullBooleanField(choices=ENDORSED_CHOICES, default=None)
+    # endorsed = models.NullBooleanField(choices=ENDORSED_CHOICES, default=None)
+    endorsed = models.BooleanField(choices=ENDORSED_CHOICES, default=None, blank=True)
 
     def __str__(self):
         if self.endorsed is not None:
