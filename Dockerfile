@@ -20,9 +20,24 @@ RUN apt-get install -y fex-utils imagemagick poppler-utils
 RUN apt-get install -y libldap2-dev libssl-dev wget build-essential vim virtualenv libmagic-dev texlive-full
 # RUN ln -s /usr/bin/python3 /usr/bin/python
 
+RUN groupadd -g 5000 oim 
+RUN useradd -g 5000 -u 5000 oim -s /bin/bash -d /app
+RUN mkdir /app 
+RUN chown -R oim.oim /app 
+
+RUN wget https://raw.githubusercontent.com/dbca-wa/wagov_utils/main/wagov_utils/bin/default_script_installer.sh -O /tmp/default_script_installer.sh
+RUN chmod 755 /tmp/default_script_installer.sh
+RUN /tmp/default_script_installer.sh
+
+COPY binaries/ffsend /usr/local/bin/
+
 # Install Python libs from requirements.txt.
 FROM builder_base_pbs as python_libs_pbs
 WORKDIR /app
+USER oim
+RUN virtualenv /app/venv
+ENV PATH=/app/venv/bin:$PATH
+RUN git config --global --add safe.directory /app
 
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt 
@@ -33,14 +48,13 @@ RUN pip3 install --no-cache-dir -r requirements.txt
   #&& sed -i -e 's/policy domain="coder" rights="none" pattern="PDF"/policy domain="coder" rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml \
   #&& rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
 # Copy the ffsend prebuilt binary.
-COPY binaries/ffsend /usr/local/bin/
 
 # Install the project.
 FROM python_libs_pbs
 COPY gunicorn.ini manage.py ./
-COPY fex.id /root/.fex/id
+COPY fex.id /app/.fex/id
 COPY .git ./.git
-RUN git log --pretty=medium -30 > ./git_history_recent && rm -rf .git
+#RUN git log --pretty=medium -30 > ./git_history_recent && rm -rf .git
 COPY pbs ./pbs
 COPY pbs_project ./pbs_project
 COPY smart_selects ./smart_selects
@@ -54,11 +68,11 @@ RUN touch .env
 RUN rm .env
 
 # Health checks for kubernetes 
-RUN wget https://raw.githubusercontent.com/dbca-wa/wagov_utils/main/wagov_utils/bin/health_check.sh -O /bin/health_check.sh
-RUN chmod 755 /bin/health_check.sh
+#RUN wget https://raw.githubusercontent.com/dbca-wa/wagov_utils/main/wagov_utils/bin/health_check.sh -O /bin/health_check.sh
+#RUN chmod 755 /bin/health_check.sh
 
 # Run the application as the www-data user.
-USER www-data
+#USER www-data
 HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 CMD ["wget", "-q", "-O", "-", "http://localhost:8080/"]
 EXPOSE 8080
 CMD ["gunicorn", "pbs_project.wsgi", "--config", "gunicorn.ini"]
