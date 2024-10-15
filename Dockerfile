@@ -64,7 +64,7 @@ COPY templates ./templates
 #COPY .env ./.env
 RUN touch .env
 #RUN python3 manage.py migrate
-#RUN python3 manage.py collectstatic --noinput
+RUN python3 manage.py collectstatic --noinput
 RUN rm .env
 
 # Health checks for kubernetes 
