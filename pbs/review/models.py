@@ -84,7 +84,12 @@ class Acknowledgement(models.Model):
         return "{} - {} - {}".format(
             self.burn, self.acknow_type, self.record)
 
-
+from django.db import ProgrammingError, OperationalError
+def get_region_choices():
+    try:
+        return [(r.id, r.name) for r in Region.objects.all()]
+    except (ProgrammingError, OperationalError):
+        return []
 
 class PrescribedBurn(Audit):
     BURN_ACTIVE = 1
@@ -134,6 +139,7 @@ class PrescribedBurn(Audit):
 
     fmt = "%Y-%m-%d %H:%M"
 
+
     prescription = models.ForeignKey(Prescription, verbose_name="Burn ID", related_name='prescribed_burn', null=True, blank=True, on_delete=models.PROTECT)
 #    prescription = ChainedForeignKey(
 #        Prescription, chained_field="region", chained_model_field="region",
@@ -143,7 +149,8 @@ class PrescribedBurn(Audit):
     # Required for Fire records
     fire_id = models.CharField(verbose_name="Fire Number", max_length=15, null=True, blank=True)
     fire_name = models.TextField(verbose_name="Name", null=True, blank=True)
-    region = models.PositiveSmallIntegerField(choices=[(r.id, r.name) for r in Region.objects.all()], null=True, blank=True)
+    # region = models.PositiveSmallIntegerField(choices=[(r.id, r.name) for r in Region.objects.all()], null=True, blank=True)
+    region = models.PositiveSmallIntegerField(choices=get_region_choices, null=True, blank=True)
     district = ChainedForeignKey(
         District, chained_field="region", chained_model_field="region",
         show_all=False, auto_choose=True, blank=True, null=True, on_delete=models.PROTECT)
