@@ -24,7 +24,7 @@ from django.contrib import admin, messages
 from functools import update_wrapper, partial
 from django.core.exceptions import (FieldError, ValidationError,
                                     PermissionDenied, ObjectDoesNotExist)
-from django.db import ProgrammingError
+from django.db import ProgrammingError, OperationalError
 from django.forms.models import modelform_factory
 from django.contrib.admin import helpers
 from django.utils.translation import gettext as _, gettext_lazy
@@ -50,14 +50,21 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
     epfp_review_template = 'admin/review/epfp_review_summary.html'
     # fmsb_group = Group.objects.get(name='Fire Management Services Branch')
     # drfms_group = Group.objects.get(name='Director Fire and Regional Services')
-    try:
-        fmsb_group = Group.objects.get(name='Fire Management Services Branch')
-    except (Group.DoesNotExist, ObjectDoesNotExist, ProgrammingError):
+    if settings.COLLECTSTATIC_ACTIVATED is True:
         fmsb_group = None
-    try:
-        drfms_group = Group.objects.get(name='Director Fire and Regional Services')
-    except (Group.DoesNotExist, ObjectDoesNotExist, ProgrammingError):
         drfms_group = None
+        pass
+    else:
+        fmsb_group = Group.objects.get(name='Fire Management Services Branch')
+        drfms_group = Group.objects.get(name='Director Fire and Regional Services')
+        # try:
+        #     fmsb_group = Group.objects.get(name='Fire Management Services Branch')
+        # except (Group.DoesNotExist, ObjectDoesNotExist, ProgrammingError):
+        #     fmsb_group = None
+        # try:
+        #     drfms_group = Group.objects.get(name='Director Fire and Regional Services')
+        # except (Group.DoesNotExist, ObjectDoesNotExist, ProgrammingError):
+        #     drfms_group = None
 
     def get_urls(self):
         """

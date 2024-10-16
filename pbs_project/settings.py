@@ -392,3 +392,11 @@ try:
         TCD_EXCLUSIONS = []
 except Exception as ex:
     raise Exception("TCD_EXCLUSIONS is invalid.{}".format(str(ex)))
+
+import sys 
+COLLECTSTATIC_ACTIVATED = False
+if len(sys.argv) > 1:
+    if sys.argv[1] == 'collectstatic':
+        COLLECTSTATIC_ACTIVATED = True
+
+

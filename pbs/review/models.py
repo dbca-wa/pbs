@@ -13,6 +13,7 @@ from django.forms import ValidationError
 from django.conf import settings
 import sys
 from django.utils import timezone
+from django.contrib.gis.db.models import MultiPolygonField as DjangoMultiPolygonField
 
 import logging
 logger = logging.getLogger('pbs')
@@ -588,7 +589,8 @@ class AircraftBurn(Audit):
 
 class AnnualIndicativeBurnProgram(models.Model):
     objectid = models.IntegerField(primary_key=True)
-    wkb_geometry = models.MultiPolygonField(srid=4326, blank=True, null=True)
+    # wkb_geometry = models.MultiPolygonField(srid=4326, blank=True, null=True)
+    wkb_geometry = DjangoMultiPolygonField(srid=4326, blank=True, null=True)
     region = models.CharField(max_length=35, blank=True)
     district = models.CharField(max_length=35, blank=True)
     burnid = models.CharField(max_length=30, blank=True)
@@ -617,7 +619,8 @@ class AnnualIndicativeBurnProgram(models.Model):
 
 class BurnProgramLink(models.Model):
     prescription = models.ForeignKey(Prescription, unique=True, on_delete=models.PROTECT)
-    wkb_geometry = models.MultiPolygonField(srid=4326)
+    # wkb_geometry = models.MultiPolygonField(srid=4326)
+    wkb_geometry = DjangoMultiPolygonField(srid=4326)
     area_ha = models.FloatField()
     longitude = models.FloatField()
     latitude = models.FloatField()
