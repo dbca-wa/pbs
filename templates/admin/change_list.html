@@ -110,33 +110,33 @@ $ = jQuery;
           // not sure why .prev().prev() but it seems to work
           var $addedRow = $(o.target).parents('tr.add-row').siblings(
               'tr#form-empty').prev();
-
           //Destroy and rebuild select2 controls.
           $addedRow.find('ul.select2-selection__rendered').remove()
           $addedRow.find('span.select2-container').remove();
+          console.log($addedRow.find('.select2-field'))
           $addedRow.find('.select2-field').select2()
         });
     });
 })(django.jQuery);
-// $(document).ready(function() {
-//     // reinit the chosen() widgets (so that the event is bound to a
-//     // correct select element)
-//     //
-//     // Now select2 widgets because chosen is actually terrible.
-//     //
-//     $('body').on('click', 'tr.add-row a', function(o) {
-//       // not sure why .prev().prev() but it seems to work
-//       var $addedRow = $(o.target).parents('tr.add-row').siblings(
-//           'tr#form-empty').prev();
+$(document).ready(function() {
+    // reinit the chosen() widgets (so that the event is bound to a
+    // correct select element)
+    //
+    // Now select2 widgets because chosen is actually terrible.
+    //
+  //   $('body').on('click', 'tr.add-row a', function(o) {
+  //     // not sure why .prev().prev() but it seems to work
+  //     var $addedRow = $(o.target).parents('tr.add-row').siblings(
+  //         'tr#form-empty').prev();
 
-//       //Destroy and rebuild select2 controls.
-//       $('select.django-select2').select2('destroy');
-//       $('input.select2-input').remove()
-//       $('ul.select2-choices').remove()
-//       $('div.select2-container').remove();
-//       $('select.django-select2').select2();
+  //     //Destroy and rebuild select2 controls.
+  //     $('select.django-select2').select2('destroy');
+  //     $('input.select2-input').remove()
+  //     $('ul.select2-choices').remove()
+  //     $('div.select2-container').remove();
+  //     $('select.django-select2').select2();
 
-//   });
+  // });
   // make empty changelists say so
   // have to use setTimeout as some pages include this before
   // injecting add links =/

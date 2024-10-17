@@ -6,6 +6,7 @@ import pytz
 from .env import env
 from django.utils import timezone
 from datetime import datetime
+import decouple
 #from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, LDAPSearchUnion
 
 
@@ -400,4 +401,5 @@ if len(sys.argv) > 1:
     if sys.argv[1] == 'collectstatic':
         COLLECTSTATIC_ACTIVATED = True
 
-
+CSRF_TRUSTED_ORIGINS_STRING = decouple.config("CSRF_TRUSTED_ORIGINS", default='[]')
+CSRF_TRUSTED_ORIGINS = json.loads(str(CSRF_TRUSTED_ORIGINS_STRING))
