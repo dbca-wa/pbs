@@ -46,7 +46,8 @@
           add_to_cache: function() {},
           redisplay: function() { window.location.reload(true); }
       };
-      $(function() {
+      // $(function() {
+        (function($) {
           $("li.dropdown li.active").parents("li.dropdown").addClass("active");
           function textAreaAdjust(o) {
               o.target.style.height = "1.5em";
@@ -399,6 +400,7 @@
 
 <script>
 
+(function($) {
 // clear the cookie token on page load
 $(document).ready(function() {
    $.cookie('fileDownloadToken', null, { path: '/' }); //clears this cookie value
@@ -461,6 +463,7 @@ $('.file-download').on('click', function(e) {
     }
 });
 
+})(django.jQuery);
 </script>
 
 {% endblock %}
