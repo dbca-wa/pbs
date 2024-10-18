@@ -29,6 +29,9 @@ class CheckboxSelectMultiple(SelectMultiple):
         # final_attrs = self.build_attrs(attrs, name=name)
         attrs['name'] = name
         final_attrs = self.build_attrs(attrs)
+        #In Django 5, required = True is added by default which is causing as issue with multiple checkboxes so deleting it
+        if 'required' in final_attrs:
+            del final_attrs['required']
         output = []
         # Normalize to strings
         str_values = set([force_str(v) for v in value])
