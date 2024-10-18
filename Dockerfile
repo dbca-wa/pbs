@@ -75,4 +75,6 @@ RUN rm .env
 #USER www-data
 HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 CMD ["wget", "-q", "-O", "-", "http://localhost:8080/"]
 EXPOSE 8080
-CMD ["gunicorn", "pbs_project.wsgi", "--config", "gunicorn.ini"]
+# CMD ["gunicorn", "pbs_project.wsgi", "--config", "gunicorn.ini"]
+CMD ["/startup.sh"]
+
