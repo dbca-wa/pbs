@@ -60,6 +60,7 @@ COPY pbs_project ./pbs_project
 COPY smart_selects ./smart_selects
 COPY swingers ./swingers
 COPY templates ./templates
+COPY startup.sh /startup.sh
 
 #COPY .env ./.env
 RUN touch .env
