@@ -428,12 +428,16 @@
 
 <script>
 
-(function($) {
-// clear the cookie token on page load
-$(document).ready(function() {
+$(document).ready(function($) {
    $.cookie('fileDownloadToken', null, { path: '/' }); //clears this cookie value
    $.removeCookie('fileDownloadToken'); //clears this cookie value
 });
+(function($) {
+// clear the cookie token on page load
+// $(document).ready(function($) {
+//    $.cookie('fileDownloadToken', null, { path: '/' }); //clears this cookie value
+//    $.removeCookie('fileDownloadToken'); //clears this cookie value
+// });
 
 $('.file-download').on('click', function(e) {
     var id = e.target.id
