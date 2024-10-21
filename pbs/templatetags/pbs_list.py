@@ -156,7 +156,8 @@ def result_headers(cl):
             # if the field is the action checkbox: no sorting and special class
             if field_name == 'action_checkbox':
                 yield {
-                    "text": text,
+                    # "text": mark_safe(text),
+                    "text": mark_safe('<input type="checkbox" id="action-toggle">'),
                     "classes": 'action-checkbox-column',
                     "sortable": False,
                 }

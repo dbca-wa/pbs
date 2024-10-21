@@ -103,14 +103,20 @@ def delete_selected(modeladmin, request, queryset):
         "opts": opts,
         "app_label": app_label,
         'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+        "current_app": modeladmin.admin_site.name
     }
 
     # Display the confirmation page
+    # return TemplateResponse(request, modeladmin.delete_selected_confirmation_template or [
+    #     "admin/%s/%s/delete_selected_confirmation.html" % (app_label, opts.model_name),
+    #     "admin/%s/delete_selected_confirmation.html" % app_label,
+    #     "admin/delete_selected_confirmation.html"
+    # ], context, current_app=modeladmin.admin_site.name)
     return TemplateResponse(request, modeladmin.delete_selected_confirmation_template or [
-        "admin/%s/%s/delete_selected_confirmation.html" % (app_label, opts.module_name),
+        "admin/%s/%s/delete_selected_confirmation.html" % (app_label, opts.model_name),
         "admin/%s/delete_selected_confirmation.html" % app_label,
         "admin/delete_selected_confirmation.html"
-    ], context, current_app=modeladmin.admin_site.name)
+    ], context)
 
 delete_selected.short_description = gettext_lazy("Delete selected %(verbose_name_plural)s")
 
