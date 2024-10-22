@@ -31,7 +31,8 @@ class OperationalOverview(Audit):
     overview = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.overview
+        # return self.overview
+        return str(self.overview)
 
     class Meta:
         get_latest_by = 'id'
