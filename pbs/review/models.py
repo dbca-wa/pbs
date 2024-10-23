@@ -645,7 +645,7 @@ class BurnProgramLink(models.Model):
         cursor.execute('''
             create or replace view review_v_dailyburns as
 			SELECT 
-			    burn_id,
+			    burn_id::varchar(7),
 			    (to_char(burn_target_date_raw::timestamp with time zone, 'FMDay, DD Mon YYYY'::text)) as burn_target_date,
 			    burn_target_date_raw,
 			    CASE
