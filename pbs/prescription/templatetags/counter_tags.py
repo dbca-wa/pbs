@@ -9,14 +9,16 @@ class Counter(object):
         self.count = itertools.count(start, step)
 
     def next(self):
-        return self.count.next()
+        # return self.count.next()
+        return next(self.count)
 
     def __iter__(self):
         return self
 
-    def __unicode__(self):
-        return unicode(self.next())
-
+    # def __unicode__(self):
+    #     return unicode(self.next())
+    def __str__(self):
+        return str(self.next())
 
 @register.simple_tag
 def counter_from(start, step=1):

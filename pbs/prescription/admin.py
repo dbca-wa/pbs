@@ -1263,45 +1263,48 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         obj = self.get_object(request, unquote(object_id))
         title = "PDFs"
 
-        cmd = ['fexsend', '-l', '-v']
-        run = subprocess.Popen(' '.join(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        fex_tokens = run.communicate()[0]
+        #fex is no longer used so commenting out the below code as it returns the empty list
+        # cmd = ['fexsend', '-l', '-v']
+        # run = subprocess.Popen(' '.join(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # fex_tokens = run.communicate()[0]
+        # import ipdb; ipdb.set_trace()
 
-        token_str = self.__find_between(fex_tokens, '<pre>', '</pre>')
-        tokens = [token for token in token_str.split('<--') if 'dkey' in token]
+        # token_str = self.__find_between(fex_tokens, '<pre>', '</pre>')
+        # tokens = [token for token in token_str.split('<--') if 'dkey' in token]
 
-        fex_file_list = []
-        for token in tokens:
-            pdf = self.__find_between(token, '>', '<')
-            dkey = self.__find_between(token, 'dkey=', '&')
-            expiry = self.__find_between(token, '[', ']')
-            size = self.__find_between(token, '   ', ' [').strip()
-            size = '< 1 MB' if size == '0 MB' else size
-            if not pdf.endswith("_pfp.pdf"):  # exclude non-pfp's
-                continue
+        # fex_file_list = []
+        # for token in tokens:
+        #     pdf = self.__find_between(token, '>', '<')
+        #     dkey = self.__find_between(token, 'dkey=', '&')
+        #     expiry = self.__find_between(token, '[', ']')
+        #     size = self.__find_between(token, '   ', ' [').strip()
+        #     size = '< 1 MB' if size == '0 MB' else size
+        #     if not pdf.endswith("_pfp.pdf"):  # exclude non-pfp's
+        #         continue
 
-            try:
-                timestamp = datetime.strptime(pdf.split('_')[-2], '%Y-%m-%dT%H%M')
-            except ValueError:
-                timestamp = datetime.strptime(pdf.split('_')[-2], '%Y-%m-%dT%H%M%S')
+        #     try:
+        #         timestamp = datetime.strptime(pdf.split('_')[-2], '%Y-%m-%dT%H%M')
+        #     except ValueError:
+        #         timestamp = datetime.strptime(pdf.split('_')[-2], '%Y-%m-%dT%H%M%S')
 
-            fex_file_list.append([
-                pdf,
-                settings.FEX_SVR_HTTP + '/fop/' + dkey + '/' + pdf,
-                size,
-                expiry,
-                timestamp,
-            ])
+        #     fex_file_list.append([
+        #         pdf,
+        #         settings.FEX_SVR_HTTP + '/fop/' + dkey + '/' + pdf,
+        #         size,
+        #         expiry,
+        #         timestamp,
+        #     ])
 
-        fex_file_list = sorted(fex_file_list, key=lambda x: x[4], reverse=True)
-
+        # fex_file_list = sorted(fex_file_list, key=lambda x: x[4], reverse=True)
+        fex_file_list=[]
         context = {
             'title': title,
             'current': obj,
             'fex_file_list': fex_file_list,
+            'current_app': self.admin_site.name
         }
         return TemplateResponse(request, self.pdf_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context )
 
     def __find_between(self, s, first, last):
         """
@@ -1311,7 +1314,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             start = s.index(first) + len(first)
             end = s.index(last, start)
             return s[start:end]
-        except ValueError:
+        except (ValueError, TypeError):
             return ""
 
     def day_summary(self, request, object_id):
