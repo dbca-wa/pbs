@@ -13,6 +13,7 @@ def get_dimensions(path, format='PDF', width=0, height=0, units='pt'):
     Takes a document path and tests to see if it can extract dimensions from
     the document itself. Will return default width and height on failure.
     """
+    #import ipdb; ipdb.set_trace()
     if os.path.exists(path):
         mime_type, _ = mimetypes.guess_type(path)
         if mime_type == 'application/pdf':
@@ -32,7 +33,15 @@ def get_dimensions(path, format='PDF', width=0, height=0, units='pt'):
                 width = int(width)
                 height = int(height)
             except:
-                pass
+                output = subprocess.check_output(["pdfinfo", path]).decode("utf-8")
+                for line in output.splitlines():
+                    if line.startswith("Page size:"):
+                        dimensions = line.split(":")[1].strip().split("x")
+                        break
+                width, height = dimensions[0].strip(), dimensions[1].split()[0].strip()
+                width = int(float(width))
+                height = int(float(height))
+                #pass
         else:
             # Try to open the image and extract its properties
             try:

@@ -24,7 +24,9 @@ No Regional Fire Management Plan Objectives Selected
 {% for context in prescription.context_set.all %}
 \textbf{Statement}
 \quad\textbf{ {{ context.get_category_display }} } \\
+{% if context.statement %}
 {{ context.statement|texify|safe }} \\
+{% endif %}
 \end{flushleft}
 {% empty %}
 No context statements have been defined.
@@ -39,7 +41,8 @@ No context statements have been defined.
 \textbf{ {{ stakeholder.name|texify|safe }}} & {{ stakeholder.organisation|texify|safe }} & {{ stakeholder.interest|texify|safe }} \\
 \hline
 {% empty %}
-\multicolumn{3}{|X|}{No Critical Stakeholders} \\
+% \multicolumn{3}{|X|}{No Critical Stakeholders} \\
+\multicolumn{3}{|p{\linewidth}|}{\centering No Critical Stakeholders} \\
 \hline
 {% endfor %}
 \end{longtabu}

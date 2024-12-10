@@ -14,19 +14,32 @@
 \endhead
 {% for bp in prescription.burningprescription_set.all %}
 \textbf{Fuel Type}                               & \textbf{ {{ bp.fuel_type|texify }} } \\*  % \\* prevents page break with row
-\rowfont{\small}{Max Scorch Height (m)}          & {{ bp.scorch|texify }} \\*
-\rowfont{\small}{Area to be Burnt (\%)}          & {{ bp.area|texify }} \\*
-\rowfont{\small}{ROS Range (m/h)}                & {{ bp.ros|texify }} \\*
-\rowfont{\small}{FFDI Range}                     & {{ bp.ffdi|texify }} \\*
-\rowfont{\small}{GFDI Range}                     & {{ bp.gfdi|texify }} \\*
-\rowfont{\small}{Temp Range ($^\circ$C)}         & {{ bp.temp|texify }} \\*
-\rowfont{\small}{Relative Humidity (\%)}         & {{ bp.rh|texify }} \\*
-\rowfont{\small}{Grassland Curing (\%)}          & {{ bp.grassland_curing|texify }} \\*
-\rowfont{\small}{Indicative SDI Range}           & {{ bp.sdi|texify }} \\*
-\rowfont{\small}{Surface Moisture Content (\%)}  & {{ bp.smc|texify }} \\*
-\rowfont{\small}{Profile Moisture Content (\%)}  & {{ bp.pmc|texify }} \\*
-\rowfont{\small}{Wind Speed Range (km/h)}        & {{ bp.wind|texify }} \\*
-\rowfont{\small}{Wind Direction}                 & {{ bp.wind_dir|texify }} \\*
+% \rowfont{\small}{Max Scorch Height (m)}          & {{ bp.scorch|texify }} \\*
+% \rowfont{\small}{Area to be Burnt (\%)}          & {{ bp.area|texify }} \\*
+% \rowfont{\small}{ROS Range (m/h)}                & {{ bp.ros|texify }} \\*
+% \rowfont{\small}{FFDI Range}                     & {{ bp.ffdi|texify }} \\*
+% \rowfont{\small}{GFDI Range}                     & {{ bp.gfdi|texify }} \\*
+% \rowfont{\small}{Temp Range ($^\circ$C)}         & {{ bp.temp|texify }} \\*
+% \rowfont{\small}{Relative Humidity (\%)}         & {{ bp.rh|texify }} \\*
+% \rowfont{\small}{Grassland Curing (\%)}          & {{ bp.grassland_curing|texify }} \\*
+% \rowfont{\small}{Indicative SDI Range}           & {{ bp.sdi|texify }} \\*
+% \rowfont{\small}{Surface Moisture Content (\%)}  & {{ bp.smc|texify }} \\*
+% \rowfont{\small}{Profile Moisture Content (\%)}  & {{ bp.pmc|texify }} \\*
+% \rowfont{\small}{Wind Speed Range (km/h)}        & {{ bp.wind|texify }} \\*
+% \rowfont{\small}{Wind Direction}                 & {{ bp.wind_dir|texify }} \\*
+{\small}{Max Scorch Height (m)}          & {{ bp.scorch|texify }} \\*
+{\small}{Area to be Burnt (\%)}          & {{ bp.area|texify }} \\*
+{\small}{ROS Range (m/h)}                & {{ bp.ros|texify }} \\*
+{\small}{FFDI Range}                     & {{ bp.ffdi|texify }} \\*
+{\small}{GFDI Range}                     & {{ bp.gfdi|texify }} \\*
+{\small}{Temp Range ($^\circ$C)}         & {{ bp.temp|texify }} \\*
+{\small}{Relative Humidity (\%)}         & {{ bp.rh|texify }} \\*
+{\small}{Grassland Curing (\%)}          & {{ bp.grassland_curing|texify }} \\*
+{\small}{Indicative SDI Range}           & {{ bp.sdi|texify }} \\*
+{\small}{Surface Moisture Content (\%)}  & {{ bp.smc|texify }} \\*
+{\small}{Profile Moisture Content (\%)}  & {{ bp.pmc|texify }} \\*
+{\small}{Wind Speed Range (km/h)}        & {{ bp.wind|texify }} \\*
+{\small}{Wind Direction}                 & {{ bp.wind_dir|texify }} \\*
 \hline
 {% endfor %}
 \end{longtable}
@@ -50,16 +63,26 @@
 \endhead % the above is repeated on every page
 {% for ep in prescription.edgingplan_set.all %}
 \textbf{Edge Description Location}                  & \textbf{ {{ ep.location|texify }} } \\* % \\* prevents page break with row
-\rowfont{\small}{Fuel Type}                         & {{ ep.fuel_type|texify }} \\*
-\rowfont{\small}{Desirable Season}                  & {{ ep.get_desirable_season_display|texify }} \\*
-\rowfont{\small}{Strategies}                        & {{ ep.strategies|texify }} \\*
-\rowfont{\small}{Desirable FFDI Range}              & {{ ep.ffdi|texify }} \\*
-\rowfont{\small}{GFDI Range}                        & {{ ep.gfdi|texify }} \\*
-\rowfont{\small}{RoS Range (m/h)}                   & {{ ep.ros|texify }} \\*
-\rowfont{\small}{Desirable SDI Range}               & {{ ep.sdi|texify }} \\*
-\rowfont{\small}{Desirable Grassland Curing Range}  & {{ ep.grassland_curing|texify }} \\*
-\rowfont{\small}{Desirable Wind Speed (km/h)}       & {{ ep.wind|texify }} \\*
-\rowfont{\small}{Desirable Wind Direction}          & {{ ep.wind_dir|texify }} \\*
+% \rowfont{\small}{Fuel Type}                         & {{ ep.fuel_type|texify }} \\*
+% \rowfont{\small}{Desirable Season}                  & {{ ep.get_desirable_season_display|texify }} \\*
+% \rowfont{\small}{Strategies}                        & {{ ep.strategies|texify }} \\*
+% \rowfont{\small}{Desirable FFDI Range}              & {{ ep.ffdi|texify }} \\*
+% \rowfont{\small}{GFDI Range}                        & {{ ep.gfdi|texify }} \\*
+% \rowfont{\small}{RoS Range (m/h)}                   & {{ ep.ros|texify }} \\*
+% \rowfont{\small}{Desirable SDI Range}               & {{ ep.sdi|texify }} \\*
+% \rowfont{\small}{Desirable Grassland Curing Range}  & {{ ep.grassland_curing|texify }} \\*
+% \rowfont{\small}{Desirable Wind Speed (km/h)}       & {{ ep.wind|texify }} \\*
+% \rowfont{\small}{Desirable Wind Direction}          & {{ ep.wind_dir|texify }} \\*
+{\small}{Fuel Type}                         & {{ ep.fuel_type|texify }} \\*
+{\small}{Desirable Season}                  & {{ ep.get_desirable_season_display|texify }} \\*
+{\small}{Strategies}                        & {{ ep.strategies|texify }} \\*
+{\small}{Desirable FFDI Range}              & {{ ep.ffdi|texify }} \\*
+{\small}{GFDI Range}                        & {{ ep.gfdi|texify }} \\*
+{\small}{RoS Range (m/h)}                   & {{ ep.ros|texify }} \\*
+{\small}{Desirable SDI Range}               & {{ ep.sdi|texify }} \\*
+{\small}{Desirable Grassland Curing Range}  & {{ ep.grassland_curing|texify }} \\*
+{\small}{Desirable Wind Speed (km/h)}       & {{ ep.wind|texify }} \\*
+{\small}{Desirable Wind Direction}          & {{ ep.wind_dir|texify }} \\*
 \hline
 {% endfor %}
 \end{longtable}
@@ -82,16 +105,26 @@
 \endhead % the above is repeated on every page
 {% for ls in prescription.lightingsequence_set.all %}
 \textbf{Cell Name}                                  & \textbf{ {{ ls.cellname|texify|safe }} } \\* % \\* prevents page break with row
-\rowfont{\small}{Sequence #}                        & {{ ls.seqno }} \\*
-\rowfont{\small}{Strategies}                        & {{ ls.strategies|texify|safe }} \\*
-\rowfont{\small}{Fuel Description}                  & {{ ls.fuel_description|texify|safe }} \\*
-\rowfont{\small}{Fuel Age (years)}                  & {% if ls.fuel_age %}{{ ls.fuel_age }}{% else %}Unknown{% endif %} \\*
-\rowfont{\small}{Planned Core Ignition Type}        & {% if ls.ignition_types.all %}{{ ls.ignition_types.all|join:", " }}{% else %}No ignition types{% endif %} \\*
-\rowfont{\small}{Preferred FFDI}                    & {{ ls.ffdi }} \\*
-\rowfont{\small}{Preferred ROS Range}               & {{ ls.ros }} \\*
-\rowfont{\small}{Preferred Wind Speed Range (km/h)} & {{ ls.wind_speed }} \\*
-\rowfont{\small}{Preferred Wind Direction}          & {{ ls.wind_dir }} \\*
-\rowfont{\small}{Specialist Resources Required}     & {{ ls.resources|texify }} \\*
+% \rowfont{\small}{Sequence #}                        & {{ ls.seqno }} \\*
+% \rowfont{\small}{Strategies}                        & {{ ls.strategies|texify|safe }} \\*
+% \rowfont{\small}{Fuel Description}                  & {{ ls.fuel_description|texify|safe }} \\*
+% \rowfont{\small}{Fuel Age (years)}                  & {% if ls.fuel_age %}{{ ls.fuel_age }}{% else %}Unknown{% endif %} \\*
+% \rowfont{\small}{Planned Core Ignition Type}        & {% if ls.ignition_types.all %}{{ ls.ignition_types.all|join:", " }}{% else %}No ignition types{% endif %} \\*
+% \rowfont{\small}{Preferred FFDI}                    & {{ ls.ffdi }} \\*
+% \rowfont{\small}{Preferred ROS Range}               & {{ ls.ros }} \\*
+% \rowfont{\small}{Preferred Wind Speed Range (km/h)} & {{ ls.wind_speed }} \\*
+% \rowfont{\small}{Preferred Wind Direction}          & {{ ls.wind_dir }} \\*
+% \rowfont{\small}{Specialist Resources Required}     & {{ ls.resources|texify }} \\*
+{\small}{Sequence }                        & {{ ls.seqno }} \\*
+{\small}{Strategies}                        & {{ ls.strategies|texify|safe }} \\*
+{\small}{Fuel Description}                  & {{ ls.fuel_description|texify|safe }} \\*
+{\small}{Fuel Age (years)}                  & {% if ls.fuel_age %}{{ ls.fuel_age }}{% else %}Unknown{% endif %} \\*
+{\small}{Planned Core Ignition Type}        & {% if ls.ignition_types.all %}{{ ls.ignition_types.all|join:", " }}{% else %}No ignition types{% endif %} \\*
+{\small}{Preferred FFDI}                    & {{ ls.ffdi }} \\*
+{\small}{Preferred ROS Range}               & {{ ls.ros }} \\*
+{\small}{Preferred Wind Speed Range (km/h)} & {{ ls.wind_speed }} \\*
+{\small}{Preferred Wind Direction}          & {{ ls.wind_dir }} \\*
+{\small}{Specialist Resources Required}     & {{ ls.resources|texify }} \\*
 \hline
 {% endfor %}
 \end{longtable}

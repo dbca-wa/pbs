@@ -92,7 +92,19 @@ All diversion maps associated with the burn have been inserted on the following 
 \clearpage
 {% endif %}
 
-\begin
+% \begin
+% {% filter_by_tag_name current.document_set "sign inspection and surveillance form" as sign_inspections %}
+% {% if sign_inspections %}
+% {% for document in sign_inspections %}
+%   {% if document %}
+%     {% include "latex/pdf.tex" %}
+%   {% endif %}
+% {% endfor %}
+% \clearpage
+% {% endif %}
+% \end
+% \clearpage
+% \begin
 {% filter_by_tag_name current.document_set "sign inspection and surveillance form" as sign_inspections %}
 {% if sign_inspections %}
 {% for document in sign_inspections %}
@@ -102,6 +114,6 @@ All diversion maps associated with the burn have been inserted on the following 
 {% endfor %}
 \clearpage
 {% endif %}
-\end
+% \end
 \clearpage
 {% endautoescape %}
