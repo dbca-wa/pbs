@@ -64,6 +64,7 @@ COPY startup.sh /startup.sh
 
 #COPY .env ./.env
 RUN touch .env
+RUN mkdir /app/logs
 #RUN python3 manage.py migrate
 RUN python3 manage.py collectstatic --noinput
 RUN rm .env
