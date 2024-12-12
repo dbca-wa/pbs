@@ -7,6 +7,7 @@
 \usepackage{booktabs}
 \usepackage{pdfpages}
 \usepackage[english]{babel} % English language/hyphenation
+\pdfoptionpdfminorversion=7
 %%% Bootstrap colors
 \definecolor{RedFire}{RGB}{146,25,28}
 \definecolor{ParksWildlife}{RGB}{0,85,144}
@@ -28,7 +29,8 @@
 %\usepackage[colorlinks=false,pdftitle={{ downloadname|texify }},linktoc=all,linkcolor=RedFire,urlcolor=ParksWildlife]{hyperref}
 \usepackage[colorlinks=true,pdftitle={{ downloadname|texify }},linktoc=all,pdfborder=white,linkcolor=black,urlcolor=white]{hyperref}
 \usepackage{colortbl}
-\usepackage{longtable}
+\usepackage{longtable}[=v4.13]
+\usepackage{tabularx}
 \usepackage{tabu}
 \setlength{\tabulinesep}{1.5mm}
 \usepackage{enumerate}

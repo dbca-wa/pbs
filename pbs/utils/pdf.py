@@ -127,11 +127,14 @@ def pdflatex(prescription,template="pfp",downloadname=None,embed=True,headers=Tr
         err_msg = None
         try:
             output = render_to_string("latex/" + template + ".tex", context)
+            logger.info("Output to render for {0} {1} successful.".format(prescription.burn_id, downloadname))
         except Exception as e:
             traceback.print_exc()
             err_msg = u"PDF tex template render failed (might be missing attachments)."
             #logger.exception("{0}\n{1}".format(err_msg,e))
             result.err_msg = "{0}\n\n{1}\n\n{2}".format(err_msg,e, traceback.format_exc())
+            logger.info('PDF tex template render failed (might be missing attachments).')
+            logger.info("Returning result. No PDF output for {0}\n{1}. Check the log file for more info.".format(prescription.burn_id, downloadname))
             return result
 
         directory = tempfile.mkdtemp(prefix="pbs_pdflatex")
@@ -146,24 +149,64 @@ def pdflatex(prescription,template="pfp",downloadname=None,embed=True,headers=Tr
         result.template_file = texpath
 
         logger.info("Starting PDF rendering process ...")
-        print(texpath)
-        cmd = ['latexmk', '-f', '-silent', '-pdf', '-outdir={}'.format(directory), texpath]
+        #cmd = ['latexmk', '-f', '-silent', '-pdf', '-outdir={}'.format(directory), texpath]
+        # cmd = ['latexmk', '-f','-pdf', '-outdir={}'.format(directory), texpath]
+        cmd = [
+            'latexmk',
+            '-f',
+            #'-silent',
+            '-pdf',
+            '-outdir={}'.format(directory),
+            '-interaction=nonstopmode',
+            '-halt-on-error',
+            '-file-line-error',  # Enables file and line number reporting
+            texpath ]
+
         logger.info("Running: {0}".format(" ".join(cmd)))
-        subprocess.call(cmd)
+        #subprocess.call(cmd)
+        try:
+            res = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            #print(res.stdout.decode())
+        except subprocess.CalledProcessError as e:
+            # print(f"Command '{cmd}' failed with return code {e.returncode}")
+            logger.info("Command {0} failed with return code {1}".format(cmd, e.returncode))
+            #print(f"Error output: {e.stderr.decode()}")
         
-        pdffile = os.path.join(directory, filename)
-        if os.path.exists(pdffile):
-            result.pdf_file = pdffile
-            
         logfile = os.path.join(directory, logfilename)
         if os.path.exists(logfile):
             result.log_file = logfile
+            if not result.succeed:
+                log_dir=os.path.join(settings.BASE_DIR, 'logs', 'pdf', prescription.burn_id, downloadname.replace('.pdf', ''))
+                if not os.path.exists(log_dir):
+                    os.makedirs(log_dir)
+                    shutil.copytree(directory, log_dir, dirs_exist_ok=True)
+                    copied_log_file= os.path.join(log_dir, logfilename)
+                    result.log_file = copied_log_file
+        pdffile = os.path.join(directory, filename)
+        if os.path.exists(pdffile):
+            result.pdf_file = pdffile
+            logger.info("PDF output for {0} {1} successful".format(prescription.burn_id, downloadname)) 
+        else:
+            err_msg = u"PDF generation failed for "
+            result.err_msg = "{0}\n\n{1}\n\n{2}".format(err_msg,prescription.burn_id,downloadname)
+            logger.info("PDF generation failed after subprocess run for {0} {1}.\nCheck the log file located at {3} for errors ".format(prescription.burn_id, downloadname, result.log_file))            
+        # logfile = os.path.join(directory, logfilename)
+        # if os.path.exists(logfile):
+        #     result.log_file = logfile
+        #     if not result.succeed:
+        #         log_dir=os.path.join(settings.BASE_DIR, 'logs', 'pdf', prescription.burn_id, downloadname.replace('.pdf', ''))
+        #         if not os.path.exists(log_dir):
+        #             os.makedirs(log_dir)
+        #             shutil.copytree(directory, log_dir, dirs_exist_ok=True)
+        #             copied_log_file= os.path.join(log_dir, logfilename)
+        #             result.log_file = copied_log_file
         return result
     except Exception as e:
         traceback.print_exc()
         err_msg = u"PDF generated failed."
         #logger.exception("{0}\n{1}".format(err_msg,e))
         result.err_msg = "{0}\n\n{1}\n\n{2}".format(err_msg,e, traceback.format_exc())
+        logger.info(err_msg)
         return result
 
 def download_pdf(request, prescription):

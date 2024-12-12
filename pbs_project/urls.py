@@ -1,6 +1,7 @@
 from django.conf.urls import include
 from django.urls import re_path, path
 from django.contrib import admin
+from django_media_serv.urls import urlpatterns as media_serv_patterns
 
 """
 some import statmement will load some module (directly or indirectly)
@@ -19,7 +20,7 @@ Solution is using two steps to populate urlpatterns
 urlpatterns = [
     re_path(r'^docs/', include('django.contrib.admindocs.urls')),
     re_path(r'^', include('django.contrib.auth.urls')),
-]
+]+ media_serv_patterns
 
 from django.views.generic.base import RedirectView
 from django_downloadview import ObjectDownloadView
@@ -61,4 +62,4 @@ urlpatterns = urlpatterns + [
     re_path(r'^api/', include(v1_api.urls)),
     #path('', site.urls),
     re_path(r'^', site.urls),
-]
+] 

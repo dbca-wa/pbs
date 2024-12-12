@@ -1,3 +1,35 @@
+% \begin{landscape}
+% \section{Section B8 - Briefing Checklist}
+% \fancyfoot[L]{ \leftmark\newline\textbf{Section B8 last modified}\textit{ {{ prescription.briefing_checklist_modified|default:"" }}}\quad\textbf{PDF Created On}\textit{ {{ timestamp }} } }
+% {% if prescription.briefingchecklist_set.all %}
+% \begin{longtabu} to \linewidth { | X | X[2] | }
+% \hline
+% {\textbf{Topic}} & {\textbf{Briefing Notes}} \\
+% \endhead
+
+% \hline
+% {% regroup prescription.briefingchecklist_set.all by smeac as briefingchecklist %}
+% {% for smeac in briefingchecklist %}
+% % \multicolumn{2}{|l|}{\textbf{% templatetag openbrace %}{{ smeac.grouper|texify|safe }}}} \\
+% \multicolumn{2}{c}{No notification} \\
+% \hline
+% {% for item in smeac.list %}
+% {% if item.action %}
+% {{ item.action.risk.name|texify|safe }} & {{ item.notes|texify|safe }} \\{% if not item.notes %}[1ex]{% endif %}
+% {% else %}
+% {{ item.title|texify|safe }} & {{ item.notes|texify|safe }} \\{% if not item.notes %}[1ex]{% endif %}
+% {% endif %}
+% \hline
+% {% endfor %}
+% \hline
+% {% endfor %}
+% \end{longtabu}
+% {% else %}
+% { No Briefing Checklist Items. }
+% {% endif %}
+% \end{landscape}
+% \clearpage
+
 \begin{landscape}
 \section{Section B8 - Briefing Checklist}
 \fancyfoot[L]{ \leftmark\newline\textbf{Section B8 last modified}\textit{ {{ prescription.briefing_checklist_modified|default:"" }}}\quad\textbf{PDF Created On}\textit{ {{ timestamp }} } }
@@ -6,10 +38,12 @@
 \hline
 {\textbf{Topic}} & {\textbf{Briefing Notes}} \\
 \endhead
+
 \hline
 {% regroup prescription.briefingchecklist_set.all by smeac as briefingchecklist %}
 {% for smeac in briefingchecklist %}
 \multicolumn{2}{|l|}{\textbf{% templatetag openbrace %}{{ smeac.grouper|texify|safe }}}} \\
+% \multicolumn{2}{|l|}{No notification} \\
 \hline
 {% for item in smeac.list %}
 {% if item.action %}
@@ -27,3 +61,35 @@
 {% endif %}
 \end{landscape}
 \clearpage
+
+% \begin{landscape}
+% \section{Section B8 - Briefing Checklist}
+% \fancyfoot[L]{ \leftmark\newline\textbf{Section B8 last modified} \textit{ {{ prescription.briefing_checklist_modified|default:"" }}}\quad\textbf{PDF Created On} \textit{ {{ timestamp }} } }
+% \newcolumntype{Y}{>{\raggedright\arraybackslash}X}  % Optional: Left-align
+% \newcolumntype{Z}{>{\raggedright\arraybackslash}X[2]}  % Define X[2]
+% {% if prescription.briefingchecklist_set.all %}
+% \begin{longtable}{|p{0.3\linewidth}|p{0.6\linewidth}|}
+% % \begin{longtable}{|Y|Z|}
+% \hline
+% {\textbf{Topic}} & {\textbf{Briefing Notes}} \\
+% \hline
+% {% regroup prescription.briefingchecklist_set.all by smeac as briefingchecklist %}
+% {% for smeac in briefingchecklist %}
+% \multicolumn{2}{|l|}{\textbf{% templatetag openbrace %}{{ smeac.grouper|texify|safe }}}} \\
+% % \multicolumn{2}{c}{}\\
+% \hline
+% {% for item in smeac.list %}
+% {% if item.action %}
+% {{ item.action.risk.name|texify|safe }} & {{ item.notes|texify|safe }} \\
+% {% else %}
+% {{ item.title|texify|safe }} & {{ item.notes|texify|safe }} \\
+% {% endif %}
+% \hline
+% {% endfor %}
+% {% endfor %}
+% \end{longtable}
+% {% else %}
+% { No Briefing Checklist Items. }
+% {% endif %}
+% \end{landscape}
+% \clearpage

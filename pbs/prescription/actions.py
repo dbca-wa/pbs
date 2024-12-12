@@ -248,11 +248,15 @@ def carry_over_burns(modeladmin, request, queryset):
         "opts": opts,
         "app_label": app_label,
         'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+        "current_app": modeladmin.admin_site.name
     }
 
+    # return TemplateResponse(
+    #     request, "admin/prescription/prescription/carry_over_burns.html",
+    #     context, current_app=modeladmin.admin_site.name)
     return TemplateResponse(
         request, "admin/prescription/prescription/carry_over_burns.html",
-        context, current_app=modeladmin.admin_site.name)
+        context)
 
 carry_over_burns.short_description = gettext_lazy("Carry over burns")
 
@@ -275,7 +279,8 @@ def _create_approvals_pdf(prescription, request=None):
 
     output = render_to_string("latex/parta_approvals.tex", context)
     with open(texname, "w") as f:
-        f.write(output.encode('utf-8'))
+        # f.write(output.encode('utf-8'))
+        f.write(output)
 
     cmd = ['latexmk', '-f', '-silent', '-pdf', '-outdir={}'.format(directory), texname]
     subprocess.call(cmd)
@@ -284,7 +289,7 @@ def _create_approvals_pdf(prescription, request=None):
     cmd = ['latexmk', '-c', '-outdir={}'.format(directory),texname]
     subprocess.call(cmd)
 
-    with open(texname.replace('tex','pdf')) as f:
+    with open(texname.replace('tex','pdf'), "rb") as f:
         suf = SimpleUploadedFile('Approvals PDF', f.read(), content_type='application/pdf')
 
     uid = request.user.id if request else 1

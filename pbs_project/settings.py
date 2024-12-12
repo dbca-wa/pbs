@@ -325,7 +325,17 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'console'
-        }
+            # 'level': 'INFO',
+            # 'class': 'logging.FileHandler',
+            # 'filename': os.path.join(BASE_DIR, 'logs', 'pdf.log'),
+            #'formatter': 'verbose2',
+            #'maxBytes': 5242880
+        },
+        'file': {
+           'level': 'DEBUG',
+           'class': 'logging.FileHandler',
+           'filename': os.path.join(BASE_DIR, 'logs', 'pbs.log'),
+       },
     },
     'loggers': {
         'django': {
@@ -339,7 +349,8 @@ LOGGING = {
             'propagate': True,
         },
         'pdf_debugging': {
-            'handlers': ['pdf_debugging'],
+            # 'handlers': ['pdf_debugging'],
+            'handlers': ['file', 'pdf_debugging'],
             'level': 'DEBUG',
             'propagate': True,
         }
