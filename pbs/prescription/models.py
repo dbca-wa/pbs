@@ -1776,3 +1776,23 @@ def archive_prescription(sender,instance,created,**kwargs):
                 send_mail(title, message, email_from, settings.NOTIFICATION_EMAIL.split(","), fail_silently=True)
             else:
                 logger.warning('ENV NOTIFICATION_EMAIL is not set. Unable to send notification email.')
+
+import reversion                                               
+reversion.register(Prescription, follow=[ "fundingallocation","priorityjustification","briefingchecklist", "endorsement", "approval", "objective", "successcriteria"#Prescription
+                                        "operationaloverview","burningprescription", "edgingplan","lightingsequence", "exclusionarea", #Implementation
+                                        "postburnchecklist", "burnclosurestate","areaachievement","proposedaction", "burnimplementationstate",  #Report
+                                        "burnstate", "prescribedburn", "aircraftburn",   #review
+                                        "register", "risk", "context", "complexity", "contingency", #Risk
+                                        "criticalstakeholder" #Stakeholder
+                                        "document", #Document 
+                                        ])
+reversion.register(FundingAllocation)
+reversion.register(PriorityJustification)
+reversion.register(BriefingChecklist)
+reversion.register(Endorsement)
+reversion.register(Approval)
+reversion.register(Objective)
+reversion.register(SuccessCriteria)
+
+
+

@@ -770,3 +770,7 @@ class BurnProgramLink(models.Model):
 
                         ''')
 
+import reversion
+reversion.register(PrescribedBurn)
+reversion.register(AircraftBurn)
+reversion.register(BurnState)

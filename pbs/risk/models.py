@@ -688,3 +688,11 @@ def update_index_total_delete(sender, instance, **kwargs):
         action.index = index + 1
         action.total = F('total') - 1
         action.save()
+
+import reversion
+reversion.register(Risk)
+reversion.register(Context)
+reversion.register(Action)
+reversion.register(Register)
+reversion.register(Contingency)
+reversion.register(Complexity)

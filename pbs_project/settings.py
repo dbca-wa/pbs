@@ -86,6 +86,7 @@ INSTALLED_APPS = (
     'django_wsgiserver',
     'swingers',
     'tastypie',
+    'reversion',
 )
 
 # MIDDLEWARE_CLASSES = (

@@ -991,3 +991,10 @@ def create_evaluation(sender, instance, created, **kwargs):
     """
     if created:
         Evaluation.objects.create(criteria=instance)
+
+import reversion
+reversion.register(PostBurnChecklist)
+reversion.register(BurnClosureState)
+reversion.register(AreaAchievement)
+reversion.register(ProposedAction)
+reversion.register(BurnImplementationState)

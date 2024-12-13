@@ -600,3 +600,10 @@ class ExclusionArea(Audit):
 
     def __str__(self):
         return "{0} - {1}".format(self.location, self.description)
+
+import reversion
+reversion.register(OperationalOverview)
+reversion.register(BurningPrescription)
+reversion.register(EdgingPlan)
+reversion.register(LightingSequence)
+reversion.register(ExclusionArea)
