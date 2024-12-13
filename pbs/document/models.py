@@ -184,3 +184,6 @@ class Document(Audit):
 
     def __str__(self):
         return "{0} - {1}".format(self.prescription, self.document.name)
+
+import reversion
+reversion.register(Document)

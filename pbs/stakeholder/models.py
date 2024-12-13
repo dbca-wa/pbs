@@ -71,3 +71,6 @@ class Notification(Audit):
 
     def __str__(self):
         return "%s - %s" % (self.prescription.burn_id, self.organisation)
+
+import reversion
+reversion.register(CriticalStakeholder)
