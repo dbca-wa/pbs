@@ -122,6 +122,7 @@ MIDDLEWARE = (
     'whitenoise.middleware.WhiteNoiseMiddleware',
     # 'pbs.middleware.SSOLoginMiddleware',
     'pbs.middleware.PBSV2SSOLoginMiddleware',
+    'pbs.middleware.PrescriptionCheckMiddleware',
 )
 # TEMPLATE_CONTEXT_PROCESSORS = (
 #     "django.contrib.auth.context_processors.auth",

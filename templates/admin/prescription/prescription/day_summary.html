@@ -134,10 +134,13 @@ $(function() {
       }
     });
   });
-
+  
   $('select').each(function() {
     $(this).data('lastSelected', $(this).val());
   });
+  {% if not can_edit %}
+    $('select').prop('disabled', true);
+  {% endif %}
   $('select').change(function(e) {
     var select = $(this);
     var request = $.ajax({

@@ -707,9 +707,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
 
         context = {
             'current': obj,
+            'current_app':self.admin_site.name,
         }
+        # return TemplateResponse(request, self.corporate_approval_template,
+        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.corporate_approval_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def endorse(self, request, object_id, extra_context=None):
         """
@@ -897,7 +900,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
 
         regional_objective = obj.regional_objectives.get(pk=unquote(objective_id))
 
-        can_delete = request.user.has_perm('prescription.change_prescription') or request.user.is_superuser
+        # can_delete = request.user.has_perm('prescription.change_prescription') or request.user.is_superuser
+        can_delete = (request.user.has_perm('prescription.change_prescription') and obj.check_archive_status(request)) or request.user.is_superuser
         if not can_delete:
             raise PermissionDenied
 
@@ -913,11 +917,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'title': "Remove regional objective from ePFP",
             'current': obj,
             'regional_objective': regional_objective,
-            'can_delete': can_delete
+            'can_delete': can_delete,
+            'current_app': self.admin_site.name,
         }
         context.update(extra_context or {})
 
-        return TemplateResponse(request, "admin/prescription/prescription/delete_regional_objective.html", context, current_app=self.admin_site.name)
+        return TemplateResponse(request, "admin/prescription/prescription/delete_regional_objective.html", context)
 
     def _approve_title(self, obj):
         if obj.approval_status == obj.APPROVAL_DRAFT:
@@ -1118,12 +1123,19 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                 'admin:prescription_prescription_detail', args=[str(obj.id)]))
             return HttpResponseRedirect(url)
 
+        can_edit = True
+        if obj.archive_successful==False:
+            if obj.override_admin(request.user):
+                can_edit = True
+            else:
+                can_edit = False
         objectives = RegionalObjective.objects.filter(
             region=obj.region).exclude(pk__in=obj.regional_objectives.all())
         context = {
             'current': obj,
             'objectives': objectives,
             'current_app': self.admin_site.name,
+            'can_edit': can_edit,
         }
         # return TemplateResponse(request, self.objectives_template,
         #                         context, current_app=self.admin_site.name)
@@ -1146,21 +1158,30 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                                               instance=obj.pre_state)
             if form.is_valid():
                 form.save()
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     message = "Summary updated."
                     return HttpResponse(json.dumps({'message': message}))
                 else:
                     url = reverse('admin:index')
                     return HttpResponseRedirect(url)
             else:
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return HttpResponse(json.dumps({'errors': form.errors}))
         else:
             form = SummaryCompletionStateForm(instance=obj.pre_state)
+        can_edit = True
+        if obj.archive_successful==False:
+            if obj.override_admin(request.user):
+                can_edit = True
+            else:
+                can_edit = False
         context = {
             'current': obj,
             'form': form,
             'current_app':self.admin_site.name,
+            'can_edit': can_edit,
         }
         # return TemplateResponse(request, self.summary_template,
         #                         context, current_app=self.admin_site.name)
@@ -1214,13 +1235,15 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             if form_valid and formset_valid:
                 form.save()
                 formset.save()
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     message = obj.__str__() + ' summary updated successfully.'
                     return HttpResponse(json.dumps({'message': message, 'description': obj.description}))
                 else:
                     return HttpResponseRedirect(obj.get_absolute_url())
             else:
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     formset_errors = formset.errors
                     cross_form_errors = formset.non_form_errors()
                     # Apply cross form errors to whole form
@@ -1334,22 +1357,30 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                                                instance=obj.day_state)
             if form.is_valid():
                 form.save()
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     message = "Summary updated."
                     return HttpResponse(json.dumps({'message': message}))
                 else:
                     url = reverse('admin:index')
                     return HttpResponseRedirect(url)
             else:
-                if request.is_ajax():
+                #if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return HttpResponse(json.dumps({'errors': form.errors}))
         else:
             form = BurnImplementationStateForm(instance=obj.day_state)
-
+        can_edit = True
+        if obj.archive_successful==False:
+            if obj.override_admin(request.user):
+                can_edit = True
+            else:
+                can_edit = False
         context = {
             'current': obj,
             'form': form,
             'current_app':self.admin_site.name,
+            'can_edit': can_edit,
         }
         # return TemplateResponse(request, self.day_summary_template,
         #                         context, current_app=self.admin_site.name)
@@ -1372,22 +1403,30 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             form = BurnClosureStateForm(request.POST, instance=obj.post_state)
             if form.is_valid():
                 form.save()
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     message = "Summary updated."
                     return HttpResponse(json.dumps({'message': message}))
                 else:
                     url = reverse('admin:index')
                     return HttpResponseRedirect(url)
             else:
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return HttpResponse(json.dumps({'errors': form.errors}))
         else:
             form = BurnClosureStateForm(instance=obj.post_state)
-
+        can_edit = True
+        if obj.archive_successful==False:
+            if obj.override_admin(request.user):
+                can_edit = True
+            else:
+                can_edit = False
         context = {
             'current': obj,
             'form': form,
             'current_app': self.admin_site.name,
+            'can_edit': can_edit,
         }
         # return TemplateResponse(request, self.post_summary_template,
         #                         context, current_app=self.admin_site.name)
@@ -1501,7 +1540,6 @@ class PrescriptionMixin(object):
 
     def changelist_view(self, request, prescription_id, extra_context=None):
         prescription = self.get_prescription(request, unquote(prescription_id))
-
         if prescription is None:
             raise Http404(_('prescription object with primary key %(key)r '
                             'does not exist.') % {'key': prescription_id})
@@ -1510,8 +1548,16 @@ class PrescriptionMixin(object):
         if not editable or 'id' in editable and len(editable) == 1:
             editable = False
         else:
-            editable = True
-
+            #editable = True
+            #Remove the save button if pdf archive has failed for the prescription
+            if prescription and hasattr(prescription, 'archive_successful'):
+                if prescription.archive_successful:
+                    editable = True
+                else:
+                    if prescription.override_admin(request.user):
+                        editable = True
+                    else:
+                        editable = False
         context = {
             'current': prescription,
             'editable': editable,
@@ -1540,7 +1586,6 @@ class PrescriptionMixin(object):
     def change_view(self, request, object_id, prescription_id,
                     extra_context=None):
         prescription = self.get_prescription(request, unquote(prescription_id))
-
         if prescription is None:
             raise Http404(_('prescription object with primary key %(key)r '
                             'does not exist.') % {'key': prescription_id})
@@ -1561,6 +1606,70 @@ class PrescriptionMixin(object):
 
         return super(PrescriptionMixin, self).change_view(
             request, object_id, extra_context=context)
+    
+    def has_add_permission(self, request, obj=None):
+        """
+        Return True if the given request has permission to add an object.
+        Can be overridden by the user in subclasses.
+        """
+        opts = self.opts
+        codename = get_permission_codename("add", opts)
+        base_permission = request.user.has_perm("%s.%s" % (opts.app_label, codename))
+        prescription = self.prescription
+        if base_permission:
+            if prescription and hasattr(prescription, 'archive_successful'):
+                if prescription.archive_successful:
+                    return base_permission
+                else:
+                    if prescription.override_admin(request.user):
+                        return base_permission
+                    else:
+                        return False
+        return request.user.has_perm("%s.%s" % (opts.app_label, codename))
+    
+    def has_change_permission(self, request, obj=None):
+        """
+        Add object permissions to the check for change permissions.
+        Module-level permissions will trump object-level permissions.
+        """
+        opts = self.opts
+        codename = get_permission_codename('change', opts)
+        base_permission = any([
+            request.user.has_perm("%s.%s" % (opts.app_label, codename)),
+            request.user.has_perm("%s.%s" % (opts.app_label, codename), obj)])
+        prescription = self.prescription
+        if base_permission:
+            if prescription and hasattr(prescription, 'archive_successful'):
+                if prescription.archive_successful:
+                    return base_permission
+                else:
+                    if prescription.override_admin(request.user):
+                        return base_permission
+                    else:
+                        return False
+        return base_permission
+        
+    def has_delete_permission(self, request, obj=None):
+        """
+        Add object permissions to the check for delete permissions.
+        Module-level permissions will trump object-level permissions.
+        """
+        opts = self.opts
+        codename = get_permission_codename('delete', opts)
+        base_permission= any([
+            request.user.has_perm("%s.%s" % (opts.app_label, codename)),
+            request.user.has_perm("%s.%s" % (opts.app_label, codename), obj)])
+        prescription = self.prescription
+        if base_permission:
+            if prescription and hasattr(prescription, 'archive_successful'):
+                if prescription.archive_successful:
+                    return base_permission
+                else:
+                    if prescription.override_admin(request.user):
+                        return base_permission
+                    else:
+                        return False
+        return base_permission
 
     def history_view(self, request, object_id, prescription_id,
                      extra_context=None):
@@ -1911,6 +2020,7 @@ class RegionalObjectiveAdmin(admin.ModelAdmin):
         obj.creator = request.user
         obj.modifier = request.user
         obj.save()
+
 
 class SuccessCriteriaAdmin(PrescriptionMixin, SavePrescriptionMixin,
                            BaseAdmin):

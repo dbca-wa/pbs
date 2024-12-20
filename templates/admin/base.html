@@ -375,6 +375,18 @@
     {% block header %}
     {% endblock %}
     {% if not is_popup %}{% block breadcrumbs %}{% endblock %}{% endif %}
+    {% block archive_warning %}
+    {% if current and not current.archive_successful %}
+    <div class="row-fluid">
+      <div class="span12">
+          <div class="alert alert-error">
+            <i class="icon-warning-sign"></i>
+                The latest archive PDF generation was not successful for this Prescription. Please fix the data before proceeding.
+          </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endblock %}
     {% block messages %}
     {% if messages %}
     <div class="row-fluid">

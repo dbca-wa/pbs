@@ -28,7 +28,7 @@
   <tbody>
     {% for objective in current.regional_objectives.all %}
     <tr>
-      <td><input type="checkbox" name="objectives" value="{{ objective.id }}" checked="true"></td>
+      <td><input type="checkbox" name="objectives" value="{{ objective.id }}" checked="true" {% if not can_edit %}disabled{% endif %}></td>
       <td>{{ objective.region }}</td>
       <td>{{ objective.get_impact_display }}</td>
       <td>{% if objective.fma_names %}{{ objective.fma_names }}{% else %}None{% endif %}</td>
@@ -37,7 +37,11 @@
     {% endfor %}
     {% for objective in objectives %}
     <tr>
+      {% if not can_edit %}
+      <td><input type="checkbox" name="objectives" value="{{ objective.id }}" disabled></td>
+      {% else %}
       <td><input type="checkbox" name="objectives" value="{{ objective.id }}"></td>
+      {% endif %}
       <td>{{ objective.region }}</td>
       <td>{{ objective.get_impact_display }}</td>
       <td>{% if objective.fma_names %}{{ objective.fma_names }}{% else %}None{% endif %}</td>
@@ -57,7 +61,7 @@
     <div class="navbar navbar-fixed-bottom">
       <div class="navbar-inner">
         <div class="container">
-          <input type="submit" name="_save" class="btn pull-right btn-success" value="{% trans 'Save' %}"/>
+          <input type="submit" name="_save" class="btn pull-right btn-success" value="{% trans 'Save' %}" {% if not can_edit %}disabled{% endif %}/>
         </div>
       </div>
     </div>

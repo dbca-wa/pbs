@@ -480,6 +480,8 @@ class Prescription(Audit):
         verbose_name="Can the burn be completed safely without the inclusion of other tenure?",
         choices=NON_CALM_TENURE_COMPLETE_CHOICES, null=True,blank=True)
     non_calm_tenure_risks = models.TextField(verbose_name="Risks based issues if other tenure not included", blank=True,null=True)
+    #Field to record if the Prescription archive pdf has been generated successfully. Set to False when pdf is failed.
+    archive_successful = models.BooleanField(default=True)
 
     def __str__(self):
         return self.burn_id
@@ -1321,8 +1323,24 @@ class Prescription(Audit):
         directory = self.uploaded_doc_directory()
         uploaded_docs = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and self.burn_id in f]
         return uploaded_docs
-        
 
+    def override_admin(self, user):
+        try:
+            override_admin_group= Group.objects.get(name='Override Application Administrator')
+            return user.groups.filter(name=override_admin_group.name).exists()
+        except:
+            return False
+        
+    def check_archive_status(self,request):
+        if self.archive_successful:
+            return True
+        else:
+            if self.override_admin(request.user):
+                return True
+            else:
+                return False
+        return True
+    
     class Meta:
         verbose_name = 'Prescribed Fire Plan'
         verbose_name_plural = 'Prescribed Fire Plans'
@@ -1726,9 +1744,62 @@ def prepare_archive_prescription(sender,instance,update_fields=None,**kwargs):
             #ignore
             pass
 
+# @receiver(post_save,sender=Prescription)
+# def archive_prescription(sender,instance,created,**kwargs):
+#     logger = logging.getLogger("pdf_debugging")
+#     from pbs.utils import pdflatex
+#     if created:
+#         return
+#     elif not hasattr(instance,"previous_status"):
+#         return
+    
+#     changed_status = None
+#     for key in status_keys:
+#         if getattr(instance,key) != instance.previous_status[key]:
+#             changed_status = key
+#             break
+
+#     if not changed_status:
+#         return
+
+#     changed_status_modified = status_modified_map[changed_status]
+#     status = status_display_map[changed_status](getattr(instance,changed_status))
+#     previous_status = status_display_map[changed_status](instance.previous_status[changed_status])
+
+#     if changed_status_modified:
+#             modified = timezone.localtime(getattr(instance,changed_status_modified))
+#     else:
+#         modified = timezone.localtime(timezone.now())
+
+#     timestamp = modified.strftime("%Y-%m-%dT%H%M%S")
+#     archivename = "{0}_{1}_{2}_{3}_{4}".format(instance.burn_id,changed_status,previous_status,status,timestamp)
+#     now = timezone.now()
+#     with pdflatex(instance,template="pfp",downloadname=archivename,embed=True,headers=True,title="Prescribed Fire Plan") as pdfresult:
+#         logger.debug(pdfresult.__dict__)
+#         if pdfresult.succeed:
+#             directory = os.path.join(settings.MEDIA_ROOT, 'snapshots', instance.financial_year.replace("/","-"), instance.burn_id)
+#             if not os.path.exists(directory):
+#                 os.makedirs(directory)
+#             shutil.move(pdfresult.pdf_file,os.path.join(directory,"{}.pdf".format(archivename)))
+#         else:
+#             title = 'PDF production failed when attempting to archive Prescription: {}'.format(instance)
+#             logger.warning(title)
+#             if settings.NOTIFICATION_EMAIL:
+#                 local_time = timezone.localtime(now)
+#                 email_from = settings.FEX_MAIL
+#                 message = (
+#                     'An attempt was made to create an archive for Prescription: {} at {}. \n\n'
+#                     'The archive attempt failed to generate the required pdf.'.format(instance, local_time)
+#                 )
+#                 send_mail(title, message, email_from, settings.NOTIFICATION_EMAIL.split(","), fail_silently=True)
+#             else:
+#                 logger.warning('ENV NOTIFICATION_EMAIL is not set. Unable to send notification email.')
+
 @receiver(post_save,sender=Prescription)
 def archive_prescription(sender,instance,created,**kwargs):
     logger = logging.getLogger("pdf_debugging")
+    if getattr(instance, '_updating_pdf_status', False): # prevent recursive call
+        return
     from pbs.utils import pdflatex
     if created:
         return
@@ -1763,9 +1834,13 @@ def archive_prescription(sender,instance,created,**kwargs):
             if not os.path.exists(directory):
                 os.makedirs(directory)
             shutil.move(pdfresult.pdf_file,os.path.join(directory,"{}.pdf".format(archivename)))
+            instance._updating_pdf_status = True
+            Prescription.objects.filter(pk=instance.pk).update(archive_successful=True)
         else:
             title = 'PDF production failed when attempting to archive Prescription: {}'.format(instance)
             logger.warning(title)
+            instance._updating_pdf_status = True
+            Prescription.objects.filter(pk=instance.pk).update(archive_successful=False)
             if settings.NOTIFICATION_EMAIL:
                 local_time = timezone.localtime(now)
                 email_from = settings.FEX_MAIL

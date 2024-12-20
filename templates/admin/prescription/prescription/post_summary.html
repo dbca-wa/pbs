@@ -113,6 +113,9 @@ $(function() {
   {% if not current.is_approved %}
     $('select').prop('disabled', true);
   {% endif %}
+  {% if not can_edit %}
+    $('select').prop('disabled', true);
+  {% endif %}
   $('select').each(function() {
     $(this).data('lastSelected', $(this).val());
   });
