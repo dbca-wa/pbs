@@ -215,7 +215,13 @@ def carry_over_burns(modeladmin, request, queryset):
                     if not os.path.exists(directory):
                         os.makedirs(directory)
                     shutil.move(pdfresult.pdf_file,os.path.join(directory,"{}.pdf".format(archivename)))
+                    prescription._updating_pdf_status = True
+                    Prescription.objects.filter(pk=instance.pk).update(archive_successful=True)
                 else:
+                    title = 'PDF production failed when attempting to archive Prescription at Cary over burn function: {}'.format(prescription)
+                    logger.warning(title)
+                    prescription._updating_pdf_status = True
+                    Prescription.objects.filter(pk=prescription.pk).update(archive_successful=False)
                     raise Exception(pdfresult.errormessage)
 
             prescription.clear_approvals()

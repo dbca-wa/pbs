@@ -94,6 +94,9 @@ $(function() {
       }
     });
   });
+  {% if not can_edit %}
+    $('select').prop('disabled', true);
+  {% endif %}
 
   $('select').each(function() {
     $(this).data('lastSelected', $(this).val());

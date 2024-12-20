@@ -189,7 +189,7 @@ def pdflatex(prescription,template="pfp",downloadname=None,embed=True,headers=Tr
         else:
             err_msg = u"PDF generation failed for "
             result.err_msg = "{0}\n\n{1}\n\n{2}".format(err_msg,prescription.burn_id,downloadname)
-            logger.info("PDF generation failed after subprocess run for {0} {1}.\nCheck the log file located at {3} for errors ".format(prescription.burn_id, downloadname, result.log_file))            
+            logger.info("PDF generation failed after subprocess run for {} {}. Check the log file located at {} for errors ".format(prescription.burn_id, downloadname, result.log_file))            
         # logfile = os.path.join(directory, logfilename)
         # if os.path.exists(logfile):
         #     result.log_file = logfile
