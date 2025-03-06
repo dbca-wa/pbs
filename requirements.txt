@@ -1,7 +1,8 @@
 #Django==1.6.5
 # Django==3.2.25
 # Django==4.2
-Django==5.0.8
+# Django==5.0.8
+Django==5.0.12
 #South==0.8.4
 dj-database-url==0.3.0
 # django-auth-ldap==1.2.0

@@ -75,7 +75,7 @@ list when it is altered by the JS below.
 <!-- The visibility-tools script will bring a Vis object into scope -->
 <script src="{% static 'pbs/js/visibility-tools.js' %}"></script>
 <script>
-$(document).ready(function() {
+$(document).ready(function($) {
     $('.changelist-multiselect').each(function () {
         var self = this;
         $(this).multiselect({
@@ -216,7 +216,6 @@ $(document).ready(function() {
     var base_url = "{% url 'admin:prescription_prescription_changelist' %}"
     // Parse the current URL query parameters into an object.
     var qs = URI(document.URL).query(true);
-
     // Iterate through each query parameter and convert comma-separated value into an array.
     $.each(qs, function(key, val) {
         // Alter the key to remove "__in" from the end (if present).
