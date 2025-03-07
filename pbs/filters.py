@@ -214,14 +214,15 @@ class RelatedFieldListFilter(filters.RelatedFieldListFilter):
         # Handle __in lookups (multiple values)
         if self.lookup_kwarg2 in self.used_parameters:
             if isinstance(self.used_parameters[self.lookup_kwarg2], (list, tuple)):
-                vals = [to_int(v) for v in self.used_parameters[self.lookup_kwarg2] if to_int(v) is not None]
+                # vals = [to_int(v) for v in self.used_parameters[self.lookup_kwarg2] if to_int(v) is not None]
+                vals = [to_int(v) for sublist in self.used_parameters[self.lookup_kwarg2] for v in sublist if to_int(v) is not None]
                 if not vals:
                     del self.used_parameters[self.lookup_kwarg2]
                 elif len(vals) == 1:
-                    self.used_parameters[self.lookup_kwarg] = vals[0]
+                    self.used_parameters[self.lookup_kwarg] = [vals[0]]
                     del self.used_parameters[self.lookup_kwarg2]
                 else:
-                    self.used_parameters[self.lookup_kwarg2] = vals
+                    self.used_parameters[self.lookup_kwarg2] = [vals]
             else:
                 val = to_int(self.used_parameters[self.lookup_kwarg2])
                 if val is None:
@@ -230,7 +231,7 @@ class RelatedFieldListFilter(filters.RelatedFieldListFilter):
                     self.used_parameters[self.lookup_kwarg] = [val]  # Wrap the single value in a list
                     del self.used_parameters[self.lookup_kwarg2]
 
-
+    
     def expected_parameters(self):
         return [self.lookup_kwarg,self.lookup_kwarg1,self.lookup_kwarg2, self.lookup_kwarg_isnull]
 

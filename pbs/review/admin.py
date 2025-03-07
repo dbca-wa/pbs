@@ -415,7 +415,8 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         Used for pre-populating location and tenures fields in PrescribedBurnForm, via ajax call
         also for calculating and returning the bushfire_id string for the FireForm
         """
-        if request.is_ajax():
+        # if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             # if request.REQUEST.has_key('burn_id'):
             if 'burn_id' in request.GET:
                 # burn_id = str( request.REQUEST.get('burn_id') )
