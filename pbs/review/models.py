@@ -333,10 +333,10 @@ class PrescribedBurn(Audit):
     @property
     def area_str(self):
         _str = ''
-        if self.area>=0:
+        if self.area and self.area>=0:
             _str += str(self.area) + " ha {} ".format('-' if self.distance else '')
 
-        if self.distance>=0:
+        if self.distance and self.distance>=0:
             _str += str(self.distance) + " km"
 
         return _str
