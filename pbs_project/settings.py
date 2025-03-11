@@ -87,6 +87,7 @@ INSTALLED_APPS = (
     'swingers',
     'tastypie',
     'reversion',
+    'appmonitor_client',
 )
 
 # MIDDLEWARE_CLASSES = (
@@ -256,7 +257,9 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL_FAILURE = LOGIN_URL
 LOGOUT_URL = '/logout/'
 LOGOUT_REDIRECT_URL = LOGOUT_URL
-
+CRON_CLASSES = [
+    'appmonitor_client.cron.CronJobAppMonitorClient',
+]
 # LDAP settings
 # AUTH_LDAP_SERVER_URI = env('LDAP_SERVER_URI', 'ldap_server')
 # AUTH_LDAP_BIND_DN = env('LDAP_BIND_DN', 'ldap_bind')
@@ -369,6 +372,7 @@ if not ENV_TYPE:
 ENV_TYPE = ENV_TYPE.upper() if ENV_TYPE else "TEST"
 
 BASE_URL = env("BASE_URL","")
+
 
 try:
     #TCD_EXCLUSIONS format is '[["go-live date or datetime","filename"],["","filename"]]'
