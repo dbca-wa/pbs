@@ -1,5 +1,6 @@
 # Prepare the base environment.
-FROM ubuntu:22.04 as builder_base_pbs
+# FROM ubuntu:22.04 as builder_base_pbs
+FROM ubuntu:24.04 as builder_base_pbs
 MAINTAINER asi@dbca.wa.gov.au
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SECRET_KEY="ThisisNotRealKey"
