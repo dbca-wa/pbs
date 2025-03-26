@@ -29,7 +29,8 @@ django-pagination-py3==1.2.0
 # psycopg2-binary==2.8.3
 psycopg2-binary==2.9.9
 python-dateutil==2.2
-Pillow==10.0.1
+# Pillow==10.0.1
+Pillow==11.1.0
 django-downloadview==1.6
 # unicodecsv==0.9.4
 unicodecsv==0.14.1
@@ -60,7 +61,8 @@ django-tastypie==0.14.7
 pytz==2023.3
 #django-smart-selects==1.0.9
 # django-smart-selects==1.0.9 version is required, but no longer available. Copy committed to repo.
-gunicorn==19.8.1
+# gunicorn==19.8.1
+gunicorn==23.0.0
 humanize==0.5.1
 docutils==0.15.2
 tzdata==2024.1
