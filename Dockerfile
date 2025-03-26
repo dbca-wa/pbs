@@ -24,7 +24,8 @@ RUN apt-get install -y libldap2-dev libssl-dev wget build-essential vim virtuale
 RUN groupadd -g 5000 oim 
 RUN useradd -g 5000 -u 5000 oim -s /bin/bash -d /app
 RUN mkdir /app 
-RUN chown -R oim.oim /app 
+RUN chown -R oim.oim /app
+RUN pip install --upgrade pip 
 
 RUN wget https://raw.githubusercontent.com/dbca-wa/wagov_utils/main/wagov_utils/bin/default_script_installer.sh -O /tmp/default_script_installer.sh
 RUN chmod 755 /tmp/default_script_installer.sh
@@ -62,6 +63,7 @@ COPY smart_selects ./smart_selects
 COPY swingers ./swingers
 COPY templates ./templates
 COPY startup.sh /startup.sh
+COPY python-cron ./
 
 #COPY .env ./.env
 RUN touch .env
