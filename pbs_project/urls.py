@@ -50,7 +50,6 @@ urlpatterns = urlpatterns + [
 
     # the password reset must come before site.urls, site.urls match all
     #re_path(r'^', include((site.urls, 'site'), namespace='site')),
-    #re_path(r'^',include((site.urls, 'site'), namespace='admin')),
     #re_path(r'^', include(site.urls)),
     #re_path(r'^password_reset/$', 'django.contrib.auth.views.password_reset',
     #     {'password_reset_form': PbsPasswordResetForm}, name='password_reset'),
