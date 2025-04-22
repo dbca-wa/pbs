@@ -22,14 +22,14 @@ class BooleanFieldListFilter(filters.BooleanFieldListFilter):
         super(BooleanFieldListFilter,self).__init__(field,request, params, model, model_admin, field_path)
         self.is_nullable = isinstance(self.field, models.NullBooleanField)
 
-        to_bool = lambda v :(None if v == "" else (True if v in ("1","true","yes","on") else False)) if isinstance(v,basestring) else (True if v else False)
+        to_bool = lambda v :(None if v == "" else (True if v in ("1","true","yes","on") else False)) if isinstance(v,str) else (True if v else False)
         for kwarg in (self.lookup_kwarg,self.lookup_kwarg1):
             if kwarg in self.used_parameters:
                 val = to_bool(self.used_parameters[kwarg])
                 if val is None:
                     del self.used_parameters[kwarg]
                 else:
-                    self.used_parameters[kwarg] = val
+                    self.used_parameters[kwarg] = [val]
 
 
         if self.lookup_kwarg3 in self.used_parameters:
@@ -70,18 +70,20 @@ class CrossTenureApprovedListFilter(ExcludeListFilterMixin,BooleanFieldListFilte
         for kwarg in (self.lookup_kwarg,self.lookup_kwarg1):
             if kwarg in self.used_parameters:
                 if self.used_parameters[kwarg] == False:
-                    self.used_parameters_exclude[kwarg] = True
+                    self.used_parameters_exclude[kwarg] = [True]
                     del self.used_parameters[kwarg]
+                else:
+                    self.used_parameters[kwarg] = [False]
 
         if self.lookup_kwarg3 in self.used_parameters:
             if False in self.used_parameters[self.lookup_kwarg3] :
                 if True in self.used_parameters[self.lookup_kwarg3] :
                     del self.used_parameters[self.lookup_kwarg3]
                 else:
-                    self.used_parameters_exclude[self.lookup_kwarg] = True
+                    self.used_parameters_exclude[self.lookup_kwarg] = [True]
                     del self.used_parameters[self.lookup_kwarg3]
             else:
-                self.used_parameters[self.lookup_kwarg] = True
+                self.used_parameters[self.lookup_kwarg] = [True]
                 del self.used_parameters[self.lookup_kwarg3]
 
 
@@ -92,18 +94,22 @@ class IntChoicesFieldListFilter(filters.ChoicesFieldListFilter):
         self.lookup_kwarg2 = '%s__in' % field_path
         self.lookup_val2 = request.GET.get(self.lookup_kwarg2, None)
         super(IntChoicesFieldListFilter,self).__init__(field,request, params, model, model_admin, field_path)
-        to_int = lambda v :None if v == "" else int(v) 
+        to_int = lambda v :None if v == "" else (int(v[0]) if len(v) else None) if isinstance(v, (list, tuple,)) else int(v)
+        
         for kwarg in (self.lookup_kwarg,self.lookup_kwarg1):
             if kwarg in self.used_parameters:
                 val = to_int(self.used_parameters[kwarg])
                 if val is None:
                     del self.used_parameters[kwarg]
                 else:
-                    self.used_parameters[kwarg] = val
+                    self.used_parameters[kwarg] = [val]
 
 
         if self.lookup_kwarg2 in self.used_parameters:
-            if isinstance(self.used_parameters[self.lookup_kwarg2],(list,tuple)):
+            used_params = self.used_parameters[self.lookup_kwarg2]
+            if isinstance(used_params,(list,tuple)):
+                if len(used_params) > 0 and isinstance(used_params[0],(list,tuple)):
+                    self.used_parameters[self.lookup_kwarg2] = [v for sublist in used_params for v in sublist]
                 vals = None
                 for v in self.used_parameters[self.lookup_kwarg2]:
                     val = to_int(v)
@@ -117,9 +123,9 @@ class IntChoicesFieldListFilter(filters.ChoicesFieldListFilter):
                     del self.used_parameters[self.lookup_kwarg2]
                 elif len(vals) == 1:
                     del self.used_parameters[self.lookup_kwarg2]
-                    self.used_parameters[self.lookup_kwarg] = vals[0]
+                    self.used_parameters[self.lookup_kwarg] = vals
                 else:
-                    self.used_parameters[self.lookup_kwarg2] = vals
+                    self.used_parameters[self.lookup_kwarg2] = [vals]
             else:
                 val = to_int(self.used_parameters[self.lookup_kwarg2])
                 if val is None:
@@ -235,52 +241,6 @@ class RelatedFieldListFilter(filters.RelatedFieldListFilter):
     def expected_parameters(self):
         return [self.lookup_kwarg,self.lookup_kwarg1,self.lookup_kwarg2, self.lookup_kwarg_isnull]
 
-
-class IntValuesFieldListFilter(filters.AllValuesFieldListFilter):
-    def __init__(self, field, request, params, model, model_admin, field_path):
-        self.lookup_kwarg2 = '%s__in' % field_path
-        self.lookup_val2 = request.GET.get(self.lookup_kwarg2, None)
-        super(IntValuesFieldListFilter, self).__init__(field, request, params, model, model_admin, field_path)
-        to_int = lambda v :None if v == "" else int(v) 
-        for kwarg in (self.lookup_kwarg,):
-            if kwarg in self.used_parameters:
-                val = to_int(self.used_parameters[kwarg])
-                if val is None:
-                    del self.used_parameters[kwarg]
-                else:
-                    self.used_parameters[kwarg] = val
-
-
-        if self.lookup_kwarg2 in self.used_parameters:
-            if isinstance(self.used_parameters[self.lookup_kwarg2],(list,tuple)):
-                vals = None
-                for v in self.used_parameters[self.lookup_kwarg2]:
-                    val = to_int(v)
-                    if val is None:
-                        continue
-                    if vals is None:
-                        vals = [val]
-                    else:
-                        vals.append(val)
-                if vals is None:
-                    del self.used_parameters[self.lookup_kwarg2]
-                elif len(vals) == 1:
-                    del self.used_parameters[self.lookup_kwarg2]
-                    self.used_parameters[self.lookup_kwarg] = vals[0]
-                else:
-                    self.used_parameters[self.lookup_kwarg2] = vals
-            else:
-                val = to_int(self.used_parameters[self.lookup_kwarg2])
-                if val is None:
-                    del self.used_parameters[self.lookup_kwarg2]
-                else:
-                    del self.used_parameters[self.lookup_kwarg2]
-                    self.used_parameters[self.lookup_kwarg] = val
-
-
-    def expected_parameters(self):
-        return [self.lookup_kwarg,self.lookup_kwarg2, self.lookup_kwarg_isnull]
-
 class StringValuesFieldListFilter(filters.AllValuesFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
         self.lookup_kwarg2 = '%s__in' % field_path
@@ -289,14 +249,19 @@ class StringValuesFieldListFilter(filters.AllValuesFieldListFilter):
         to_str = lambda v :None if v == "" else str(v) 
         for kwarg in (self.lookup_kwarg,):
             if kwarg in self.used_parameters:
-                val = to_int(self.used_parameters[kwarg])
+                val = to_str(self.used_parameters[kwarg])
                 if val is None:
                     del self.used_parameters[kwarg]
                 else:
-                    self.used_parameters[kwarg] = val
+                    self.used_parameters[kwarg] = [val]
 
 
         if self.lookup_kwarg2 in self.used_parameters:
+            used_params = self.used_parameters[self.lookup_kwarg2]
+            if isinstance(used_params,(list,tuple)):
+                if len(used_params) > 0 and isinstance(used_params[0],(list,tuple)):
+                    self.used_parameters[self.lookup_kwarg2] = [v for sublist in used_params for v in sublist]
+
             if isinstance(self.used_parameters[self.lookup_kwarg2],(list,tuple)):
                 vals = None
                 for v in self.used_parameters[self.lookup_kwarg2]:
@@ -311,11 +276,11 @@ class StringValuesFieldListFilter(filters.AllValuesFieldListFilter):
                     del self.used_parameters[self.lookup_kwarg2]
                 elif len(vals) == 1:
                     del self.used_parameters[self.lookup_kwarg2]
-                    self.used_parameters[self.lookup_kwarg] = vals[0]
+                    self.used_parameters[self.lookup_kwarg] = vals
                 else:
-                    self.used_parameters[self.lookup_kwarg2] = vals
+                    self.used_parameters[self.lookup_kwarg2] = [vals]
             else:
-                val = to_int(self.used_parameters[self.lookup_kwarg2])
+                val = to_str(self.used_parameters[self.lookup_kwarg2])
                 if val is None:
                     del self.used_parameters[self.lookup_kwarg2]
                 else:
