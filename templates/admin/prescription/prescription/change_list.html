@@ -291,7 +291,7 @@ $(document).ready(function($) {
                     }
                 }
         }
-
+        delete qs['p']
         // Iterate through each key/value in the filter parameters
         var searchQs = {};
         for (var key in qs) {
@@ -303,7 +303,11 @@ $(document).ready(function($) {
                     break;
                 default:
                     // Add "__in" to the end of non-boolean parameters.
-                    searchQs[key + "__in"] = qs[key].join(',');
+                    if (!qs[key]?.length) {
+                        delete searchQs[key + "__in"];
+                    } else {
+                        searchQs[key + "__in"] = qs[key].join(',');
+                    }
             }
         };
         // Finally, replace the target URL.

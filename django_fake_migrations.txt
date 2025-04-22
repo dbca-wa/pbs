@@ -8,10 +8,12 @@ python manage.py migrate document 0002_initial --fake
 python manage.py migrate guardian --fake
 python manage.py migrate implementation --fake
 python manage.py migrate pbs --fake
-python manage.py migrate prescription --fake
+python manage.py migrate prescription 0001_initial --fake
+python manage.py migrate prescription 0002_initial --fake
 python manage.py migrate report --fake
 python manage.py migrate review --fake
 python manage.py migrate sessions --fake
 python manage.py migrate sites
 python manage.py migrate stakeholder --fake
 python manage.py migrate tastypie --fake
+python manage.py migrate prescription 0003_prescription_archive_successful_and_more
