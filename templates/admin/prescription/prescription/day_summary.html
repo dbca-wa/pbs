@@ -37,12 +37,12 @@
       <td><a value="Section B1 &#x2010; Operational overview" class="btn" href="{{ download_pdf }}?template=sectionb1"><i class="icon-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.pre_actions %}success{% else %}{% if current.day_state.pre_actions == None %}info{% else %}error{% endif %}{% endif %}">
-    <th><a href="{{ actions|add:"?pre_burn=true" }}">Section B1 &#x2010; Pre&#x2010;burn actions</a></th>
+    <th><a href="{{ actions|add:"?pre_burn=True" }}">Section B1 &#x2010; Pre&#x2010;burn actions</a></th>
     <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.pre_actions }}{% else %}{{ current.day_state.pre_actions|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
         <td><a value="Section B1 &#x2010; Pre&#x2010;burn actions" class="btn" href="{{ download_pdf }}?template=sectionb1"><i class="icon-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.actions %}success{% else %}{% if current.day_state.actions == None %}info{% else %}error{% endif %}{% endif %}">
-    <th><a href="{{ actions|add:"?day_of_burn=true" }}">Section B2 &#x2010; Day of burn actions</a></th>
+    <th><a href="{{ actions|add:"?day_of_burn=True" }}">Section B2 &#x2010; Day of burn actions</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.actions }}{% else %}{{ current.day_state.actions|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
         <td><a value="Section B2 &#x2010; Day of burn actions" class="btn" href="{{ download_pdf }}?template=sectionb2"><i class="icon-print"></i></a></td>
     </tr>

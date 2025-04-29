@@ -886,8 +886,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'errors': None
         }
         return TemplateResponse(request, "admin/prescription/prescription/"
-                                "endorsing_roles.html", context,
-                                current_app=self.admin_site.name)
+                                "endorsing_roles.html", context)
 
     def delete_regional_objective(self, request, object_id, objective_id, extra_context=None):
         obj = self.get_object(request, unquote(object_id))
@@ -1871,6 +1870,10 @@ class PrescriptionMixin(object):
                                (opts.app_label, opts.model_name),
                                args=(pk_value, self.prescription.pk),
                                current_app=self.admin_site.name)
+        if "_popup" in request.GET:
+            return HttpResponse('<script type="text/javascript">console.log(opener);opener.dismissAddAnotherPopup(window, "%s", "%s");opener.location = opener.location.pathname;</script>' % \
+                # escape() calls force_unicode.
+                (escape(obj._get_pk_val()), escape(obj)))                    
         if '_save' in request.POST:
             msg = ('The %(name)s "%(obj)s" was added successfully.' % msg_dict)
             self.message_user(request, msg, messages.SUCCESS)

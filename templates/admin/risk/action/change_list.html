@@ -69,9 +69,9 @@
 </ul>
 <ul id="actionnav" class="nav nav-pills">
     <li{% if not 'pre_burn' in request.GET and not 'day_of_burn' in request.GET and not 'post_burn' in request.GET %} class="active"{% endif %}><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="icon-list-ol"></i>Plan actions</a></li>
-    <li{% if 'pre_burn' in request.GET %} class="active"{% endif %}><a href="?pre_burn=true"><i class="icon-tasks"></i>Pre-burn actions</a></li>
-    <li{% if 'day_of_burn' in request.GET %} class="active"{% endif %}><a href="?day_of_burn=true"><i class="icon-legal"></i>Day of burn actions</a></li>
-    <li{% if 'post_burn' in request.GET %} class="active"{% endif %}><a href="?post_burn=true"><i class="icon-warning-sign"></i>Post-burn actions</a></li>
+    <li{% if 'pre_burn' in request.GET %} class="active"{% endif %}><a href="?pre_burn=True"><i class="icon-tasks"></i>Pre-burn actions</a></li>
+    <li{% if 'day_of_burn' in request.GET %} class="active"{% endif %}><a href="?day_of_burn=True"><i class="icon-legal"></i>Day of burn actions</a></li>
+    <li{% if 'post_burn' in request.GET %} class="active"{% endif %}><a href="?post_burn=True"><i class="icon-warning-sign"></i>Post-burn actions</a></li>
 </ul>
 {% endblock %}
 
@@ -98,7 +98,7 @@
 
 {% if 'pre_burn' in request.GET or 'day_of_burn' in request.GET or 'post_burn' in request.GET %}
 <h1>Actions Report <a href="{{ upload_document }}?tag={{ actions_form_name|tag_id }}&next={{ request.get_full_path }}" class="pull-right btn btn-small btn-info"><i class="icon-plus"></i> Upload {{ actions_form_name }}</a></h1>
-<h5><a class="btn btn-small btn-info" href="{{ download_pdf }}?template=form-{{ actions_form_name|slugify }}&download=true"><i class="icon-download-alt"></i> Download the {{ actions_form_name }} template</a></h5>
+<h5><a class="btn btn-small btn-info" href="{{ download_pdf }}?template=form-{{ actions_form_name|slugify }}&download=True"><i class="icon-download-alt"></i> Download the {{ actions_form_name }} template</a></h5>
 
 {% document_list %}
 {% endif %}

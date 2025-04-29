@@ -110,7 +110,7 @@
   {% if request.get_full_path == risk_register and current.endorsement_status == current.ENDORSEMENT_DRAFT and current.can_corporate_approve %}
   (function($) {
     $(function() {
-      $("#result_list tbody tr").tabularFormset({
+      $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
         addText: '<i class="icon-plus"></i> Add another risk register item'

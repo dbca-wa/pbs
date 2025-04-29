@@ -182,8 +182,18 @@ class PrescriptionEditForm(PrescriptionFormBase):
             "non_calm_tenure_value":forms.widgets.Textarea(attrs={"style":"width:90%;"}),
             "non_calm_tenure_risks":forms.widgets.Textarea(attrs={"style":"width:90%;"})
         }
-        fields='__all__'
-
+        fields=('planned_season', 'financial_year', 'name', 'description', 'region',
+                  'district', 'last_year', 'last_season',
+                  'last_season_unknown', 'contentious', 'last_year_unknown',
+                  'forest_blocks', 'contentious_rationale', 'purposes',
+                  'aircraft_burn', 'priority', 'area', 'treatment_percentage',
+                  'perimeter', 'location', 'remote_sensing_priority',
+                  "non_calm_tenure", "non_calm_tenure_approved", "non_calm_tenure_complete", 
+                  "non_calm_tenure_included", "non_calm_tenure_value", "non_calm_tenure_risks", 
+                  "shires", "bushfire_act_zone", "prohibited_period",
+                  "fuel_types", "tenures", "forecast_areas",
+                  "prescribing_officer", "short_code", 
+                  )
 
 class PrescriptionSummaryForm(forms.ModelForm):
     location = LocationMultiField(required=False)
