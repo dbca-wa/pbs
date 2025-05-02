@@ -150,6 +150,20 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
               
 
                 return qs
+            
+            def get_queryset(self, request):
+                qs = super(DocumentChangeList, self).get_queryset(request)
+                category = re.findall("/category/(.+)/", request.path)
+                tag = re.findall("/tag/(.+)/", request.path)
+
+                if category:
+                    category = category[0].replace('_', ' ')
+                    qs = qs.filter(tag__category__name__iexact=category)
+                if tag:
+                    tag = tag[0].replace('_', ' ')
+                    #only show non-archived documents for tag view
+                    qs = qs.filter(tag__name__iexact=tag,document_archived=False)
+                return qs
 
         return DocumentChangeList
 

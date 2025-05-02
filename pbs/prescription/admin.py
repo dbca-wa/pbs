@@ -709,8 +709,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current': obj,
             'current_app':self.admin_site.name,
         }
-        # return TemplateResponse(request, self.corporate_approval_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.corporate_approval_template,
                                 context)
 
@@ -798,8 +796,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'not_endorsed_endorsing_roles': obj.not_endorsed_endorsing_roles,
         }
         return TemplateResponse(request, "admin/prescription/prescription/"
-                                "endorsement.html", context,
-                                current_app=self.admin_site.name)
+                                "endorsement.html", context)
 
     def delete_endorsement(self, request, object_id, endorsement_id,
                            extra_context=None):
@@ -1086,8 +1083,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current': obj,
         }
         return TemplateResponse(request, "admin/prescription/prescription/"
-                                "closure.html", context,
-                                current_app=self.admin_site.name)
+                                "closure.html", context)
 
     def add_objectives(self, request, object_id):
         """
@@ -1136,8 +1132,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current_app': self.admin_site.name,
             'can_edit': can_edit,
         }
-        # return TemplateResponse(request, self.objectives_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.objectives_template, context)
 
     def summary(self, request, object_id):
@@ -1182,8 +1176,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current_app':self.admin_site.name,
             'can_edit': can_edit,
         }
-        # return TemplateResponse(request, self.summary_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.summary_template,
                                 context)
 
@@ -1273,8 +1265,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'purposes': [p.name for p in obj.purposes.all()],
             'current_app': self.admin_site.name
         }
-        # return TemplateResponse(request, self.pre_summary_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.pre_summary_template,
                                 context)
 
@@ -1381,8 +1371,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current_app':self.admin_site.name,
             'can_edit': can_edit,
         }
-        # return TemplateResponse(request, self.day_summary_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.day_summary_template,
                                 context)
 
@@ -1427,8 +1415,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current_app': self.admin_site.name,
             'can_edit': can_edit,
         }
-        # return TemplateResponse(request, self.post_summary_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.post_summary_template,
                                 context)
 
