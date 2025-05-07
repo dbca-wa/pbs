@@ -11,7 +11,7 @@
 \endhead
 \hline
 {% for road in prescription.ways.roads %}
-{{ road.name|texify|safe }} & {{ road.road_type|texify|safe }} & {{ road.traffic_considerations|texify|safe }} & {{ road.traffic_diagram }} & {% if road.signs_installed %}{{ road.signs_installed }}{% endif %} & {% if road.signs_removed %}{{ road.signs_removed }}{% endif %} \\
+{{ road.name|texify|safe }} & {{ road.road_type|texify|safe }} & {{ road.traffic_considerations|texify|safe }} & {{ road.traffic_diagram|texify|safe }} & {{ road.signs_installed|default:"" }} & {{ road.signs_removed|default:"" }} \\
 \hline
 {% endfor %}
 \end{longtabu}

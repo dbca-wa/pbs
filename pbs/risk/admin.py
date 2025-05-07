@@ -171,7 +171,7 @@ class RegisterAdmin(PrescriptionMixin, SavePrescriptionMixin,
             url = reverse('admin:risk_treatment_add',
                           args=(quote(self.prescription.pk),),
                           current_app=self.admin_site.name)
-            url += '?register=%d' % obj.pk
+            url += '?register=%d&_popup=1' % obj.pk
             output += (
                 '<br><a id="add_treatment_%(pk)s" '
                 'onclick="return showAddAnotherPopup(this);" '
@@ -265,7 +265,7 @@ class ContextRelevantActionAdmin(PrescriptionMixin, SavePrescriptionMixin,
         obj = self.get_object(request, unquote(object_id))
 
         if (obj is None or not self.has_change_permission(request, obj) or
-                not request.is_ajax() or request.method != "POST"):
+                not request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.method != "POST"):
             return super(ContextRelevantActionAdmin, self).change_view(
                 request, object_id)
         else:
@@ -293,6 +293,7 @@ class ComplexityAdmin(PrescriptionMixin, SavePrescriptionMixin,
 
 class ContingencyActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
     model = ContingencyAction
+    prescription_filter_field = "contingency__prescription"
     fields = ("action",)
     actions = None
 
@@ -325,6 +326,7 @@ class ContingencyActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin
 
 class ContingencyNotificationAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
     model = ContingencyNotification
+    prescription_filter_field = "contingency__prescription"
     fields = ('name', 'location', 'organisation', 'contact_number')
     actions = None
 
@@ -398,15 +400,15 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                       args=(obj.prescription.pk,),
                       current_app=self.admin_site.name)
         if editable:
-            output += '''<a onclick="return showAddAnotherPopup(this);"
-                class="add-another" href="{0}?contingency={1}">
+            output += '''<a  onclick="return showAddAnotherPopup(this);"
+                class="add-another" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add an action</a>'''.format(url, obj.pk)
         # Include a distinctive class name in the "Add" link in order to conditionally
         # remove the stupid thing depending on the user's group membership.
         # We do this because we don't get access to the request object in this method.
         else:
-            output += '''<a onclick="return showAddAnotherPopup(this);"
-                class="add-another hide adminonly" href="{0}?contingency={1}">
+            output += '''<a  onclick="return showAddAnotherPopup(this);"
+                class="add-another hide adminonly" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add an action</a>'''.format(url, obj.pk)
         return output
     display_actions.short_description = "Actions"
@@ -452,14 +454,14 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                       current_app=self.admin_site.name)
         if editable:
             output += '''<a onclick="return showAddAnotherPopup(this);"
-                class="add-another" href="{0}?contingency={1}">
+                class="add-another" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add a notification</a>'''.format(url, obj.pk)
         # Include a distinctive class name in the "Add" link in order to conditionally
         # remove the stupid thing depending on the user's group membership.
         # We do this because we don't get access to the request object in this method.
         else:
             output += '''<a onclick="return showAddAnotherPopup(this);"
-                class="add-another hide adminonly" href="{0}?contingency={1}">
+                class="add-another hide adminonly" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add a notification</a>'''.format(url, obj.pk)
         return output
     display_notifications.short_description = 'Notifications'

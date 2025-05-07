@@ -66,7 +66,7 @@
 
       function fixToggleSectionCheckbox(el) {
         var rel = $(el).parent("td").parent("tr").attr('rel');
-        var $sectionRow = $('tr[rel=' + rel + ']').has('th.group-heading');
+        var $sectionRow = $('tr[rel="' + rel + '"]').has('th.group-heading');
         if ($sectionRow.length) {
           var $sectionCheckbox = $sectionRow.find('input:checkbox');
           if (el.checked) {
@@ -75,7 +75,7 @@
           } else {
             // if all other checkboxes in this section are unchecked, uncheck
             // the section checkbox
-            if ($('tr[rel=' + rel + '] > td.column-relevant > input:checkbox:checked').length == 0)
+            if ($('tr[rel="' + rel + '"] > td.column-relevant > input:checkbox:checked').length == 0)
               $sectionCheckbox.prop('checked', false);
           }
         }
@@ -109,7 +109,7 @@
             var $tr = $(tr);
             var $th = $tr.children("th.group-heading");
             var rel = $tr.attr('rel');
-            var $group = $('tr[rel=' + rel + ']:not(:first)');  // skip the group heading :)
+            var $group = $('tr[rel="' + rel + '"]:not(:first)');  // skip the group heading :)
             var $collapseLink = $(collapseLink + $th.html() + '</a>');
             var $expandLink = $(expandLink + $th.html() + '</a>');
             var $relevantCheckboxes = $group.find('td.column-relevant > input:checkbox');

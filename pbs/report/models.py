@@ -247,32 +247,32 @@ class BurnImplementationState(AbstractState):
     # roads = models.NullBooleanField(choices=NULL_CHOICES, default=False)
     # traffic = models.NullBooleanField(choices=NULL_CHOICES, default=False)
     # tracks = models.NullBooleanField(choices=NULL_CHOICES, default=False)
-    pre_actions = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
-    actions = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
-    roads = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
-    traffic = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
-    tracks = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
+    pre_actions = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
+    actions = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
+    roads = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
+    traffic = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
+    tracks = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
     burning_prescription = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
     # fuel_assessment = models.NullBooleanField(
     #     choices=NULL_CHOICES, default=False)
     # edging_plan = models.NullBooleanField(choices=NULL_CHOICES, default=False)
     fuel_assessment = models.BooleanField(
-        choices=NULL_CHOICES, default=False, null=True)
-    edging_plan = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
+        choices=NULL_CHOICES, default=False, null=True, blank=True)
+    edging_plan = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
     contingency_plan = models.BooleanField(choices=BOOL_CHOICES, default=False)
     lighting_sequence = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
     # exclusion_areas = models.NullBooleanField(
     #     choices=NULL_CHOICES, default=False)
     exclusion_areas = models.BooleanField(
-        choices=NULL_CHOICES, default=False, null=True)
+        choices=NULL_CHOICES, default=False, null=True, blank=True)
     organisational_structure = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
     briefing = models.BooleanField(choices=BOOL_CHOICES, default=False)
     operation_maps = models.BooleanField(choices=BOOL_CHOICES, default=False)
     # aerial_maps = models.NullBooleanField(choices=NULL_CHOICES, default=False)
-    aerial_maps = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
+    aerial_maps = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
 
     def clean_overview(self):
         overviews = self.prescription.operationaloverview_set.all()
@@ -695,12 +695,16 @@ class PostBurnChecklist(Audit):
     def clean(self, *args, **kwargs):
         super(PostBurnChecklist, self).clean(*args, **kwargs)
 
-        if self.completed_on is not None and not self.completed_by:
-            raise ValidationError("Please specify who completed this action.")
+        if self.relevant:
+            if self.completed_on is not None and not self.completed_by:
+                raise ValidationError("Please specify who completed this action.")
 
-        if self.completed_by and self.completed_on is None:
-            raise ValidationError("Please specify when was this action "
-                                  "completed.")
+            if self.completed_by and self.completed_on is None:
+                raise ValidationError("Please specify when was this action "
+                                    "completed.")
+        else:
+            self.completed_on = None
+            self.completed_by = None
 
     class Meta:
         ordering = ["pk"]
@@ -717,11 +721,11 @@ class BurnClosureState(AbstractState):
     prescription = models.OneToOneField(
         Prescription, related_name='post_state', on_delete=models.PROTECT)
     # post_actions = models.NullBooleanField(choices=NULL_CHOICES, default=False)
-    post_actions = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
+    post_actions = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
     evaluation_summary = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
     # evaluation = models.NullBooleanField(choices=NULL_CHOICES, default=False)
-    evaluation = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
+    evaluation = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
     # post_ignitions = models.NullBooleanField(
     #     choices=NULL_CHOICES, default=False)
     # aerial_intensity = models.NullBooleanField(
@@ -730,18 +734,18 @@ class BurnClosureState(AbstractState):
     #     choices=NULL_CHOICES, default=False)
     # other = models.NullBooleanField(choices=NULL_CHOICES, default=False)
     post_ignitions = models.BooleanField(
-        choices=NULL_CHOICES, default=False, null=True)
+        choices=NULL_CHOICES, default=False, null=True, blank=True)
     aerial_intensity = models.BooleanField(
-        choices=NULL_CHOICES, default=False, null=True)
+        choices=NULL_CHOICES, default=False, null=True, blank=True)
     satellite_intensity = models.BooleanField(
-        choices=NULL_CHOICES, default=False, null=True)
-    other = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
+        choices=NULL_CHOICES, default=False, null=True, blank=True)
+    other = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
     post_burn_checklist = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
     closure_declaration = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
     # signage = models.NullBooleanField(choices=NULL_CHOICES, default=False)
-    signage = models.BooleanField(choices=NULL_CHOICES, default=False, null=True)
+    signage = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
 
     def clean_evaluation(self):
         evaluations = self.prescription.proposedaction_set.all().count()

@@ -37,7 +37,7 @@
   </thead>
   <tbody>
     <tr class="{% if current.post_state.post_actions %}success{% else %}{% if current.post_state.post_actions == None %}info{% else %}error{% endif %}{% endif %}">
-      <th><a href="{% url 'admin:risk_action_changelist' current.id %}?post_burn=true">Section C1 &#x2010; Post-burn actions</a></th>
+      <th><a href="{% url 'admin:risk_action_changelist' current.id %}?post_burn=True">Section C1 &#x2010; Post-burn actions</a></th>
       <td>{% if not current.is_closed %}{{ form.post_actions }}{% else %}{{ current.post_state.post_actions|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
         <td><a value="Section C1 &#x2010; Post-burn actions" class="btn" href="{{ download_pdf }}?template=sectionc1"><i class="icon-print"></i></a></td>
     </tr>

@@ -317,8 +317,8 @@
                   <li{% if request.path == partb %} class="active"{% endif %}><a href="{{ partb }}">Part B Summary</a></li>
                   <li{% if request.get_full_path == operational_overview %} class="active"{% endif %}><a href="{{ operational_overview }}">B1 - Operational Overview</a></li>
                   <li{% if request.get_full_path == actions %} class="active"{% endif %}><a href="{{ actions }}">B1 - Plan Actions</a></li>
-                  <li{% if actions|add:"?pre_burn=true" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?pre_burn=true">B1 - Pre-burn actions</a></li>
-                  <li{% if actions|add:"?day_of_burn=true" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?day_of_burn=true">B2 - Day of burn actions</a></li>
+                  <li{% if actions|add:"?pre_burn=True" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?pre_burn=True">B1 - Pre-burn actions</a></li>
+                  <li{% if actions|add:"?day_of_burn=True" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?day_of_burn=True">B2 - Day of burn actions</a></li>
                   <li{% if request.path == sectionb3_trails %} class="active"{% endif %}><a href="{{ sectionb3_trails }}">B3 - Tracks and Trails</a></li>
                   <li{% if request.path == sectionb3_inspection %} class="active"{% endif %}><a href="{{ sectionb3_inspection }}">B3 - Sign Inspection & Surveillance</a></li>
                   <li{% if request.path == sectionb3_roads  %} class="active"{% endif %}><a href="{{ sectionb3_roads }}">B4 - Roads</a></li>
@@ -343,7 +343,7 @@
                 </a>
                 <ul class="dropdown-menu">
                   <li{% if request.path == post_summary %} class="active"{% endif %}><a href="{{ post_summary }}">Part C Summary</a></li>
-                  <li{% if actions|add:"?post_burn=true" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?post_burn=true">C1 - Post burn actions</a></li>
+                  <li{% if actions|add:"?post_burn=True" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?post_burn=True">C1 - Post burn actions</a></li>
                   <li{% if request.path == evaluation %} class="active"{% endif %}><a href="{{ evaluation }}">C2 - Burn evaluation summary</a></li>
                   <li{% if request.path == proposed_action %} class="active"{% endif %}><a href="{{ proposed_action }}">C3 - Lessons learned</a></li>
                   <li{% if request.path == post_burn_checklist %} class="active"{% endif %}><a href="{{ post_burn_checklist }}">C4 - Post burn checklist</a></li>

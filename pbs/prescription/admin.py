@@ -709,8 +709,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current': obj,
             'current_app':self.admin_site.name,
         }
-        # return TemplateResponse(request, self.corporate_approval_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.corporate_approval_template,
                                 context)
 
@@ -798,8 +796,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'not_endorsed_endorsing_roles': obj.not_endorsed_endorsing_roles,
         }
         return TemplateResponse(request, "admin/prescription/prescription/"
-                                "endorsement.html", context,
-                                current_app=self.admin_site.name)
+                                "endorsement.html", context)
 
     def delete_endorsement(self, request, object_id, endorsement_id,
                            extra_context=None):
@@ -886,8 +883,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'errors': None
         }
         return TemplateResponse(request, "admin/prescription/prescription/"
-                                "endorsing_roles.html", context,
-                                current_app=self.admin_site.name)
+                                "endorsing_roles.html", context)
 
     def delete_regional_objective(self, request, object_id, objective_id, extra_context=None):
         obj = self.get_object(request, unquote(object_id))
@@ -1087,8 +1083,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current': obj,
         }
         return TemplateResponse(request, "admin/prescription/prescription/"
-                                "closure.html", context,
-                                current_app=self.admin_site.name)
+                                "closure.html", context)
 
     def add_objectives(self, request, object_id):
         """
@@ -1137,8 +1132,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current_app': self.admin_site.name,
             'can_edit': can_edit,
         }
-        # return TemplateResponse(request, self.objectives_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.objectives_template, context)
 
     def summary(self, request, object_id):
@@ -1183,8 +1176,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current_app':self.admin_site.name,
             'can_edit': can_edit,
         }
-        # return TemplateResponse(request, self.summary_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.summary_template,
                                 context)
 
@@ -1274,8 +1265,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'purposes': [p.name for p in obj.purposes.all()],
             'current_app': self.admin_site.name
         }
-        # return TemplateResponse(request, self.pre_summary_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.pre_summary_template,
                                 context)
 
@@ -1382,8 +1371,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current_app':self.admin_site.name,
             'can_edit': can_edit,
         }
-        # return TemplateResponse(request, self.day_summary_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.day_summary_template,
                                 context)
 
@@ -1428,8 +1415,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current_app': self.admin_site.name,
             'can_edit': can_edit,
         }
-        # return TemplateResponse(request, self.post_summary_template,
-        #                         context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.post_summary_template,
                                 context)
 
@@ -1871,6 +1856,10 @@ class PrescriptionMixin(object):
                                (opts.app_label, opts.model_name),
                                args=(pk_value, self.prescription.pk),
                                current_app=self.admin_site.name)
+        if "_popup" in request.GET:
+            return HttpResponse('<script type="text/javascript">console.log(opener);opener.dismissAddAnotherPopup(window, "%s", "%s");opener.location = opener.location.pathname;</script>' % \
+                # escape() calls force_unicode.
+                (escape(obj._get_pk_val()), escape(obj)))                    
         if '_save' in request.POST:
             msg = ('The %(name)s "%(obj)s" was added successfully.' % msg_dict)
             self.message_user(request, msg, messages.SUCCESS)
