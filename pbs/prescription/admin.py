@@ -2029,6 +2029,7 @@ class PriorityJustificationAdmin(PrescriptionMixin, SavePrescriptionMixin,
     list_display_links = (None,)
     list_empty_form = False
     actions = None
+    can_delete = False
 
     def criteria_display(self, obj):
         """
@@ -2037,9 +2038,10 @@ class PriorityJustificationAdmin(PrescriptionMixin, SavePrescriptionMixin,
         return markdownify(obj.criteria)
     criteria_display.short_description = "Criteria"
 
-    def queryset(self, request):
-        qs = super(PriorityJustificationAdmin, self).queryset(request)
-        return qs.filter(relevant=True)
+    def get_queryset(self, request):
+        if self.prescription:
+            qs = self.prescription.priorityjustification_set.all()
+            return qs.filter(relevant=True)
 
     def changelist_view(self, request, prescription_id, extra_context=None):
         current = self.get_prescription(request, unquote(prescription_id))
