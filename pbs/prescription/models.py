@@ -1686,7 +1686,12 @@ def update_justification(sender, instance, action, reverse, model, pk_set,
             logger.debug("Updating priority justifications...")
             qs = instance.priorityjustification_set
             qs.filter(purpose__in=pk_set).update(relevant=True)
-            qs.filter(~Q(purpose__in=pk_set)).update(relevant=False)
+            logger.debug("Priority justifications updated...")
+    elif action == 'post_remove':
+        if pk_set is not None:
+            logger.debug("Updating priority justifications...")
+            qs = instance.priorityjustification_set
+            qs.filter(purpose__in=pk_set).update(relevant=False)
             logger.debug("Priority justifications updated...")
 
 
