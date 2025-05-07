@@ -400,14 +400,14 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                       args=(obj.prescription.pk,),
                       current_app=self.admin_site.name)
         if editable:
-            output += '''<a  onclick="console.log(this);return showAddAnotherPopup(this);"
+            output += '''<a  onclick="return showAddAnotherPopup(this);"
                 class="add-another" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add an action</a>'''.format(url, obj.pk)
         # Include a distinctive class name in the "Add" link in order to conditionally
         # remove the stupid thing depending on the user's group membership.
         # We do this because we don't get access to the request object in this method.
         else:
-            output += '''<a  onclick="console.log(this);return showAddAnotherPopup(this);"
+            output += '''<a  onclick="return showAddAnotherPopup(this);"
                 class="add-another hide adminonly" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add an action</a>'''.format(url, obj.pk)
         return output
