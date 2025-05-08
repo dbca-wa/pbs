@@ -6,11 +6,11 @@ class NullBooleanSelect(forms.widgets.NullBooleanSelect):
     """
     def __init__(self, attrs=None,true='Yes',false='No',none='--------'):
         if none is None:
-            choices = (('2', true),
-                       ('3', false))
+            choices = (('true', true),
+                       ('false', false))
         else:
-            choices = (('1', none),
-                       ('2', true),
-                       ('3', false))
+            choices = (('--', none),
+                       ('true', true),
+                       ('false', false))
         forms.widgets.Select.__init__(self,attrs, choices)
 

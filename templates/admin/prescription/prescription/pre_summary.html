@@ -218,7 +218,7 @@
                 </div>
                 <script type="text/javascript">
                     function check_non_calm_tenure() {
-                        if (document.getElementById("id_non_calm_tenure").value === "2") {
+                        if (document.getElementById("id_non_calm_tenure").value === "true") {
                             $("#id_non_calm_tenure_approved_container").show()
                             $("#id_non_calm_tenure_body").show()
                             $.each(["#id_non_calm_tenure_included","#id_non_calm_tenure_value","input[name='non_calm_tenure_complete']","#id_non_calm_tenure_risks"],function(index,id){
@@ -375,7 +375,7 @@
         <tr>
             <th>Non-CALM Act Tenure</th>
             <td colspan="3" >
-                {{ current.non_calm_tenure | yesno:"Yes,No,--------" }}
+                {{ current.non_calm_tenure | yesno:"True,False,--------" }}
                 {% if current.non_calm_tenure %}
                 <span style="padding-left:100px"><span style="font-weight:bold">Cross Tenure Approved</span> {{ current.non_calm_tenure_approved | yesno:"Yes,No,No" }}</span>
                 <br><br><span style="font-weight:bold"> Non-CALM Act tenure included * </span>
@@ -561,7 +561,7 @@ var ajaxPost = function(evt) {
                 ' ' + data.message).prepend($('<i>').addClass('icon-ok'));
 
             //if not cross tenure, reset corss_tenure_approved to False
-            if (document.getElementById("id_non_calm_tenure").value !== "2") {
+            if (document.getElementById("id_non_calm_tenure").value !== "true") {
                 $("#id_non_calm_tenure_approved").prop("checked",false)
             }
         };
