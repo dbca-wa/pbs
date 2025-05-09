@@ -24,7 +24,7 @@
     {% if result.group != result.previous %}
     <tr rel="{{ result.group_id }}"><th colspan="{{ result|length }}" class="group-heading">{{ result.group }}</th></tr>
     {% endif %}
-    <tr{% if cl.model_admin.list_empty_form %} id="{{ cl.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}" class="form-row{% if forloop.last %} empty-form{% endif %}"{% else %} rel="{{ result.group_id }}"{% endif %}>
+    <tr{% if cl.model_admin.list_empty_form %} id="{{ cl.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}" class="form-row{% if forloop.last %} empty-form{% endif %} has_original"{% else %} rel="{{ result.group_id }}"{% endif %}>
         {% for item in result %}{{ item }}{% endfor %}
     </tr>
     {% if result.form.non_field_errors %}
