@@ -12,7 +12,7 @@
         adminStaticPrefix: '{% static "admin/" %}',
         addText: '<i class="icon-plus"></i> Add another success criteria'
       });
-      $("#result_list_objectives_disabled tbody tr").tabularFormset({
+      $("#result_list_objectives_disabled tbody tr").tabularFormset(this, {
         prefix: "{{ objective_cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
         addText: '<i class="icon-plus"></i> Add another objective'

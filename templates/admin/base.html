@@ -508,6 +508,21 @@ $('.file-download').on('click', function(e) {
 });
 
 })(django.jQuery);
+$(document).ready(function($) {
+  function textAreaAdjust(o) {
+      o.target.style.height = "1.5em";
+      if (o.target.scrollHeight > $(o.target).height()) {
+        o.target.style.height = "1px";
+        o.target.style.height = (25 + o.target.scrollHeight) + "px";
+      }
+  }
+  $("body textarea").on('keyup' , textAreaAdjust);
+  $("body textarea").trigger("keyup");
+  document.addEventListener('formset:added', (event) => {
+    $(event.target).find('textarea').on('keyup', textAreaAdjust);
+  });
+  document.addEventListener('formset:removed', (event) => {});
+})
 </script>
 
 {% endblock %}

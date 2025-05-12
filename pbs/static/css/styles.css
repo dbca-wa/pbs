@@ -677,3 +677,17 @@ tr.burn-completed {
     color: darkgray;
 }
 
+
+
+/* ========================================================
+ *    Text Areas
+ * ===================================================== */
+ .vLargeTextField {
+    width: 95%;
+    resize: vertical;
+    max-height: 500px;
+    min-width: 270px;
+    line-height: 24px;
+    min-height: 24px;
+    overflow-y: auto;
+}
