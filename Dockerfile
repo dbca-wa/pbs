@@ -23,7 +23,7 @@ RUN apt-get install -y libldap2-dev libssl-dev wget build-essential vim virtuale
 # RUN apt-get install --no-install-recommends -y texlive-bibtex-extra texlive-binaries texlive-extra-utils texlive-fonts-extra texlive-formats-extra texlive-humanities texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-luatex texlive-metapost texlive-pictures texlive-plain-generic texlive-pstricks texlive-publishers texlive-science texlive-xetex
 
 RUN groupadd -g 5000 oim 
-RUN useradd -g 5000 -u 5000 oim -s /bin/bash -d /app
+RUN useradd -l -g 5000 -u 5000 oim -s /bin/bash -d /app
 RUN mkdir /app 
 RUN chown -R oim.oim /app
 
