@@ -48,21 +48,21 @@ COPY requirements.txt ./
 RUN pip install --upgrade pip
 RUN pip3 install --no-cache-dir -r requirements.txt 
 
-# # Install the project.
-# FROM python_libs_pbs
-# COPY gunicorn.ini manage.py ./
-# COPY fex.id /app/.fex/id
-# COPY .git ./.git
-# #RUN git log --pretty=medium -30 > ./git_history_recent && rm -rf .git
-# COPY pbs ./pbs
-# COPY pbs_project ./pbs_project
-# COPY smart_selects ./smart_selects
-# COPY swingers ./swingers
-# COPY templates ./templates
-# COPY startup.sh /startup.sh
-# #COPY python-cron ./
-# RUN touch .env
-# RUN mkdir /app/logs
+# Install the project.
+FROM python_libs_pbs
+COPY gunicorn.ini manage.py ./
+COPY fex.id /app/.fex/id
+COPY .git ./.git
+#RUN git log --pretty=medium -30 > ./git_history_recent && rm -rf .git
+COPY pbs ./pbs
+COPY pbs_project ./pbs_project
+COPY smart_selects ./smart_selects
+COPY swingers ./swingers
+COPY templates ./templates
+COPY startup.sh /startup.sh
+#COPY python-cron ./
+RUN touch .env
+RUN mkdir /app/logs
 # RUN python3 manage.py collectstatic --noinput
 
 # Run the application as the www-data user.
