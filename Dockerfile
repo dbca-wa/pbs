@@ -63,7 +63,7 @@ COPY startup.sh /startup.sh
 #COPY python-cron ./
 RUN touch .env
 RUN mkdir /app/logs
-# RUN python3 manage.py collectstatic --noinput
+RUN python3 manage.py collectstatic --noinput
 
 # Run the application as the www-data user.
 HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 CMD ["wget", "-q", "-O", "-", "http://localhost:8080/"]
