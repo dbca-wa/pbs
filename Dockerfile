@@ -16,19 +16,16 @@ ENV DATABASE_URL="sqlite://memory"
 
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install -yq git mercurial gcc gdal-bin libsasl2-dev libpq-dev
+RUN apt-get install -yq git gcc gdal-bin libsasl2-dev libpq-dev
 RUN apt-get install -y python3-setuptools python3-dev python3-pip 
 RUN apt-get install -y fex-utils imagemagick poppler-utils
 RUN apt-get install -y libldap2-dev libssl-dev wget build-essential vim virtualenv libmagic-dev
 # RUN apt-get install --no-install-recommends -y texlive-bibtex-extra texlive-binaries texlive-extra-utils texlive-fonts-extra texlive-formats-extra texlive-humanities texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-luatex texlive-metapost texlive-pictures texlive-plain-generic texlive-pstricks texlive-publishers texlive-science texlive-xetex
 
-# RUN ln -s /usr/bin/python3 /usr/bin/python
-
 RUN groupadd -g 5000 oim 
 RUN useradd -g 5000 -u 5000 oim -s /bin/bash -d /app
 RUN mkdir /app 
 RUN chown -R oim.oim /app
-#RUN pip install --upgrade pip 
 
 RUN wget https://raw.githubusercontent.com/dbca-wa/wagov_utils/main/wagov_utils/bin/default_script_installer.sh -O /tmp/default_script_installer.sh
 RUN chmod 755 /tmp/default_script_installer.sh
@@ -52,7 +49,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM python_libs_pbs
 COPY gunicorn.ini manage.py ./
 COPY fex.id /app/.fex/id
-COPY .git ./.git
+#COPY .git ./.git
 #RUN git log --pretty=medium -30 > ./git_history_recent && rm -rf .git
 COPY pbs ./pbs
 COPY pbs_project ./pbs_project
