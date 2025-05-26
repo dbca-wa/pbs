@@ -46,7 +46,7 @@ RUN git config --global --add safe.directory /app
 
 COPY requirements.txt ./
 RUN pip install --upgrade pip
-RUN pip3 install --no-cache-dir -r requirements.txt 
+RUN pip install --no-cache-dir -r requirements.txt 
 
 # Install the project.
 FROM python_libs_pbs
@@ -63,9 +63,8 @@ COPY startup.sh /startup.sh
 #COPY python-cron ./
 RUN touch .env
 RUN mkdir /app/logs
-RUN python3 manage.py collectstatic --noinput
+RUN python /app/manage.py collectstatic --noinput
 
-# Run the application as the www-data user.
 HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 CMD ["wget", "-q", "-O", "-", "http://localhost:8080/"]
 EXPOSE 8080
 CMD ["/startup.sh"]
