@@ -1,4 +1,4 @@
-Django==5.1.7
+Django==5.0.14
 dj-database-url==0.3.0
 django-reversion==5.1.0
 django-wsgiserver==0.8.0rc1
