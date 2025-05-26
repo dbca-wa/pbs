@@ -33,7 +33,7 @@ RUN chown -R oim.oim /app
 RUN wget https://raw.githubusercontent.com/dbca-wa/wagov_utils/main/wagov_utils/bin/default_script_installer.sh -O /tmp/default_script_installer.sh
 RUN chmod 755 /tmp/default_script_installer.sh
 RUN /tmp/default_script_installer.sh
-
+# Copy the ffsend prebuilt binary.
 COPY binaries/ffsend /usr/local/bin/
 
 # Install Python libs from requirements.txt.
@@ -46,8 +46,7 @@ RUN git config --global --add safe.directory /app
 
 COPY requirements.txt ./
 RUN pip install --upgrade pip
-# RUN pip3 install --no-cache-dir -r requirements.txt 
-# # Copy the ffsend prebuilt binary.
+RUN pip3 install --no-cache-dir -r requirements.txt 
 
 # # Install the project.
 # FROM python_libs_pbs
