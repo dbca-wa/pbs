@@ -12,6 +12,7 @@ variables:
   tag: '$(Build.BuildId)'
   tagDate: $[ format('{0:yyyy}.{0:MM}.{0:dd}.{0:HH}.{0:mm}{0:ss}', pipeline.startTime) ]
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/pbs_django_3')]
+  DOCKER_BUILDKIT: 1
   
 stages:
 - stage: Build
