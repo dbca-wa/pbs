@@ -61,6 +61,7 @@ COPY startup.sh /startup.sh
 RUN touch .env
 RUN mkdir /app/logs
 RUN python /app/manage.py collectstatic --noinput
+RUN apt-get clean
 
 HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 CMD ["wget", "-q", "-O", "-", "http://localhost:8080/"]
 EXPOSE 8080
