@@ -33,6 +33,8 @@ RUN /tmp/default_script_installer.sh
 # Copy the ffsend prebuilt binary.
 COPY binaries/ffsend /usr/local/bin/
 
+RUN apt-get clean
+RUN rm -rf /tmp/*
 # Install Python libs from requirements.txt.
 FROM builder_base_pbs as python_libs_pbs
 WORKDIR /app
@@ -61,7 +63,7 @@ COPY startup.sh /startup.sh
 RUN touch .env
 RUN mkdir /app/logs
 RUN python /app/manage.py collectstatic --noinput
-RUN apt-get clean
+
 
 HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 CMD ["wget", "-q", "-O", "-", "http://localhost:8080/"]
 EXPOSE 8080
