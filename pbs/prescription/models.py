@@ -1838,7 +1838,9 @@ def archive_prescription(sender,instance,created,**kwargs):
             directory = os.path.join(settings.MEDIA_ROOT, 'snapshots', instance.financial_year.replace("/","-"), instance.burn_id)
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            shutil.move(pdfresult.pdf_file,os.path.join(directory,"{}.pdf".format(archivename)))
+            source_file = pdfresult.pdf_file
+            shutil.copy(source_file, os.path.join(directory,"{}.pdf".format(archivename)))
+            os.remove(source_file)
             instance._updating_pdf_status = True
             Prescription.objects.filter(pk=instance.pk).update(archive_successful=True)
         else:
