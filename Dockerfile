@@ -1,7 +1,7 @@
 # Prepare the base environment.
 # FROM ubuntu:22.04 as builder_base_pbs
-#FROM ubuntu:24.04 AS builder_base_pbs
-FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu2404texlive_latest AS builder_base_pbs
+FROM ubuntu:24.04 AS builder_base_pbs
+#FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu2404texlive_latest AS builder_base_pbs
 MAINTAINER asi@dbca.wa.gov.au
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SECRET_KEY="ThisisNotRealKey"
@@ -19,7 +19,7 @@ RUN apt-get upgrade -y
 RUN apt-get install -yq git gcc gdal-bin libsasl2-dev libpq-dev
 RUN apt-get install -y python3-setuptools python3-dev python3-pip 
 RUN apt-get install -y fex-utils imagemagick poppler-utils
-RUN apt-get install -y libldap2-dev libssl-dev wget build-essential vim virtualenv libmagic-dev
+RUN apt-get install -y libldap2-dev libssl-dev wget build-essential vim virtualenv libmagic-dev texlive-full
 # RUN apt-get install --no-install-recommends -y texlive-bibtex-extra texlive-binaries texlive-extra-utils texlive-fonts-extra texlive-formats-extra texlive-humanities texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-luatex texlive-metapost texlive-pictures texlive-plain-generic texlive-pstricks texlive-publishers texlive-science texlive-xetex
 
 RUN groupadd -g 5000 oim 
