@@ -39,6 +39,7 @@ import sys, traceback
 from django.db import IntegrityError
 from django.forms import ModelChoiceField, ChoiceField
 import requests
+from pbs.utils.pdf import PdflatexResult
 
 import logging
 logger = logging.getLogger('pbs')
@@ -232,7 +233,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """ view to render the FMSB Report form """
         context = {'form': CsvForm()}
         csv_template = 'admin/review/prescribedburn/csv_form.html'
-        return TemplateResponse(request, csv_template, context, current_app=self.admin_site.name)
+        return TemplateResponse(request, csv_template, context)
 
     def response_post_save_change(self, request, obj):
         """
@@ -1554,9 +1555,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         logger.info('Starting render_to_string step')
         err_msg = None
         try:
-            output = render_to_string(
-                "latex/" + template + ".tex", context,
-                context_instance=RequestContext(request))
+            output = render_to_string("latex/" + template + ".tex", context)
         except Exception as e:
             import traceback
             err_msg = u"PDF tex template render failed (might be missing attachments):"
@@ -1567,13 +1566,21 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
 
         texpath = os.path.join(directory, texname)
         with open(texpath, "w") as f:
-            f.write(output.encode('utf-8'))
+            f.write(output)
             logger.info("Writing to {}".format(directory + texname))
 
         logger.info("Starting PDF rendering process ...")
         cmd = ['latexmk', '-f', '-silent', '-pdf', '-outdir={}'.format(directory), texpath]
         logger.info("Running: {0}".format(" ".join(cmd)))
         subprocess.call(cmd)
+        pdffile = os.path.join(directory, filename)
+        result = PdflatexResult()
+        if os.path.exists(pdffile):
+            result.pdf_file = pdffile
+            logger.info("PDF output for {0} successful".format(downloadname)) 
+        else:
+            err_msg = u"PDF generation failed for "
+            result.err_msg = "{0}\n\n{1}".format(err_msg, downloadname)
 
         logger.info("Cleaning up ...")
         cmd = ['latexmk', '-c', '-outdir={}'.format(directory), texpath]
@@ -1582,7 +1589,8 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         subprocess.call(cmd)
 
         logger.info("Reading PDF output from {}".format(filename))
-        response.write(open(directory + filename).read())
+        with open(result.pdf_file, 'rb') as f:
+            response.write(f.read())
         logger.info("Finally: returning PDF response.")
         return response
 
@@ -2049,9 +2057,7 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         logger.debug('Starting  render_to_string step')
         err_msg = None
         try:
-            output = render_to_string(
-                "latex/" + template + ".tex", context,
-                context_instance=RequestContext(request))
+            output = render_to_string("latex/" + template + ".tex", context)
         except Exception as e:
             import traceback
             err_msg = u"PDF tex template render failed (might be missing attachments):"
@@ -2062,7 +2068,7 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
 
         texpath = os.path.join(directory, texname)
         with open(texpath, "w") as f:
-            f.write(output.encode('utf-8'))
+            f.write(output)
             logger.debug("Writing to {}".format(texpath))
 
         logger.debug("Starting PDF rendering process ...")
