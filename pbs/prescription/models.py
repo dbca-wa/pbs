@@ -1839,7 +1839,7 @@ def archive_prescription(sender,instance,created,**kwargs):
             if not os.path.exists(directory):
                 os.makedirs(directory)
             source_file = pdfresult.pdf_file
-            shutil.copy(source_file, os.path.join(directory,"{}.pdf".format(archivename)))
+            shutil.copyfile(source_file, os.path.join(directory,"{}.pdf".format(archivename)))
             os.remove(source_file)
             instance._updating_pdf_status = True
             Prescription.objects.filter(pk=instance.pk).update(archive_successful=True)
