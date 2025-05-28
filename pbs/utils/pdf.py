@@ -242,7 +242,8 @@ def download_pdf(request, prescription):
                     pdfresult.pdf_file
                 ]
                 logger.info('ffsend cmd: {}'.format(cmd))
-                file_url = subprocess.check_output(cmd)
+                output = subprocess.check_output(cmd)
+                file_url = output.decode('utf-8').strip()
                 logger.info('Sending email notification to user of download URL')
                 subject = 'Prescribed Burn System: file {}'.format(downloadname)
                 email_from = settings.FEX_MAIL
