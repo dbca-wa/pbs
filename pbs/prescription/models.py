@@ -1860,13 +1860,14 @@ def archive_prescription(sender,instance,created,**kwargs):
                 logger.warning('ENV NOTIFICATION_EMAIL is not set. Unable to send notification email.')
 
 import reversion                                               
-reversion.register(Prescription, follow=[ "fundingallocation","priorityjustification","briefingchecklist", "endorsement", "approval", "objective", "successcriteria"#Prescription
-                                        "operationaloverview","burningprescription", "edgingplan","lightingsequence", "exclusionarea", #Implementation
-                                        "postburnchecklist", "burnclosurestate","areaachievement","proposedaction", "burnimplementationstate",  #Report
-                                        "burnstate", "prescribedburn", "aircraftburn",   #review
-                                        "register", "risk", "context", "complexity", "contingency", #Risk
-                                        "criticalstakeholder" #Stakeholder
-                                        "document", #Document 
+
+reversion.register(Prescription, follow=[ "fundingallocation_set","priorityjustification_set","briefingchecklist_set", "endorsement_set", "approval_set", "objective_set", "successcriteria_set",#Prescription
+                                        "operationaloverview_set","burningprescription_set", "edgingplan_set","lightingsequence_set", "exclusionarea_set", #Implementation
+                                        "postburnchecklist_set", "post_state","areaachievement_set","proposedaction_set", "day_state",  #Report
+                                        "burnstate", "prescribed_burn", "aircraft_burns",   #review
+                                        "register_set", "risk_set", "context_set", "complexity_set", "contingency_set", #Risk
+                                        "criticalstakeholder_set", #Stakeholder
+                                        "document_set", #Document 
                                         ])
 reversion.register(FundingAllocation)
 reversion.register(PriorityJustification)

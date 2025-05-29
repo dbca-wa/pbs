@@ -124,6 +124,7 @@ MIDDLEWARE = (
     # 'pbs.middleware.SSOLoginMiddleware',
     'pbs.middleware.PBSV2SSOLoginMiddleware',
     'pbs.middleware.PrescriptionCheckMiddleware',
+    'reversion.middleware.RevisionMiddleware',
 )
 # TEMPLATE_CONTEXT_PROCESSORS = (
 #     "django.contrib.auth.context_processors.auth",
