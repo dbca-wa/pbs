@@ -1,4 +1,4 @@
-Django==5.0.14
+Django==5.2.2
 dj-database-url==0.3.0
 django-reversion==5.1.0
 django-wsgiserver==0.8.0rc1
@@ -28,7 +28,7 @@ git+https://github.com/dbca-wa/dbca-utils.git@1.1.1#egg=dbca-utils
 git+https://github.com/dbca-wa/wagov_utils.git#egg=wagov_utils
 git+https://github.com/dbca-wa/django-media-serv.git#egg=django_media_serv
 git+https://github.com/dbca-wa/appmonitor_client.git#egg=appmonitor_client
-django-compressor==4.4
+django-compressor==4.5.1
 django-tastypie==0.14.7
 pytz==2023.3
 gunicorn==23.0.0
@@ -36,3 +36,4 @@ humanize==0.5.1
 docutils==0.15.2
 tzdata==2024.1
 python-decouple==3.8
+setuptools==80.7.1
