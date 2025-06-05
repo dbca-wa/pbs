@@ -27,7 +27,7 @@ FROM_EMAIL = env('FROM_EMAIL', 'PrescribedBurnSystem@dbca.wa.gov.au')
 SUPPORT_EMAIL = env('SUPPORT_EMAIL', ['oim.servicedesk@dbca.wa.gov.au'])
 
 NOTIFICATION_EMAIL=env('NOTIFICATION_EMAIL', None)
-
+FIRE_NOTIFICATION_EMAIL=env('FIRE_NOTIFICATION_EMAIL', None)
 #BFRS_URL = env('BFRS_URL', 'https://bfrs.dpaw.wa.gov.au/')
 BFRS_URL = env('BFRS_URL', 'https://bfrsapi.dbca.wa.gov.au/')
 USER_SSO = env('USER_SSO', required=True)
