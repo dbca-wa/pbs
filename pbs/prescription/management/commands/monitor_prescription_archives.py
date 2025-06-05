@@ -9,7 +9,7 @@
         If the archive directory does exist, it will then check if there is an archive file for each status field
         that has been modified.
         Issues are ordered by date modified descending, stored as rows in a .csv file and sent via email to the
-        address(es) specied in the NOTIFICATION_EMAIL environment variable.
+        address(es) specied in the FIRE_NOTIFICATION_EMAIL environment variable.
         If the environment variable is not set then the issues are logged to the console instead (which would end up in 
         the container logs in rancher/k8s)
 
@@ -136,14 +136,14 @@ class Command(BaseCommand):
         body += ", ".join([p["prescription"] for p in issues])
         body += "\n\nSee the attached .csv file for more information about each issue."
 
-        if not settings.NOTIFICATION_EMAIL:
+        if not settings.FIRE_NOTIFICATION_EMAIL:
             # If there is no address to send the email to then write the data to the log instead
             self.log_issues(body, issues_csv)
             return
 
         try:
             with open(issues_csv.name, "r") as file:
-                mail = EmailMessage(subject=subject, body=body, from_email=settings.FEX_MAIL, to=settings.NOTIFICATION_EMAIL.split(","))
+                mail = EmailMessage(subject=subject, body=body, from_email=settings.FEX_MAIL, to=settings.FIRE_NOTIFICATION_EMAIL.split(","))
                 mail.attach(file.name, file.read(), "text/csv")
                 mail.send()
         except (SMTPException, IOError) as e:
@@ -152,7 +152,7 @@ class Command(BaseCommand):
             self.log_issues(body, issues_csv)
             
     def log_issues(self, body, issues_csv):
-            logger.warning("ENV NOTIFICATION_EMAIL is not set. Unable to send notification email.")
+            logger.warning("ENV FIRE_NOTIFICATION_EMAIL is not set. Unable to send notification email.")
             logger.warning(body)
             with open(issues_csv.name, "r") as file:
                 csvFile = csv.reader(file)
