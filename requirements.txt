@@ -1,4 +1,4 @@
-Django==5.2.2
+Django~=5.2.0
 dj-database-url==0.3.0
 django-reversion==5.1.0
 django-wsgiserver==0.8.0rc1
@@ -6,12 +6,12 @@ django-dtpanel-htmltidy==0.1.1
 django-chosen-mega==0.1.6
 django-appconf==1.0.3
 django-confy==1.0.4
-Django-Select2==8.2.1
+Django-Select2==8.4.1
 django-select2-forms==3.0.0
 django-pagination-py3==1.2.0
 psycopg2-binary==2.9.9
 python-dateutil==2.2
-Pillow==11.1.0
+Pillow==11.3.0
 django-downloadview==1.6
 unicodecsv==0.14.1
 Markdown==3.5.1
