@@ -13,6 +13,28 @@ class ExcludeListFilterMixin(object):
         except ValidationError as e:
             raise IncorrectLookupParameters(e)
 
+
+def _to_bool(v):
+    """Convert various representations to a bool or None.
+
+    Handles strings, lists/tuples (takes first element), and other
+    python values. Returns None for empty string or empty list.
+    """
+    # If it's a list or tuple, use the first element or "" if empty.
+    if isinstance(v, (list, tuple)):
+        v = v[0] if len(v) else ""
+    if v == "":
+        return None
+    if isinstance(v, str):
+        vl = v.lower()
+        if vl in ("1", "true", "yes", "on"):
+            return True
+        if vl in ("0", "false", "no", "off"):
+            return False
+        # Non-empty string that isn't explicitly boolean-like is True
+        return True
+    return True if v else False
+
 class BooleanFieldListFilter(filters.BooleanFieldListFilter):
     def __init__(self, field, request, params, model, model_admin, field_path):
         self.lookup_kwarg1 = '%s' % field_path
@@ -22,10 +44,29 @@ class BooleanFieldListFilter(filters.BooleanFieldListFilter):
         super(BooleanFieldListFilter,self).__init__(field,request, params, model, model_admin, field_path)
         self.is_nullable = isinstance(self.field, models.NullBooleanField)
 
-        to_bool = lambda v :(None if v == "" else (True if v in ("1","true","yes","on") else False)) if isinstance(v,str) else (True if v else False)
+        def _to_bool(v):
+            """Convert various representations to a bool or None.
+
+            Handles strings, lists/tuples (takes first element), and other
+            python values. Returns None for empty string or empty list.
+            """
+            # If it's a list or tuple, use the first element or "" if empty.
+            if isinstance(v, (list, tuple)):
+                v = v[0] if len(v) else ""
+            if v == "":
+                return None
+            if isinstance(v, str):
+                vl = v.lower()
+                if vl in ("1", "true", "yes", "on"):
+                    return True
+                if vl in ("0", "false", "no", "off"):
+                    return False
+                # Non-empty string that isn't explicitly boolean-like is True
+                return True
+            return True if v else False
         for kwarg in (self.lookup_kwarg,self.lookup_kwarg1):
             if kwarg in self.used_parameters:
-                val = to_bool(self.used_parameters[kwarg])
+                val = _to_bool(self.used_parameters[kwarg])
                 if val is None:
                     del self.used_parameters[kwarg]
                 else:
@@ -36,7 +77,7 @@ class BooleanFieldListFilter(filters.BooleanFieldListFilter):
             if isinstance(self.used_parameters[self.lookup_kwarg3],(list,tuple)):
                 vals = None
                 for v in self.used_parameters[self.lookup_kwarg3]:
-                    val = to_bool(v)
+                    val = _to_bool(v)
                     if val is None:
                         continue
                     if vals is None:
@@ -53,7 +94,7 @@ class BooleanFieldListFilter(filters.BooleanFieldListFilter):
                 else:
                     del self.used_parameters[self.lookup_kwarg3]
             else:
-                val = to_bool(self.used_parameters[self.lookup_kwarg3])
+                val = _to_bool(self.used_parameters[self.lookup_kwarg3])
                 if val is None:
                     del self.used_parameters[self.lookup_kwarg3]
                 else:
@@ -69,7 +110,9 @@ class CrossTenureApprovedListFilter(ExcludeListFilterMixin,BooleanFieldListFilte
         self.used_parameters_exclude = {}
         for kwarg in (self.lookup_kwarg,self.lookup_kwarg1):
             if kwarg in self.used_parameters:
-                if self.used_parameters[kwarg] == False:
+                val = self.used_parameters[kwarg]
+                # Handle both boolean and list/tuple representations of False
+                if val is False or (isinstance(val, (list, tuple)) and val == [False]):
                     self.used_parameters_exclude[kwarg] = [True]
                     del self.used_parameters[kwarg]
                 else:

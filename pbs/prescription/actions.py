@@ -170,12 +170,13 @@ def delete_approval_endorsement(modeladmin, request, queryset):
         "opts": opts,
         "app_label": app_label,
         'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+        "current_app": modeladmin.admin_site.name
     }
 
     # Display the confirmation page
     return TemplateResponse(
         request, modeladmin.remove_selected_confirmation_template,
-        context, current_app=modeladmin.admin_site.name)
+        context)
 
 delete_approval_endorsement.short_description = gettext_lazy("Remove Burn Plan Endorsements and Approval")
 

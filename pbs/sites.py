@@ -267,9 +267,49 @@ class PrescriptionSite(AuditSite):
 
         export_csv = True if request.GET.get('Export_CSV') == 'export_csv' else False
 
+        def _parse_date(date_value):
+            """Parse a date value coming from a request GET parameter.
+
+            Accepts datetime.date/datetime.datetime instances (returns date),
+            or strings in a number of common formats.
+            Falls back to today's date if parsing fails.
+            """
+            if not date_value:
+                return None
+            if isinstance(date_value, datetime.date):
+                # If it's already a date (or datetime since datetime is subclass), return the date
+                try:
+                    return date_value.date()
+                except Exception:
+                    return date_value
+            if isinstance(date_value, datetime.datetime):
+                return date_value.date()
+            date_str = str(date_value).strip()
+            # Try a number of formats (dd-mm-yyyy is the primary expected format)
+            formats = [
+                '%d-%m-%Y',
+                '%d-%m-%y',
+                '%Y-%m-%d',
+                '%b. %d, %Y',
+                '%b %d, %Y',
+                '%B %d, %Y'
+            ]
+            for fmt in formats:
+                try:
+                    return datetime.datetime.strptime(date_str, fmt).date()
+                except Exception:
+                    continue
+            # As a final attempt, try ISO parsing with dateutil if available
+            try:
+                from dateutil import parser as _parser
+                return _parser.parse(date_str).date()
+            except Exception:
+                log.warning('Could not parse date: %s, defaulting to today', date_str)
+                return datetime.date.today()
+
         if request.GET.get('fromDate'):
             fromDate = request.GET.get('fromDate')
-            fromDate = datetime.datetime.strptime(fromDate, '%d-%m-%Y').date()
+            fromDate = _parse_date(fromDate)
         else:
             # default - beginning of current financial year
             today = datetime.date.today()
@@ -284,7 +324,7 @@ class PrescriptionSite(AuditSite):
 
         if request.GET.get('toDate'):
             toDate = request.GET.get('toDate')
-            toDate = datetime.datetime.strptime(toDate, '%d-%m-%Y').date()
+            toDate = _parse_date(toDate)
         else:
             toDate = datetime.date.today()
 
@@ -472,7 +512,10 @@ class PrescriptionSite(AuditSite):
             'Shire', 'Burn Purpose/s', 'Program Allocations', 'Land Tenure', 'Success Criteria'])
 
         for burn in query_list:
-            writer.writerow([unicode(s).encode("utf-8") for s in burn])
+            # Ensure all values are text strings for the CSV writer.
+            # In Python 3, `unicode()` does not exist; convert bytes to str
+            # and make None values empty strings.
+            writer.writerow([s.decode('utf-8') if isinstance(s, bytes) else '' if s is None else str(s) for s in burn])
 
         return response
     export_to_csv.short_description = gettext_lazy("Export to CSV")
