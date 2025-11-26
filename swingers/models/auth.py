@@ -39,8 +39,20 @@ class Audit(Model):
         self._changed_data = None
         self._initial = {}
         if self.pk:
+            # Don't use getattr to load field values here because doing so may
+            # trigger descriptors (eg. DeferredAttribute, related fields) which
+            # call ``refresh_from_db`` and in turn instantiate the model
+            # again, leading to infinite recursion. Instead, read raw values
+            # from the instance __dict__ when present and fall back to None.
             for field in self._meta.fields:
-                self._initial[field.attname] = getattr(self, field.attname)
+                if field.attname in self.__dict__:
+                    # get the currently-loaded (raw) value without triggering
+                    # any descriptor access
+                    self._initial[field.attname] = self.__dict__[field.attname]
+                else:
+                    # attribute not present on instance, don't trigger a DB
+                    # refresh here — record as None
+                    self._initial[field.attname] = None
 
     def has_changed(self):
         """
