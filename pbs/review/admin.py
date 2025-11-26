@@ -1451,7 +1451,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             "Rolled"])
 
         for row in query_list:
-            writer.writerow([unicode(s).encode("utf-8") for s in row])
+            writer.writerow([s.decode('utf-8') if isinstance(s, bytes) else '' if s is None else str(s) for s in row])
 
         return response
     export_to_csv.short_description = gettext_lazy("Export to CSV")

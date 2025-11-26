@@ -512,7 +512,10 @@ class PrescriptionSite(AuditSite):
             'Shire', 'Burn Purpose/s', 'Program Allocations', 'Land Tenure', 'Success Criteria'])
 
         for burn in query_list:
-            writer.writerow([unicode(s).encode("utf-8") for s in burn])
+            # Ensure all values are text strings for the CSV writer.
+            # In Python 3, `unicode()` does not exist; convert bytes to str
+            # and make None values empty strings.
+            writer.writerow([s.decode('utf-8') if isinstance(s, bytes) else '' if s is None else str(s) for s in burn])
 
         return response
     export_to_csv.short_description = gettext_lazy("Export to CSV")
