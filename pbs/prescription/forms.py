@@ -132,7 +132,7 @@ class PrescriptionCreateForm(PrescriptionFormBase):
                   'last_season_unknown', 'contentious', 'last_year_unknown',
                   'forest_blocks', 'contentious_rationale', 'purposes',
                   'aircraft_burn', 'priority', 'area', 'treatment_percentage',
-                  'perimeter', 'location', 'remote_sensing_priority')
+                  'perimeter', 'location', 'remote_sensing_priority', 'rationale')
 
 
 class PrescriptionEditForm(PrescriptionFormBase):
@@ -188,6 +188,7 @@ class PrescriptionEditForm(PrescriptionFormBase):
                   'forest_blocks', 'contentious_rationale', 'purposes',
                   'aircraft_burn', 'priority', 'area', 'treatment_percentage',
                   'perimeter', 'location', 'remote_sensing_priority',
+              'rationale',
                   "non_calm_tenure", "non_calm_tenure_approved", "non_calm_tenure_complete", 
                   "non_calm_tenure_included", "non_calm_tenure_value", "non_calm_tenure_risks", 
                   "shires", "bushfire_act_zone", "prohibited_period",
