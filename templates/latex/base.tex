@@ -127,7 +127,7 @@
 {% block after-title %}
 \textbf{PDF Created on} {{ timestamp }}
 \vfill
-\textbf{Prescribing Officer}: {{ prescription.prescribing_officer.get_full_name }}
+\textbf{Prescribing Officer}: {{ prescription.prescribing_officer.get_full_name|texify|safe }}
 \vfill\vfill
 \textbf{Prescribed Fire Plan Status}\\\,
 \begin{tabu} to \linewidth { | X[l] | X | }

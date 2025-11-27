@@ -39,12 +39,12 @@ and accordingly, I approve the plan for implementation.
 {% endif %}
 } \\
 \hline
-\textbf{Approved by {{ approval.creator.get_full_name }}} & \textbf{Valid to {{ approval.valid_to }}} \\
+\textbf{Approved by {{ approval.creator.get_full_name|texify|safe }}} & \textbf{Valid to {{ approval.valid_to }}} \\
 \hline
 \end{tabu}
 {% if current_approval.extension_count > 0 %}
 \newline
-This approval has been extended \textbf{% templatetag openbrace %}{{ prescription.current_approval.extension_count }}} time{{ prescription.current_approval.extension_count|pluralize }} from its initial expiry date of \textbf{% templatetag openbrace %}{{ prescription.current_approval.initial_valid_to }}}, with the last extension being done by \textbf{% templatetag openbrace %}{{ prescription.current_approval.modifier.get_full_name }}} on \textbf{% templatetag openbrace %}{{ prescription.current_approval.modified }}}
+This approval has been extended \textbf{% templatetag openbrace %}{{ prescription.current_approval.extension_count }}} time{{ prescription.current_approval.extension_count|pluralize }} from its initial expiry date of \textbf{% templatetag openbrace %}{{ prescription.current_approval.initial_valid_to }}}, with the last extension being done by \textbf{% templatetag openbrace %}{{ prescription.current_approval.modifier.get_full_name|texify|safe }}} on \textbf{% templatetag openbrace %}{{ prescription.current_approval.modified }}}
 {% endif %}
 {% endwith %}
 \clearpage

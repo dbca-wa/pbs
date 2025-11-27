@@ -40,7 +40,7 @@ This burn has no endorsing roles determined yet.
 {I, the Prescribing Officer, have reviewed the content of this re-scheduled ePFP
 including the objectives, context, risk register and burn implementation plan and certify they are accurate.} \\
 \hline
-\textbf{Endorsed by {{ prescription.prescribing_officer.get_full_name }}} & {% if prescription.prescribing_officer.get_full_name %}\textbf{ {{ prescription.modified }} } {% endif %} \\
+\textbf{Endorsed by {{ prescription.prescribing_officer.get_full_name|texify|safe }}} & {% if prescription.prescribing_officer.get_full_name %}\textbf{ {{ prescription.modified }} } {% endif %} \\
 \hline
 \end{tabu}
 \newline
