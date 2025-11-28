@@ -1312,7 +1312,18 @@ class Prescription(Audit):
     
     def archived_pdfs(self):
         directory = self.archived_pdf_directory()
-        archived_pdfs = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and f.endswith('.pdf')]
+        # If the directory does not exist, return an empty list rather than
+        # raising FileNotFoundError.
+        if not os.path.isdir(directory):
+            return []
+        try:
+            archived_pdfs = [
+                f for f in os.listdir(directory)
+                if os.path.isfile(os.path.join(directory, f)) and f.endswith('.pdf')
+            ]
+        except (OSError, PermissionError):
+            # In case of any unexpected OS error, return an empty list.
+            return []
         return archived_pdfs
 
     def uploaded_doc_directory(self):
@@ -1321,7 +1332,16 @@ class Prescription(Audit):
     
     def uploaded_docs(self):
         directory = self.uploaded_doc_directory()
-        uploaded_docs = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and self.burn_id in f]
+        # If the uploads directory does not exist, return an empty list.
+        if not os.path.isdir(directory):
+            return []
+        try:
+            uploaded_docs = [
+                f for f in os.listdir(directory)
+                if os.path.isfile(os.path.join(directory, f)) and self.burn_id in f
+            ]
+        except (OSError, PermissionError):
+            return []
         return uploaded_docs
 
     def override_admin(self, user):
