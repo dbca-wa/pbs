@@ -26,7 +26,14 @@
     .upload {
       margin-left: 5px;
       display: inline-block;
-      vertical-align: center;
+      vertical-align: middle;
+    }
+    /* Remove the vLargeTextField min-width in this changelist to prevent columns from forcing page overflow */
+    #result_list textarea.vLargeTextField,
+    #result_list .vLargeTextField {
+      min-width: 0 !important;
+      max-width: 100% !important;
+      height: 53px !important;
     }
   </style>
 {% endblock %}
