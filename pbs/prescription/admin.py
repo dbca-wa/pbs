@@ -1665,8 +1665,12 @@ class PrescriptionMixin(object):
             raise Http404(_('prescription object with primary key %(key)r '
                             'does not exist.') % {'key': prescription_id})
 
+        opts = self.opts
+        app_label = opts.app_label
+
         context = {
-            'current': prescription
+            'current': prescription,
+            'app_label': app_label,
         }
         context.update(extra_context or {})
 
