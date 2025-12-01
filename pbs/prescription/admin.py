@@ -826,11 +826,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'title': "Delete endorsement",
             'current': obj,
-            'endorsement': endorsement
+            'endorsement': endorsement,
+            'current_app': self.admin_site.name,
         }
         context.update(extra_context or {})
 
-        return TemplateResponse(request, "admin/prescription/prescription/delete_endorsement.html", context, current_app=self.admin_site.name)
+        return TemplateResponse(request, "admin/prescription/prescription/delete_endorsement.html", context)
 
     def endorsing_roles(self, request, object_id, extra_context=None):
         """
