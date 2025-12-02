@@ -194,7 +194,8 @@
           {% if user.profile.is_fpc_user and password_change %}
             <li><a href="{{ password_change }}">{% trans 'Change password' %}</a></li>
           {% endif %}
-            <li><a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a></li>
+            <!-- <li><a href="{% url 'admin:logout' %}">{% trans 'Log out1' %}</a></li> -->
+             <li><a href="/logout/">{% trans 'Log out' %}</a></li>
           {% endblock %}
           </ul>
         </li>
