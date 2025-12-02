@@ -32,6 +32,7 @@ NOTIFICATION_EMAIL=env('NOTIFICATION_EMAIL', None)
 EMAIL_INSTANCE = env("EMAIL_INSTANCE", default="PROD")
 NON_PROD_EMAIL = env("NON_PROD_EMAIL", default="")
 PRODUCTION_EMAIL= env("PRODUCTION_EMAIL", default=False)
+SYSTEM_ID = env("SYSTEM_ID", default="S029")
 
 #BFRS_URL = env('BFRS_URL', 'https://bfrs.dpaw.wa.gov.au/')
 BFRS_URL = env('BFRS_URL', 'https://bfrsapi.dbca.wa.gov.au/')

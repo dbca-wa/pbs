@@ -826,11 +826,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'title': "Delete endorsement",
             'current': obj,
-            'endorsement': endorsement
+            'endorsement': endorsement,
+            'current_app': self.admin_site.name,
         }
         context.update(extra_context or {})
 
-        return TemplateResponse(request, "admin/prescription/prescription/delete_endorsement.html", context, current_app=self.admin_site.name)
+        return TemplateResponse(request, "admin/prescription/prescription/delete_endorsement.html", context)
 
     def endorsing_roles(self, request, object_id, extra_context=None):
         """
@@ -1664,8 +1665,12 @@ class PrescriptionMixin(object):
             raise Http404(_('prescription object with primary key %(key)r '
                             'does not exist.') % {'key': prescription_id})
 
+        opts = self.opts
+        app_label = opts.app_label
+
         context = {
-            'current': prescription
+            'current': prescription,
+            'app_label': app_label,
         }
         context.update(extra_context or {})
 

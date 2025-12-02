@@ -19,7 +19,7 @@ Solution is using two steps to populate urlpatterns
 # ]
 urlpatterns = [
     re_path(r'^docs/', include('django.contrib.admindocs.urls')),
-    re_path(r'^', include('django.contrib.auth.urls')),
+    #re_path(r'^', include('django.contrib.auth.urls')),
 ]+ media_serv_patterns
 
 from django.views.generic.base import RedirectView
@@ -27,6 +27,7 @@ from django_downloadview import ObjectDownloadView
 from pbs.document.models import Document
 from pbs.sites import site
 from pbs.forms import PbsPasswordResetForm
+from pbs.views import sso_logout
 
 from tastypie.api import Api
 from pbs.review.api import PrescribedBurnResource
@@ -59,6 +60,7 @@ urlpatterns = urlpatterns + [
     re_path('^documents/(?P<pk>\d+)/download$', document_download, name='document_download'),
     re_path(r'^favicon\.ico$', favicon_view, name='favicon_view'),
     re_path(r'^api/', include(v1_api.urls)),
+    re_path(r'^logout/$', sso_logout, name='logout'),
     #path('', site.urls),
     re_path(r'^', site.urls),
 ] 
