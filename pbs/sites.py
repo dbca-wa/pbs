@@ -167,14 +167,15 @@ class PrescriptionSite(AuditSite):
             self._registry[model] = admin_class(model, self)
 
     @method_decorator(sensitive_post_parameters())
-    @never_cache
+    @method_decorator(never_cache)
     def login(self, request, redirect_field_name=REDIRECT_FIELD_NAME,
               authentication_form=PbsAdminAuthenticationForm,
               extra_context=None):
         """
         Displays the login form and handles the login action.
         """
-        redirect_to = request.REQUEST.get(redirect_field_name, '')
+        redirect_to = request.POST.get(redirect_field_name,
+                           request.GET.get(redirect_field_name, ''))
 
         if request.method == 'POST':
             form = authentication_form(request, data=request.POST)
@@ -212,14 +213,15 @@ class PrescriptionSite(AuditSite):
             redirect_field_name: request.get_full_path(),
             'site': current_site,
             'site_name': current_site.name,
+            'current_app': self.name,
         }
         if extra_context is not None:
             context.update(extra_context)
         return TemplateResponse(request,
                                 self.login_template or 'admin/login.html',
-                                context, current_app=self.name)
+                                context)
 
-    @never_cache
+    @method_decorator(never_cache)
     def logout(self, request, extra_context=None):
         from django.contrib.auth.views import logout
         return logout(request, reverse('admin:index', current_app=self.name))

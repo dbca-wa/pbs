@@ -2,6 +2,7 @@ from django.conf.urls import include
 from django.urls import re_path, path
 from django.contrib import admin
 from django_media_serv.urls import urlpatterns as media_serv_patterns
+from django.contrib.auth import views as auth_views
 
 """
 some import statmement will load some module (directly or indirectly)
@@ -20,6 +21,19 @@ Solution is using two steps to populate urlpatterns
 urlpatterns = [
     re_path(r'^docs/', include('django.contrib.admindocs.urls')),
     #re_path(r'^', include('django.contrib.auth.urls')),
+    
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
+    path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path(
+        "password_change/done/",
+        auth_views.PasswordChangeDoneView.as_view(),
+        name="password_change_done",
+    ),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
 ]+ media_serv_patterns
 
 from django.views.generic.base import RedirectView
@@ -57,7 +71,7 @@ urlpatterns = urlpatterns + [
     re_path(r'^password_reset/$', PasswordResetView.as_view(form_class=PbsPasswordResetForm), name='password_reset'),
     re_path(r'^chaining/', include('smart_selects.urls')),
     re_path(r'^select2/', include("django_select2.urls")),
-    re_path('^documents/(?P<pk>\d+)/download$', document_download, name='document_download'),
+    re_path(r'^documents/(?P<pk>\d+)/download$', document_download, name='document_download'),
     re_path(r'^favicon\.ico$', favicon_view, name='favicon_view'),
     re_path(r'^api/', include(v1_api.urls)),
     re_path(r'^logout/$', sso_logout, name='logout'),
