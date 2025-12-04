@@ -107,28 +107,80 @@ class BooleanFieldListFilter(filters.BooleanFieldListFilter):
         return [self.lookup_kwarg,self.lookup_kwarg1, self.lookup_kwarg2,self.lookup_kwarg3]
 
 class CrossTenureApprovedListFilter(ExcludeListFilterMixin,BooleanFieldListFilter):
+    def expected_parameters(self):
+        # Ensure Django admin recognizes all possible filter params
+        return [self.lookup_kwarg, self.lookup_kwarg1, self.lookup_kwarg3]
+
+    def get_expected_value(self, value):
+        # Normalize value for queryset filtering
+        if value in (True, '1', 1, [True], ['1'], [1]):
+            return True
+        if value in (False, '0', 0, [False], ['0'], [0]):
+            return False
+        if value in (None, '', [None], ['']):
+            return None
+        return value
+
+    def get_filter_value(self):
+        # Try all possible parameter keys for this filter
+        for key in (self.lookup_kwarg, self.lookup_kwarg1, self.lookup_kwarg3):
+            val = self.used_parameters.get(key)
+            if val is not None:
+                # If it's a list, get the first value
+                if isinstance(val, (list, tuple)):
+                    if val:
+                        return val[0]
+                else:
+                    return val
+        return None
+
+    def queryset(self, request, queryset):
+        # Apply correct filter for admin list
+        value = self.get_filter_value()
+        value = self.get_expected_value(value)
+        if value is True:
+            return queryset.filter(non_calm_tenure_approved=True)
+        elif value is False:
+            return queryset.filter(non_calm_tenure_approved=False)
+        elif value is None:
+            return queryset.filter(non_calm_tenure_approved__isnull=True)
+        return queryset
     def __init__(self, field, request, params, model, model_admin, field_path):
-        super(CrossTenureApprovedListFilter,self).__init__(field,request, params, model, model_admin, field_path)
+        super(CrossTenureApprovedListFilter, self).__init__(field, request, params, model, model_admin, field_path)
         self.used_parameters_exclude = {}
-        for kwarg in (self.lookup_kwarg,self.lookup_kwarg1):
+        # Fix for Django 3+: ensure all values are lists and handle string/boolean/null correctly
+        for kwarg in (self.lookup_kwarg, self.lookup_kwarg1):
             if kwarg in self.used_parameters:
                 val = self.used_parameters[kwarg]
-                # Handle both boolean and list/tuple representations of False
-                if val is False or (isinstance(val, (list, tuple)) and val == [False]):
+                # Accept both boolean and string representations
+                if val in (False, '0', 0, [False], ['0'], [0]):
                     self.used_parameters_exclude[kwarg] = [True]
                     del self.used_parameters[kwarg]
+                elif val in (True, '1', 1, [True], ['1'], [1]):
+                    self.used_parameters[kwarg] = [True]
                 else:
-                    self.used_parameters[kwarg] = [False]
+                    # If null/None/empty string, treat as isnull
+                    if val in (None, '', [None], ['']):
+                        self.used_parameters[kwarg] = [None]
+                    else:
+                        self.used_parameters[kwarg] = [val]
 
         if self.lookup_kwarg3 in self.used_parameters:
-            if False in self.used_parameters[self.lookup_kwarg3] :
-                if True in self.used_parameters[self.lookup_kwarg3] :
+            vals = self.used_parameters[self.lookup_kwarg3]
+            if not isinstance(vals, (list, tuple)):
+                vals = [vals]
+            vals_set = set(str(v).lower() for v in vals)
+            if 'false' in vals_set or '0' in vals_set:
+                if 'true' in vals_set or '1' in vals_set:
                     del self.used_parameters[self.lookup_kwarg3]
                 else:
                     self.used_parameters_exclude[self.lookup_kwarg] = [True]
                     del self.used_parameters[self.lookup_kwarg3]
-            else:
+            elif 'true' in vals_set or '1' in vals_set:
                 self.used_parameters[self.lookup_kwarg] = [True]
+                del self.used_parameters[self.lookup_kwarg3]
+            elif '' in vals_set or 'none' in vals_set:
+                self.used_parameters[self.lookup_kwarg] = [None]
                 del self.used_parameters[self.lookup_kwarg3]
 
 
