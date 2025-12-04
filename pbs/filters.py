@@ -1,6 +1,8 @@
 from django.contrib.admin import filters
 from django.db import models
 from django.contrib.admin.utils import (get_model_from_relation,)
+from django.forms import ValidationError
+from django.contrib.admin.options import IncorrectLookupParameters
 
 class ExcludeListFilterMixin(object):
     def queryset(self, request, queryset):
@@ -88,7 +90,7 @@ class BooleanFieldListFilter(filters.BooleanFieldListFilter):
                     del self.used_parameters[self.lookup_kwarg3]
                 elif len(vals) == 1:
                     del self.used_parameters[self.lookup_kwarg3]
-                    self.used_parameters[self.lookup_kwarg] = vals[0]
+                    self.used_parameters[self.lookup_kwarg] = [vals[0]]
                 elif self.is_nullable:
                     self.used_parameters[self.lookup_kwarg3] = vals
                 else:
@@ -99,7 +101,7 @@ class BooleanFieldListFilter(filters.BooleanFieldListFilter):
                     del self.used_parameters[self.lookup_kwarg3]
                 else:
                     del self.used_parameters[self.lookup_kwarg3]
-                    self.used_parameters[self.lookup_kwarg] = val
+                    self.used_parameters[self.lookup_kwarg] = [val]
 
     def expected_parameters(self):
         return [self.lookup_kwarg,self.lookup_kwarg1, self.lookup_kwarg2,self.lookup_kwarg3]
@@ -175,7 +177,7 @@ class IntChoicesFieldListFilter(filters.ChoicesFieldListFilter):
                     del self.used_parameters[self.lookup_kwarg2]
                 else:
                     del self.used_parameters[self.lookup_kwarg2]
-                    self.used_parameters[self.lookup_kwarg] = val
+                    self.used_parameters[self.lookup_kwarg] = [val]
 
 
     def expected_parameters(self):
@@ -223,7 +225,7 @@ class RelatedFieldListFilterOriginal(filters.RelatedFieldListFilter):
                     del self.used_parameters[self.lookup_kwarg2]
                 elif len(vals) == 1:
                     del self.used_parameters[self.lookup_kwarg2]
-                    self.used_parameters[self.lookup_kwarg] = vals[0]
+                    self.used_parameters[self.lookup_kwarg] = [vals[0]]
                 else:
                     self.used_parameters[self.lookup_kwarg2] = vals
             else:
@@ -232,7 +234,7 @@ class RelatedFieldListFilterOriginal(filters.RelatedFieldListFilter):
                     del self.used_parameters[self.lookup_kwarg2]
                 else:
                     del self.used_parameters[self.lookup_kwarg2]
-                    self.used_parameters[self.lookup_kwarg] = val
+                    self.used_parameters[self.lookup_kwarg] = [val]
 
 
     def expected_parameters(self):
@@ -319,7 +321,7 @@ class StringValuesFieldListFilter(filters.AllValuesFieldListFilter):
                     del self.used_parameters[self.lookup_kwarg2]
                 elif len(vals) == 1:
                     del self.used_parameters[self.lookup_kwarg2]
-                    self.used_parameters[self.lookup_kwarg] = vals
+                    self.used_parameters[self.lookup_kwarg] = [vals[0]]
                 else:
                     self.used_parameters[self.lookup_kwarg2] = [vals]
             else:
@@ -328,7 +330,7 @@ class StringValuesFieldListFilter(filters.AllValuesFieldListFilter):
                     del self.used_parameters[self.lookup_kwarg2]
                 else:
                     del self.used_parameters[self.lookup_kwarg2]
-                    self.used_parameters[self.lookup_kwarg] = val
+                    self.used_parameters[self.lookup_kwarg] = [val]
 
 
     def expected_parameters(self):
