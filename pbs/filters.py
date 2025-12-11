@@ -136,6 +136,7 @@ class CrossTenureApprovedListFilter(ExcludeListFilterMixin,BooleanFieldListFilte
 
     def queryset(self, request, queryset):
         # Apply correct filter for admin list
+        queryset = super(CrossTenureApprovedListFilter, self).queryset(request, queryset)
         value = self.get_filter_value()
         value = self.get_expected_value(value)
         if value is True:
