@@ -231,7 +231,7 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
             return ('<a href="%s" class="btn btn-mini alert-error" '
                     'title="Delete"><i class="icon-trash"></i></a>') % delete_url
         else:
-            return ""
+            return format_html('&nbsp;')
 
     def category_view(self, request, prescription_id, category_name,
                       extra_context=None):
