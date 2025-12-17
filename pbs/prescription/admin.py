@@ -35,7 +35,7 @@ from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
-from django.utils.html import escape
+from django.utils.html import escape, format_html
 from django.utils.translation import gettext as _, gettext_lazy
 from django.views.decorators.csrf import csrf_protect
 
@@ -1811,10 +1811,12 @@ class PrescriptionMixin(object):
             delete_url = reverse('admin:%s_%s_delete' % info,
                                  args=(quote(obj.pk),
                                        quote(self.prescription.pk)))
-            return ('<div><a href="%s" class="inline-deletelink"'
-                    'title="Delete"></a></div>') % delete_url
+            return format_html(
+                '<div><a href="{}" class="inline-deletelink" title="Delete"></a></div>',
+                delete_url
+            )
         else:
-            return ""
+            return format_html('&nbsp;')
 
     def display_add_link(self, request, related):
         def inner(obj):
