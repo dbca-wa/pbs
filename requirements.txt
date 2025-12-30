@@ -37,3 +37,4 @@ docutils==0.15.2
 tzdata==2024.1
 python-decouple==3.8
 setuptools==80.7.1
+urllib3==2.6.2
