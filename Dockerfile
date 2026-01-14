@@ -1,7 +1,6 @@
 # Prepare the base environment.
-# FROM ubuntu:22.04 as builder_base_pbs
-FROM ubuntu:24.04 AS builder_base_pbs
-#FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu2404texlive_latest AS builder_base_pbs
+FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu_2510_base_python AS builder_base_pbs
+
 MAINTAINER asi@dbca.wa.gov.au
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SECRET_KEY="ThisisNotRealKey"
@@ -16,10 +15,9 @@ ENV DATABASE_URL="sqlite://memory"
 
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install -yq git gcc gdal-bin libsasl2-dev libpq-dev
-RUN apt-get install -y python3-setuptools python3-dev python3-pip 
+RUN apt-get install -yq libsasl2-dev 
 RUN apt-get install -y fex-utils imagemagick poppler-utils
-RUN apt-get install -y libldap2-dev libssl-dev wget build-essential vim virtualenv libmagic-dev 
+RUN apt-get install -y libldap2-dev libssl-dev build-essential 
 RUN apt-get install -y latexmk texlive-lang-english texlive-latex-recommended texlive-base texlive-latex-base texlive-fonts-recommended texlive-latex-extra
 #texlive-full
 # RUN apt-get install --no-install-recommends -y texlive-bibtex-extra texlive-binaries texlive-extra-utils texlive-fonts-extra texlive-formats-extra texlive-humanities texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-luatex texlive-metapost texlive-pictures texlive-plain-generic texlive-pstricks texlive-publishers texlive-science texlive-xetex
@@ -29,9 +27,6 @@ RUN useradd -l -g 5000 -u 5000 oim -s /bin/bash -d /app
 RUN mkdir /app 
 RUN chown -R oim.oim /app
 
-RUN wget https://raw.githubusercontent.com/dbca-wa/wagov_utils/main/wagov_utils/bin/default_script_installer.sh -O /tmp/default_script_installer.sh
-RUN chmod 755 /tmp/default_script_installer.sh
-RUN /tmp/default_script_installer.sh
 # Copy the ffsend prebuilt binary.
 COPY binaries/ffsend /usr/local/bin/
 
@@ -65,7 +60,6 @@ COPY startup.sh /startup.sh
 RUN touch .env
 RUN mkdir /app/logs
 RUN python /app/manage.py collectstatic --noinput
-
 
 HEALTHCHECK --interval=1m --timeout=5s --start-period=10s --retries=3 CMD ["wget", "-q", "-O", "-", "http://localhost:8080/"]
 EXPOSE 8080
