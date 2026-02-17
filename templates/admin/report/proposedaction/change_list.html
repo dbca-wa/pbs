@@ -2,12 +2,13 @@
 {% load i18n static admin_list %}
 
 {% block extrahead %}
+
   {{ block.super }}
   <script>
   {% if not current.is_draft and not current.is_closed %}
   (function($) {
     $(function() {
-      $("#result_list tbody tr").tabularFormset({
+      $("#result_list tbody tr").tabularFormset(this,{
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
         addText: '<i class="icon-plus"></i> Add another lesson'
