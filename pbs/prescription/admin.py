@@ -64,6 +64,7 @@ from pbs.filters import BooleanFieldListFilter,CrossTenureApprovedListFilter,Int
 from django.core.mail import send_mail
 
 from pbs.prescription import fund_allocation
+from django.contrib.auth.models import User
 
 
 csrf_protect_m = method_decorator(csrf_protect)
@@ -136,6 +137,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
     )
     filter_horizontal = ('tenures', 'fuel_types', 'shires',
                          'forecast_areas', 'endorsing_roles')
+
+    
+    # class Media:
+    #     css = {
+    #         'all': ('admin_extra.css',)  # ensure this file is in STATICFILES_DIRS
+    #     }
 
     def _non_calm_tenure(self,obj):
         if obj.non_calm_tenure:
@@ -575,8 +582,18 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             return db_field.formfield(**kwargs)
 
         if db_field.name == 'prescribing_officer':
+            from pbs.prescription.forms import UserChoiceField, UserSelect2Widget, UserSelect2ChoiceField
             kwargs['initial'] = request.user.pk
-            field = db_field.formfield(**kwargs)
+            # kwargs.setdefault('queryset', User.objects.filter(is_active=True))            
+            # Attach the Select2 widget
+            # kwargs['widget'] = UserSelect2Widget(attrs={
+            #     "style": "width: 100%;",
+            #     "class": "select2-field",
+            #     "data-minimum-input-length": "0"
+            # })
+            # return super().formfield_for_foreignkey(db_field, request, **kwargs)
+            # #field = UserSelect2ChoiceField(**kwargs)
+            field = UserChoiceField(**kwargs)
             return field
 
         return super(PrescriptionAdmin, self).formfield_for_foreignkey(
@@ -1186,6 +1203,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         """
         obj = self.get_object(request, unquote(object_id))
         AdminPrescriptionSummaryForm = self.get_form(request, obj)
+        print("AdminPrescriptionSummaryForm: {}".format(AdminPrescriptionSummaryForm))
 
         funding_choices = FundingAllocation._meta.get_field('allocation').choices
         # I have not been able to pass this queryset in as a keyword param to FundingAllocationFormSet
@@ -1246,6 +1264,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                     }
                     return HttpResponse(json.dumps(errors))
         else:
+            print("adminfom", AdminPrescriptionSummaryForm )
             form = AdminPrescriptionSummaryForm(instance=obj)
             formset = FundingAllocationFormSet(prescription=obj, instance=obj, initial=initial_choices)
 

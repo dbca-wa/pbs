@@ -11,14 +11,93 @@ from pbs.prescription.fields import LocationMultiField
 from pbs.forms import PbsModelForm
 from pbs.widgets import NullBooleanSelect
 from django.utils import timezone
+from django_select2.forms import ModelSelect2Widget
+
+
+class UserSelect2Widget(ModelSelect2Widget):
+    model = User
+    search_fields = [
+        "first_name__icontains",
+        "last_name__icontains",
+    ]
+
+
+    
+    def get_queryset(self):
+        # Only active users (mirrors your current field default)
+        return User.objects.filter(is_active=True)
+
+    # def label_from_instance(self, obj):
+    #     if obj.get_full_name():
+    #         return obj.get_full_name()
+    #     else:
+    #         return obj.username
+    
+    def label_from_instance(self, obj):
+        return getattr(obj, 'get_full_name', lambda: '')() or getattr(obj, 'username', str(obj.pk))
+
+
+    
+    
+    def filter_queryset(self, request, term, queryset=None, **dependent_fields):
+        qs = queryset or self.get_queryset()
+        if term:
+            # Use base filtering for typed term
+            return super().filter_queryset(request, term, qs, **dependent_fields)
+        return qs.order_by('first_name', 'last_name')[:25]
+
+
+
+
+
+class UserSelect2ChoiceField(forms.ModelChoiceField):
+    """
+    Reusable ModelChoiceField for selecting a single user with Select2.
+    Automatically wires the Select2 widget and defaults to active users.
+    """
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("queryset", User.objects.filter(is_active=True))
+        widget = kwargs.pop("widget", None) or UserSelect2Widget(
+            attrs={
+                "data-placeholder": "Search user…",
+                "data-allow-clear": "true",
+                # Uncomment to show results without typing:
+                # "data-minimum-input-length": "0",
+                "style": "width: 100%;",
+            }
+        )
+        kwargs.setdefault("widget", widget)
+        super().__init__(*args, **kwargs)
+
+    # Keep label logic consistent even when widget falls back
+    def label_from_instance(self, obj):
+        return (getattr(obj, "get_full_name", lambda: "")() or
+                getattr(obj, "username", str(obj.pk)))
+
+    def _get_choices(self):
+        """Get sorted choices by label."""
+        return [
+            (obj.pk, self.label_from_instance(obj))
+            for obj in sorted(
+                self.queryset.all(),
+                key=lambda x: (self.label_from_instance(x) or u'').lower()
+            )
+        ]
+
+    def _set_choices(self, value):
+        """Allow setting choices."""
+        pass
+
+    choices = property(_get_choices, _set_choices)
 
 
 class UserChoiceField(forms.ModelChoiceField):
     '''Optional field override to disply users in a nicer fashion.
     '''
     def __init__(self, *args, **kwargs):
-        kwargs['queryset'] = User.objects.filter(
-            is_active=True).order_by('username')
+        # Set queryset if not provided
+        if 'queryset' not in kwargs:
+            kwargs['queryset'] = User.objects.filter(is_active=True)
         super(UserChoiceField, self).__init__(*args, **kwargs)
 
     def label_from_instance(self, obj):
@@ -26,6 +105,22 @@ class UserChoiceField(forms.ModelChoiceField):
             return obj.get_full_name()
         else:
             return obj.username
+
+    def _get_choices(self):
+        """Get sorted choices by label."""
+        return [
+            (obj.pk, self.label_from_instance(obj))
+            for obj in sorted(
+                self.queryset.all(),
+                key=lambda x: (self.label_from_instance(x) or u'').lower()
+            )
+        ]
+
+    def _set_choices(self, value):
+        """Allow setting choices."""
+        pass
+
+    choices = property(_get_choices, _set_choices)
 
 
 class PrescriptionFormBase(forms.ModelForm):
@@ -210,6 +305,8 @@ class PrescriptionSummaryForm(forms.ModelForm):
         self.fields['prohibited_period'].widget.attrs.update(
             {'class': 'span10'})
         self.fields['prescribing_officer'] = UserChoiceField(required=False)
+        #self.fields['prescribing_officer'] = UserSelect2ChoiceField(required=False)
+
         self.fields['purposes'].error_messages.update({
             'required': 'There must be at least one burn purpose.'
         })
