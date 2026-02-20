@@ -250,6 +250,7 @@ EMAIL_BACKEND = 'wagov_utils.components.utils.email_backend.EmailBackend'
 # Authentication settings
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
     # 'swingers.sauth.backends.EmailBackend',
     # 'wagov_utils.components.utils.email_backend.EmailBackend',
 )

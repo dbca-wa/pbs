@@ -239,6 +239,7 @@ class ContextAdmin(PrescriptionMixin, SavePrescriptionMixin,
     list_display_links = (None,)
     list_editable = ("statement",)
     actions = None
+    can_delete = True
 
     def get_readonly_fields(self, request, obj=None):
         """
