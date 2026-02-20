@@ -250,6 +250,7 @@ EMAIL_BACKEND = 'wagov_utils.components.utils.email_backend.EmailBackend'
 # Authentication settings
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
     # 'swingers.sauth.backends.EmailBackend',
     # 'wagov_utils.components.utils.email_backend.EmailBackend',
 )
@@ -259,9 +260,9 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL_FAILURE = LOGIN_URL
 LOGOUT_URL = '/logout/'
 LOGOUT_REDIRECT_URL = LOGOUT_URL
-CRON_CLASSES = [
-    'appmonitor_client.cron.CronJobAppMonitorClient',
-]
+# CRON_CLASSES = [
+#     'appmonitor_client.cron.CronJobAppMonitorClient',
+# ]
 # LDAP settings
 # AUTH_LDAP_SERVER_URI = env('LDAP_SERVER_URI', 'ldap_server')
 # AUTH_LDAP_BIND_DN = env('LDAP_BIND_DN', 'ldap_bind')

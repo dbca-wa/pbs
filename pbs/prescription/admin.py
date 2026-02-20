@@ -1203,7 +1203,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         """
         obj = self.get_object(request, unquote(object_id))
         AdminPrescriptionSummaryForm = self.get_form(request, obj)
-        print("AdminPrescriptionSummaryForm: {}".format(AdminPrescriptionSummaryForm))
 
         funding_choices = FundingAllocation._meta.get_field('allocation').choices
         # I have not been able to pass this queryset in as a keyword param to FundingAllocationFormSet
@@ -1264,7 +1263,6 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                     }
                     return HttpResponse(json.dumps(errors))
         else:
-            print("adminfom", AdminPrescriptionSummaryForm )
             form = AdminPrescriptionSummaryForm(instance=obj)
             formset = FundingAllocationFormSet(prescription=obj, instance=obj, initial=initial_choices)
 
