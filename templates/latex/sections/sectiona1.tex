@@ -29,7 +29,7 @@
 \tabucline{2-4}
 \textbf{Shire/s} &
 \multicolumn{3}{p{\dimexpr 3\tabucolX+3\tabcolsep+\arrayrulewidth\relax}|}{
-{{ prescription.shire_str }}
+{{ prescription.shire_str|texify }}
 }\\
 \tabucline{2-4}
 \textbf{Fire Weather Forecast Areas} &
@@ -37,7 +37,7 @@
 & \textbf{Prescribing Officer} & {% firstof prescription.prescribing_officer.get_full_name|texify|safe "No Prescribing Officer" %} \\
 \textbf{Endorsement Status} & {{ prescription.get_endorsement_status_display }} & \textbf{Approval Status} & {{ prescription.get_approval_status_display }} \\
 \textbf{Planning Status} & {{ prescription.get_planning_status_display }} & \textbf{Ignition Status} & {{ prescription.get_ignition_status_display }} \\
-\textbf{Burn Closure Status} & {{ prescription.get_status_display }} & \textbf{Shortcode} & {% firstof prescription.short_code "No Shortcode" %} \\
+\textbf{Burn Closure Status} & {{ prescription.get_status_display }} & \textbf{Shortcode} & {% firstof prescription.short_code|texify "No Shortcode" %} \\
 \hline
 \end{tabu}
 \vfill
