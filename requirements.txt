@@ -11,7 +11,7 @@ django-select2-forms==3.0.0
 django-pagination-py3==1.2.0
 psycopg2-binary==2.9.10
 python-dateutil==2.2
-pillow==12.1.0
+pillow~=12.1.0
 django-downloadview==1.6
 unicodecsv==0.14.1
 Markdown==3.5.1
