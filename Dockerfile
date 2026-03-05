@@ -55,6 +55,7 @@ COPY pbs_project ./pbs_project
 COPY smart_selects ./smart_selects
 COPY swingers ./swingers
 COPY templates ./templates
+COPY --chown=oim:oim  python-cron ./
 COPY startup.sh /startup.sh
 #COPY python-cron ./
 RUN touch .env
