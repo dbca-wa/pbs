@@ -103,5 +103,13 @@ stakeholder
 ./manage.py migrate
 
 ```
+## Step 8: Apply the script to change the EndorsingRole disclaimer text (change word 'DPaW' to 'department).
+  Do the dry run first to check if 9 records are changing then run the script to apply the change.
+  ```
+  python pbs/scripts/update_endorsingrole_disclaimers.py --dry-run
+  python pbs/scripts/update_endorsingrole_disclaimers.py
+  
+  ```
+
 
 
