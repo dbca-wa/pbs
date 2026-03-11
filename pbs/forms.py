@@ -96,7 +96,7 @@ class SessionPersistenceMixin(object):
             #form status found in session
             if persistent_fields:
                 #partial persistent, add missing field value from default_initial
-                for key,value in (kwargs.get("initial") or self.default_initial() or {}).iteritems():
+                for key,value in (kwargs.get("initial") or self.default_initial() or {}).items():
                     if key not in initial:
                         initial[key] = value
 
