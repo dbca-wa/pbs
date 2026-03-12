@@ -181,9 +181,9 @@
           <ul class="dropdown-menu">
           {% block userlinks %}
           {% url 'django-admindocs-docroot' as docsroot %}
-          {% if docsroot %}
+          <!-- {% if docsroot %}
             <li><a href="{{ docsroot }}">{% trans 'Help' %}</a></li>
-          {% endif %}
+          {% endif %} -->
           {% if perms.auth.change_user %}
             <li><a href="{% url 'admin:auth_user_changelist' %}">Manage Users</a></li>
           {% endif %}
