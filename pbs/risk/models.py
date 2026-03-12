@@ -415,7 +415,7 @@ class Register(Audit):
             final_consequence = self.final_consequence - 1
             self.final_risk_level = self.RISK_MATRIX[final_likelihood][final_consequence]
 
-        if self.alarp and self.treatment_set.count() > 0:
+        if self.alarp and self.pk and self.treatment_set.count() > 0:
             self.treatment_set.all().delete()
 
         super(Register, self).save(**kwargs)
