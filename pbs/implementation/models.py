@@ -429,7 +429,8 @@ class EdgingPlan(Audit):
     gfdi.admin_order_field = "gfdi_max"
 
     def wind(self):
-        return "%d-%d" % (self.wind_min, self.wind_max)
+        #return "%d-%d" % (self.wind_min, self.wind_max)
+        return field_range(self.wind_min, self.wind_max)
     wind.short_description = "Wind Speed Range (km/h)"
 
     def grassland_curing(self):
