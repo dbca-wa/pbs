@@ -31,10 +31,10 @@ git+https://github.com/dbca-wa/appmonitor_client.git#egg=appmonitor_client
 django-compressor==4.5.1
 django-tastypie==0.14.7
 pytz==2023.3
-gunicorn==23.0.0
+gunicorn==25.0.0
 humanize==0.5.1
 docutils==0.15.2
 tzdata==2024.1
 python-decouple==3.8
-setuptools==80.9.0
+setuptools==82.0.0
 urllib3==2.6.3
