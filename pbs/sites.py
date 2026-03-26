@@ -94,6 +94,14 @@ class UserAdmin(AuthUserAdmin):
     )
     list_filter = ("is_active", "groups")
 
+    def get_urls(self):
+        from django.views.generic import RedirectView
+        favicon_url = [
+            re_path(r'^favicon\.ico$',
+                    RedirectView.as_view(url='/static/favicon.ico', permanent=True)),
+        ]
+        return favicon_url + super().get_urls()
+
 
 class PrescriptionSite(AuditSite):
     def has_permission(self, request):
