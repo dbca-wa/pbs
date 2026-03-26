@@ -333,6 +333,9 @@ $(document).ready(function($) {
 </div>
 {% endblock %}
 
+{% comment %}
+Legacy footer behavior (kept for reference, intentionally disabled):
+
 {% block footer %}
 {{ block.super }}
 <script>
@@ -343,3 +346,7 @@ $(document).ready(function($) {
     });
 </script>
 {% endblock %}
+
+Reason disabled: modern Django admin actions.js toggles visibility using the
+"hidden" class. Forcing jQuery .hide() here prevents "Select all N ..." from appearing.
+{% endcomment %}
