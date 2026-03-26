@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n staticfiles admin_list %}
+{% load i18n static admin_list %}
 
 {% block breadcrumbs %}
 <ul class="breadcrumb">
@@ -94,6 +94,9 @@ $(function() {
       }
     });
   });
+  {% if not can_edit %}
+    $('select').prop('disabled', true);
+  {% endif %}
 
   $('select').each(function() {
     $(this).data('lastSelected', $(this).val());

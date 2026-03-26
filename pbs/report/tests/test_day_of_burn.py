@@ -8,7 +8,7 @@ Description: Beginning the test framwework
 from __future__ import print_function, division, unicode_literals, absolute_import
 ### Imports
 from django.test import Client
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 
 import pytest

@@ -1,5 +1,5 @@
 {% extends "admin/change_list.html" %}
-{% load i18n staticfiles admin_list %}
+{% load i18n static admin_list %}
 {% load multiselect_extras %}
 
 {% block breadcrumbs %}
@@ -75,7 +75,7 @@ list when it is altered by the JS below.
 <!-- The visibility-tools script will bring a Vis object into scope -->
 <script src="{% static 'pbs/js/visibility-tools.js' %}"></script>
 <script>
-$(document).ready(function() {
+$(document).ready(function($) {
     $('.changelist-multiselect').each(function () {
         var self = this;
         $(this).multiselect({
@@ -216,7 +216,6 @@ $(document).ready(function() {
     var base_url = "{% url 'admin:prescription_prescription_changelist' %}"
     // Parse the current URL query parameters into an object.
     var qs = URI(document.URL).query(true);
-
     // Iterate through each query parameter and convert comma-separated value into an array.
     $.each(qs, function(key, val) {
         // Alter the key to remove "__in" from the end (if present).
@@ -292,7 +291,7 @@ $(document).ready(function() {
                     }
                 }
         }
-
+        delete qs['p']
         // Iterate through each key/value in the filter parameters
         var searchQs = {};
         for (var key in qs) {
@@ -304,7 +303,11 @@ $(document).ready(function() {
                     break;
                 default:
                     // Add "__in" to the end of non-boolean parameters.
-                    searchQs[key + "__in"] = qs[key].join(',');
+                    if (!qs[key]?.length) {
+                        delete searchQs[key + "__in"];
+                    } else {
+                        searchQs[key + "__in"] = qs[key].join(',');
+                    }
             }
         };
         // Finally, replace the target URL.
@@ -330,6 +333,9 @@ $(document).ready(function() {
 </div>
 {% endblock %}
 
+{% comment %}
+Legacy footer behavior (kept for reference, intentionally disabled):
+
 {% block footer %}
 {{ block.super }}
 <script>
@@ -340,3 +346,7 @@ $(document).ready(function() {
     });
 </script>
 {% endblock %}
+
+Reason disabled: modern Django admin actions.js toggles visibility using the
+"hidden" class. Forcing jQuery .hide() here prevents "Select all N ..." from appearing.
+{% endcomment %}

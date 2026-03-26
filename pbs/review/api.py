@@ -1,4 +1,5 @@
-from django.conf.urls import url
+# from django.conf.urls import url
+from django.urls import re_path
 from django.conf import settings
 from django.db.models import Count, Sum
 from tastypie.resources import ModelResource, Resource
@@ -36,11 +37,12 @@ def generate_meta(klass):
 
 class APIResource(ModelResource):
     class Meta:
-        pass
+        #pass
+        object_class=None
 
     def prepend_urls(self):
         return [
-            url(
+           re_path(
                 r"^(?P<resource_name>{})/fields/(?P<field_name>[\w\d_.-]+)/$".format(self._meta.resource_name),
                 self.wrap_view('field_values'), name="api_field_values"),
         ]
@@ -58,10 +60,11 @@ class APIResource(ModelResource):
 class PrescribedBurnResource(APIResource):
     class Meta:
         authorization= ReadOnlyAuthorization()
+        object_class=None
 
     def prepend_urls(self):
         return [
-            url(
+           re_path(
                 r"^(?P<resource_name>{})/$".format(self._meta.resource_name),
                 self.wrap_view('field_values'), name="api_field_values"),
         ]

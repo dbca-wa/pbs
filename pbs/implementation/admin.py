@@ -60,7 +60,7 @@ class EdgingPlanAdmin(PrescriptionMixin, SavePrescriptionMixin,
                       BaseAdmin):
     list_display = ("location_text", "fuel_type", "desirable_season", "strategies",
                     "ffdi", "gfdi", "ros", "sdi", "grassland_curing", "wind_dir", "wind")
-    filter_horizontal = ("fuel_types",)
+    #filter_horizontal = ("fuel_types",)
     list_empty_form = True
     list_display_links = ("location_text",)
     actions = None

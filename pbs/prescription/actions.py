@@ -2,16 +2,16 @@ import os
 import shutil
 
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.admin import helpers
-from django.contrib.admin.util import model_ngettext
+from django.contrib.admin.utils import model_ngettext
 from django.db import router
 from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils import timezone
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy, ugettext as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy, gettext as _
 
 from guardian.shortcuts import assign_perm
 
@@ -67,7 +67,7 @@ def delete_selected(modeladmin, request, queryset):
             for obj in queryset:
                 if obj._meta.object_name == 'Prescription':
                     prescription_list.append(obj.burn_id + ' - ' + obj.name + ' (' + obj.season + ')')
-                obj_display = force_text(obj)
+                obj_display = force_str(obj)
                 modeladmin.log_deletion(request, obj, obj_display)
             queryset.delete()
             if str(opts) == 'prescription.prescription':
@@ -84,9 +84,9 @@ def delete_selected(modeladmin, request, queryset):
         return None
 
     if len(queryset) == 1:
-        objects_name = force_text(opts.verbose_name)
+        objects_name = force_str(opts.verbose_name)
     else:
-        objects_name = force_text(opts.verbose_name_plural)
+        objects_name = force_str(opts.verbose_name_plural)
 
     if perms_needed or protected:
         title = _("Cannot delete %(name)s") % {"name": objects_name}
@@ -103,16 +103,22 @@ def delete_selected(modeladmin, request, queryset):
         "opts": opts,
         "app_label": app_label,
         'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+        "current_app": modeladmin.admin_site.name
     }
 
     # Display the confirmation page
+    # return TemplateResponse(request, modeladmin.delete_selected_confirmation_template or [
+    #     "admin/%s/%s/delete_selected_confirmation.html" % (app_label, opts.model_name),
+    #     "admin/%s/delete_selected_confirmation.html" % app_label,
+    #     "admin/delete_selected_confirmation.html"
+    # ], context, current_app=modeladmin.admin_site.name)
     return TemplateResponse(request, modeladmin.delete_selected_confirmation_template or [
-        "admin/%s/%s/delete_selected_confirmation.html" % (app_label, opts.module_name),
+        "admin/%s/%s/delete_selected_confirmation.html" % (app_label, opts.model_name),
         "admin/%s/delete_selected_confirmation.html" % app_label,
         "admin/delete_selected_confirmation.html"
-    ], context, current_app=modeladmin.admin_site.name)
+    ], context)
 
-delete_selected.short_description = ugettext_lazy("Delete selected %(verbose_name_plural)s")
+delete_selected.short_description = gettext_lazy("Delete selected %(verbose_name_plural)s")
 
 
 def delete_approval_endorsement(modeladmin, request, queryset):
@@ -159,19 +165,20 @@ def delete_approval_endorsement(modeladmin, request, queryset):
         "title": title,
         "remove": 'all endorsements and approval',
         "action": 'delete_approval_endorsement',
-        "objects_name": force_text(opts.verbose_name),
+        "objects_name": force_str(opts.verbose_name),
         'queryset': queryset,
         "opts": opts,
         "app_label": app_label,
         'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+        "current_app": modeladmin.admin_site.name
     }
 
     # Display the confirmation page
     return TemplateResponse(
         request, modeladmin.remove_selected_confirmation_template,
-        context, current_app=modeladmin.admin_site.name)
+        context)
 
-delete_approval_endorsement.short_description = ugettext_lazy("Remove Burn Plan Endorsements and Approval")
+delete_approval_endorsement.short_description = gettext_lazy("Remove Burn Plan Endorsements and Approval")
 
 
 def carry_over_burns(modeladmin, request, queryset):
@@ -208,8 +215,16 @@ def carry_over_burns(modeladmin, request, queryset):
                     directory = os.path.join(settings.MEDIA_ROOT, 'snapshots', prescription.financial_year.replace("/","-"), prescription.burn_id)
                     if not os.path.exists(directory):
                         os.makedirs(directory)
-                    shutil.move(pdfresult.pdf_file,os.path.join(directory,"{}.pdf".format(archivename)))
+                    source_file = pdfresult.pdf_file
+                    shutil.copyfile(source_file, os.path.join(directory,"{}.pdf".format(archivename)))
+                    os.remove(source_file)
+                    prescription._updating_pdf_status = True
+                    Prescription.objects.filter(pk=prescription.pk).update(archive_successful=True)
                 else:
+                    title = 'PDF production failed when attempting to archive Prescription at Cary over burn function: {}'.format(prescription)
+                    logger.warning(title)
+                    prescription._updating_pdf_status = True
+                    Prescription.objects.filter(pk=prescription.pk).update(archive_successful=False)
                     raise Exception(pdfresult.errormessage)
 
             prescription.clear_approvals()
@@ -237,18 +252,22 @@ def carry_over_burns(modeladmin, request, queryset):
     context = {
         "title": title,
         "action": 'carry_over_burns',
-        "objects_name": force_text(opts.verbose_name),
+        "objects_name": force_str(opts.verbose_name),
         'queryset': queryset,
         "opts": opts,
         "app_label": app_label,
         'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
+        "current_app": modeladmin.admin_site.name
     }
 
+    # return TemplateResponse(
+    #     request, "admin/prescription/prescription/carry_over_burns.html",
+    #     context, current_app=modeladmin.admin_site.name)
     return TemplateResponse(
         request, "admin/prescription/prescription/carry_over_burns.html",
-        context, current_app=modeladmin.admin_site.name)
+        context)
 
-carry_over_burns.short_description = ugettext_lazy("Carry over burns")
+carry_over_burns.short_description = gettext_lazy("Carry over burns")
 
 
 def _create_approvals_pdf(prescription, request=None):
@@ -269,7 +288,8 @@ def _create_approvals_pdf(prescription, request=None):
 
     output = render_to_string("latex/parta_approvals.tex", context)
     with open(texname, "w") as f:
-        f.write(output.encode('utf-8'))
+        # f.write(output.encode('utf-8'))
+        f.write(output)
 
     cmd = ['latexmk', '-f', '-silent', '-pdf', '-outdir={}'.format(directory), texname]
     subprocess.call(cmd)
@@ -278,7 +298,7 @@ def _create_approvals_pdf(prescription, request=None):
     cmd = ['latexmk', '-c', '-outdir={}'.format(directory),texname]
     subprocess.call(cmd)
 
-    with open(texname.replace('tex','pdf')) as f:
+    with open(texname.replace('tex','pdf'), "rb") as f:
         suf = SimpleUploadedFile('Approvals PDF', f.read(), content_type='application/pdf')
 
     uid = request.user.id if request else 1
@@ -341,7 +361,7 @@ def bulk_corporate_approve(modeladmin, request, queryset):
     context = {
         "title": title,
         "action": 'bulk_corporate_approve',
-        "objects_name": force_text(opts.verbose_name),
+        "objects_name": force_str(opts.verbose_name),
         'queryset': queryset,
         "opts": opts,
         "app_label": app_label,
@@ -352,7 +372,7 @@ def bulk_corporate_approve(modeladmin, request, queryset):
         request, "admin/prescription/prescription/bulk_corporate_approve.html",
         context, current_app=modeladmin.admin_site.name)
 
-bulk_corporate_approve.short_description = ugettext_lazy("Apply corporate approval")
+bulk_corporate_approve.short_description = gettext_lazy("Apply corporate approval")
 
 
 def archive_documents(modeladmin, request, queryset):
@@ -384,7 +404,7 @@ def archive_documents(modeladmin, request, queryset):
     context = {
         "title": title,
         "action": 'archive_documents',
-        "objects_name": force_text(opts.verbose_name),
+        "objects_name": force_str(opts.verbose_name),
         'queryset': queryset,
         "opts": opts,
         "app_label": app_label,
@@ -395,6 +415,6 @@ def archive_documents(modeladmin, request, queryset):
         request, "admin/document/document/archive_documents.html",
         context, current_app=app_label)
 
-archive_documents.short_description = ugettext_lazy("Archive documents")
+archive_documents.short_description = gettext_lazy("Archive documents")
 
 

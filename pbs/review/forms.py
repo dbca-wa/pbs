@@ -56,16 +56,16 @@ class PrescribedBurnForm(forms.ModelForm):
 
     def clean(self):
 
-        if not self.cleaned_data.has_key('prescription'):
+        if not 'prescription' in self.cleaned_data:
             raise ValidationError("Prescription is Required")
 
         if not (self.cleaned_data['planned_area'] or self.cleaned_data['planned_distance']):
             raise ValidationError("Must input at least one of Area or Distance")
 
-        if not self.cleaned_data.has_key('location'):
+        if not 'location' in self.cleaned_data:
             raise ValidationError("Must input location")
 
-        if self.cleaned_data.has_key('prescription') and self.cleaned_data.has_key('date') and self.cleaned_data.has_key('location'):
+        if 'prescription' in self.cleaned_data and 'date' in self.cleaned_data and 'location' in self.cleaned_data:
             # check for integrity constraint - duplicate keys
             prescription = self.cleaned_data['prescription']
             dt = self.cleaned_data['date']
@@ -131,7 +131,7 @@ class PrescribedBurnEditForm(forms.ModelForm):
 
     def clean_location(self):
 
-        if self.cleaned_data.has_key('prescription') and self.cleaned_data.has_key('date'):
+        if 'prescription' in self.cleaned_data and 'date' in self.cleaned_data:
             # check for integrity constraint - duplicate keys
             prescription = self.cleaned_data['prescription']
             dt = self.cleaned_data['date']
@@ -192,7 +192,7 @@ class PrescribedBurnActiveForm(forms.ModelForm):
         if self.cleaned_data['area']==None and self.cleaned_data['distance']==None:
             raise ValidationError("Must input at least one of Area or Distance")
 
-        if self.cleaned_data.has_key('prescription') and self.cleaned_data.has_key('date'):
+        if 'prescription' in self.cleaned_data and 'date' in self.cleaned_data:
             # check for integrity constraint - duplicate keys
             prescription = self.cleaned_data['prescription']
             dt = self.cleaned_data['date']
@@ -260,13 +260,13 @@ class PrescribedBurnEditActiveForm(forms.ModelForm):
 
     def clean_location(self):
 
-        if self.cleaned_data.has_key('prescription') and self.cleaned_data.has_key('date'):
+        if 'prescription' in self.cleaned_data and 'date' in self.cleaned_data:
             # check for integrity constraint - duplicate keys
             prescription = self.cleaned_data['prescription']
             dt = self.cleaned_data['date']
             location = self.cleaned_data['location']
 
-            if hasattr(prescription, "current_approval") and dt > prescription.current_approval.valid_to and not self.cleaned_data.has_key('status'):
+            if hasattr(prescription, "current_approval") and dt > prescription.current_approval.valid_to and not 'status' in self.cleaned_data:
                 raise ValidationError("Date Error: Burn ID  {} is valid to {}".format(prescription.burn_id, prescription.current_approval.valid_to))
 
             objects = PrescribedBurn.objects.filter(prescription=prescription, date=dt, form_name=PrescribedBurn.FORM_268B, location=location)
@@ -325,7 +325,6 @@ class FireForm(forms.ModelForm):
         """ Returns tuple eg. ((0,'--------'), (1,2017)) """
         choices = [[0, '--------']]
         bfrs_url = settings.BFRS_URL if settings.BFRS_URL.endswith('/') else settings.BFRS_URL + os.sep
-        print(bfrs_url)
         years = ['--------'] + requests.get(url=bfrs_url + 'api/v1/bushfire/fields/year/?format=json', auth=requests.auth.HTTPBasicAuth(settings.USER_SSO, settings.PASS_SSO), verify=False).json()
         return tuple([(years.index(i), i) for i in years])
 

@@ -8,7 +8,7 @@ Observations Identified & Proposed Action \\
 {{ item.observations|texify|safe }} & {{ item.action|texify|safe }} \\
 \hline
 {% empty %}
-\multicolumn{2}{|X|}{No Lessons Identified} \\
+\multicolumn{2}{|p{\linewidth}|}{\textrm{No Lessons Identified}} \\
 {% endfor %}
 \hline
 \end{longtabu}

@@ -1,0 +1,31 @@
+{% load prescription_tags %}
+{
+\pdfpagewidth={{document.dimensions.width}}pt
+\pdfpageheight={{document.dimensions.height}}pt
+\fancyhf{}
+\renewcommand{\headrulewidth}{0}
+\renewcommand{\footrulewidth}{0}
+
+\newdimen\rightmargin
+\setlength{\rightmargin}{\paperwidth}
+\addtolength{\rightmargin}{-22mm}
+
+\includepdf[pages=-,scale=1,fitpaper=true,templatesize={\pdfpagewidth}{\pdfpageheight},pagecommand={
+   \begin{tikzpicture}[remember picture,overlay]
+    \node[yshift=-28pt,xshift=11mm] at (current page.north west)
+      {\begin{tikzpicture}[remember picture, overlay]
+        \draw[draw=none,fill=white,opacity=0.0] (0,0) rectangle
+          (\paperwidth, 28pt);
+        \node[anchor=north west,rectangle,yshift=28pt,inner sep=4pt]
+        {\href{% templatetag openbrace %}{{ request.build_absolute_uri|texify }}}{% templatetag openbrace %}{{ prescription|texify }}} {{ prescription.name|texify }} };
+        \node[anchor=north west,rectangle,yshift=14pt,inner sep=4pt]
+        { {% if document.modified %}\textbf{Document Uploaded}\textit{ {{ document.modified }}}\quad{% endif %}\textbf{PDF Created On}\textit{ {{ timestamp }} }};
+        \node[anchor=north east,rectangle,yshift=28pt,xshift=\rightmargin,inner sep=4pt]
+        {% templatetag openbrace %}{% if section %}{{ section }}{% else %}\leftmark{% endif %}};
+        \node[anchor=north east,rectangle,yshift=14pt,xshift=\rightmargin,inner sep=4pt]
+        {Page \thepage\ of \pageref{LastPage}};
+       \end{tikzpicture}
+      };
+   \end{tikzpicture}
+    }]{% templatetag openbrace %}{{ document.document.path|safe }}}
+}

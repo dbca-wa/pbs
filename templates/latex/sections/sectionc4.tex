@@ -24,7 +24,7 @@ hard copy Burn File.
 \hline
 {% if prescription.status == prescription.STATUS_CLOSED %}
 {% with prescription.approval_set.latest as approval %}
-\textbf{Closed by {{ prescription.closure_officer.get_full_name }}} & \textbf{Date {{ prescription.status_modified }}} \\
+\textbf{Closed by {{ prescription.closure_officer.get_full_name|texify|safe }}} & \textbf{Date {{ prescription.status_modified }}} \\
 {% endwith %}
 {% else %}
 \textbf{Closed by} & \textbf{Date} \\

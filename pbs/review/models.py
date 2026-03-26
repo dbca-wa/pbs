@@ -6,13 +6,14 @@ from pbs.prescription.models import (Prescription, Region, District, Tenure)
 from smart_selects.db_fields import ChainedForeignKey
 from swingers.models.auth import Audit
 from dateutil import tz
-from django.utils.encoding import python_2_unicode_compatible
+
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.forms import ValidationError
 from django.conf import settings
 import sys
 from django.utils import timezone
+from django.contrib.gis.db.models import MultiPolygonField as DjangoMultiPolygonField
 
 import logging
 logger = logging.getLogger('pbs')
@@ -40,7 +41,7 @@ class BurnState(models.Model):
             self.prescription, self.review_type, self.record)
 
 
-@python_2_unicode_compatible
+
 class ExternalAssist(models.Model):
     name = models.CharField(max_length=25)
 
@@ -51,7 +52,7 @@ class ExternalAssist(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
+
 class FireTenure(models.Model):
     name = models.CharField(max_length=50)
 
@@ -84,8 +85,13 @@ class Acknowledgement(models.Model):
         return "{} - {} - {}".format(
             self.burn, self.acknow_type, self.record)
 
+from django.db import ProgrammingError, OperationalError
+def get_region_choices():
+    try:
+        return [(r.id, r.name) for r in Region.objects.all()]
+    except (ProgrammingError, OperationalError):
+        return []
 
-@python_2_unicode_compatible
 class PrescribedBurn(Audit):
     BURN_ACTIVE = 1
     BURN_INACTIVE = 2
@@ -134,6 +140,7 @@ class PrescribedBurn(Audit):
 
     fmt = "%Y-%m-%d %H:%M"
 
+
     prescription = models.ForeignKey(Prescription, verbose_name="Burn ID", related_name='prescribed_burn', null=True, blank=True, on_delete=models.PROTECT)
 #    prescription = ChainedForeignKey(
 #        Prescription, chained_field="region", chained_model_field="region",
@@ -143,7 +150,8 @@ class PrescribedBurn(Audit):
     # Required for Fire records
     fire_id = models.CharField(verbose_name="Fire Number", max_length=15, null=True, blank=True)
     fire_name = models.TextField(verbose_name="Name", null=True, blank=True)
-    region = models.PositiveSmallIntegerField(choices=[(r.id, r.name) for r in Region.objects.all()], null=True, blank=True)
+    # region = models.PositiveSmallIntegerField(choices=[(r.id, r.name) for r in Region.objects.all()], null=True, blank=True)
+    region = models.PositiveSmallIntegerField(choices=get_region_choices, null=True, blank=True)
     district = ChainedForeignKey(
         District, chained_field="region", chained_model_field="region",
         show_all=False, auto_choose=True, blank=True, null=True, on_delete=models.PROTECT)
@@ -325,10 +333,10 @@ class PrescribedBurn(Audit):
     @property
     def area_str(self):
         _str = ''
-        if self.area>=0:
+        if self.area and self.area>=0:
             _str += str(self.area) + " ha {} ".format('-' if self.distance else '')
 
-        if self.distance>=0:
+        if self.distance and self.distance>=0:
             _str += str(self.distance) + " km"
 
         return _str
@@ -511,7 +519,7 @@ class AircraftApproval(models.Model):
             self.aircraft_burn, self.approval_type, self.record)
 
 
-@python_2_unicode_compatible
+
 class AircraftBurn(Audit):
     APPROVAL_DRAFT = 'DRAFT'
     APPROVAL_SUBMITTED = 'USER'
@@ -581,7 +589,8 @@ class AircraftBurn(Audit):
 
 class AnnualIndicativeBurnProgram(models.Model):
     objectid = models.IntegerField(primary_key=True)
-    wkb_geometry = models.MultiPolygonField(srid=4326, blank=True, null=True)
+    # wkb_geometry = models.MultiPolygonField(srid=4326, blank=True, null=True)
+    wkb_geometry = DjangoMultiPolygonField(srid=4326, blank=True, null=True)
     region = models.CharField(max_length=35, blank=True)
     district = models.CharField(max_length=35, blank=True)
     burnid = models.CharField(max_length=30, blank=True)
@@ -601,15 +610,17 @@ class AnnualIndicativeBurnProgram(models.Model):
     perim_km = models.DecimalField(max_digits=19, decimal_places=11, blank=True, null=True)
     longitude = models.DecimalField(max_digits=19, decimal_places=11, blank=True, null=True)
     latitude = models.DecimalField(max_digits=19, decimal_places=11, blank=True, null=True)
-    objects = models.GeoManager()
+    # objects = models.GeoManager()
+    objects = models.Manager()
 
     class Meta:
         managed=False
 
 
 class BurnProgramLink(models.Model):
-    prescription = models.ForeignKey(Prescription, unique=True)
-    wkb_geometry = models.MultiPolygonField(srid=4326)
+    prescription = models.ForeignKey(Prescription, unique=True, on_delete=models.PROTECT)
+    # wkb_geometry = models.MultiPolygonField(srid=4326)
+    wkb_geometry = DjangoMultiPolygonField(srid=4326)
     area_ha = models.FloatField()
     longitude = models.FloatField()
     latitude = models.FloatField()
@@ -759,3 +770,7 @@ class BurnProgramLink(models.Model):
 
                         ''')
 
+import reversion
+reversion.register(PrescribedBurn)
+reversion.register(AircraftBurn)
+reversion.register(BurnState)

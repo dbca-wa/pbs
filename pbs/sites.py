@@ -4,19 +4,21 @@ from functools import update_wrapper
 
 from django.conf import settings
 from django.contrib.admin import ModelAdmin
-from django.contrib.admin.validation import ImproperlyConfigured
+# from django.contrib.admin.validation import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth import REDIRECT_FIELD_NAME, login
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin, GroupAdmin
-from django.contrib.sites.models import get_current_site
-from django.core.urlresolvers import reverse
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import resolve_url
-from django.template import add_to_builtins
+# from django.template import add_to_builtins
 from django.template.response import TemplateResponse
 from django.utils.decorators import method_decorator
-from django.utils.http import is_safe_url
-from django.utils.translation import ugettext as _, ugettext_lazy
+# from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext as _, gettext_lazy
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
 
@@ -61,6 +63,7 @@ from pbs.stakeholder.models import (CriticalStakeholder, PublicContact,
                                     Notification)
 from pbs.review.models import (BurnState, PrescribedBurn, AircraftBurn)
 from pbs.review.admin import (BurnStateAdmin, PrescribedBurnAdmin, AircraftBurnAdmin)
+from django.urls import re_path
 
 from swingers.sauth.sites import AuditSite
 
@@ -70,6 +73,8 @@ import datetime
 from dateutil import tz
 import re
 import itertools
+
+from django.contrib import admin
 
 
 log = logging.getLogger(__name__)
@@ -89,6 +94,14 @@ class UserAdmin(AuthUserAdmin):
     )
     list_filter = ("is_active", "groups")
 
+    def get_urls(self):
+        from django.views.generic import RedirectView
+        favicon_url = [
+            re_path(r'^favicon\.ico$',
+                    RedirectView.as_view(url='/static/favicon.ico', permanent=True)),
+        ]
+        return favicon_url + super().get_urls()
+
 
 class PrescriptionSite(AuditSite):
     def has_permission(self, request):
@@ -98,22 +111,25 @@ class PrescriptionSite(AuditSite):
         """
         Add a view to clear the current prescription from the session
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        # from django.urls import re_path
 
         def wrap(view, cacheable=False):
             def wrapper(*args, **kwargs):
                 return self.admin_view(view, cacheable)(*args, **kwargs)
             return update_wrapper(wrapper, view)
-
-        urlpatterns = patterns(
-            '',
-            url(r'^administration/$',
+        
+        urlpatterns = [
+            # '',
+            re_path(r'^administration/$',
                 wrap(self.site_admin),
                 name='site_admin'),
-            url(r'^profile/$',
+            re_path(r'^administration/$',wrap(self.site_admin), name='site_admin'),
+            re_path(r'^profile/$',
                 wrap(self.profile),
                 name='profile'),
-            url(r'^endorse-authorise/$',
+            re_path(r'^endorse-authorise/$',
                 wrap(self.endorse_authorise_summary),
                 name='endorse_authorise_summary'),
 #            url(r'^daily-burn-program/$',
@@ -123,12 +139,14 @@ class PrescriptionSite(AuditSite):
 #                wrap(self.daily_burn_program_add),
 #                name='daily_burn_program_add'),
 
-            url(r'^endorse-authorise/export_csv/$',
+            re_path(r'^endorse-authorise/export_csv/$',
                 wrap(self.export_to_csv),
                 name='endorse_authorise_exportcsv'),
-        )
+        ]
 
-        return urlpatterns + super(PrescriptionSite, self).get_urls()
+        #return urlpatterns + super(PrescriptionSite, self).get_urls()
+        return urlpatterns + super().get_urls()
+        #return urlpatterns
 
     def index(self, request):
         try:
@@ -157,21 +175,24 @@ class PrescriptionSite(AuditSite):
             self._registry[model] = admin_class(model, self)
 
     @method_decorator(sensitive_post_parameters())
-    @never_cache
+    @method_decorator(never_cache)
     def login(self, request, redirect_field_name=REDIRECT_FIELD_NAME,
               authentication_form=PbsAdminAuthenticationForm,
               extra_context=None):
         """
         Displays the login form and handles the login action.
         """
-        redirect_to = request.REQUEST.get(redirect_field_name, '')
+        redirect_to = request.POST.get(redirect_field_name,
+                           request.GET.get(redirect_field_name, ''))
 
         if request.method == 'POST':
             form = authentication_form(request, data=request.POST)
             if form.is_valid():
 
                 # Ensure the user-originating redirection url is safe.
-                if not is_safe_url(url=redirect_to, host=request.get_host()):
+                # if not is_safe_url(url=redirect_to, host=request.get_host()):
+                #     redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
+                if not url_has_allowed_host_and_scheme(url=redirect_to, host=request.get_host()):
                     redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
 
                 # If this is the user's first login, redirect them to
@@ -200,26 +221,31 @@ class PrescriptionSite(AuditSite):
             redirect_field_name: request.get_full_path(),
             'site': current_site,
             'site_name': current_site.name,
+            'current_app': self.name,
         }
         if extra_context is not None:
             context.update(extra_context)
         return TemplateResponse(request,
                                 self.login_template or 'admin/login.html',
-                                context, current_app=self.name)
+                                context)
 
-    @never_cache
+    @method_decorator(never_cache)
     def logout(self, request, extra_context=None):
         from django.contrib.auth.views import logout
         return logout(request, reverse('admin:index', current_app=self.name))
 
     def site_admin(self, request, extra_context=None):
-        context = {}
+        context = {
+            'current_app': self.name
+        }
         context.update(extra_context or {})
-        return TemplateResponse(request, "admin/site_admin.html", context,
-                                current_app=self.name)
+        # return TemplateResponse(request, "admin/site_admin.html", context,
+        #                         current_app=self.name)
+        return TemplateResponse(request, "admin/site_admin.html", context)
 
     def profile(self, request):
-        profile = request.user.get_profile()
+        # profile = request.user.get_profile()
+        profile = request.user.profile
         if request.method == 'POST':
             form = ProfileForm(request.POST, instance=profile)
             if form.is_valid():
@@ -232,8 +258,8 @@ class PrescriptionSite(AuditSite):
             'title': _('Edit profile'),
             'form': form
         }
-        return TemplateResponse(request, "admin/profile.html", context,
-                                current_app=self.name)
+        request.current_app=self.name
+        return TemplateResponse(request, "admin/profile.html", context)
 
     def endorse_authorise_summary(self, request, extra_context=None):
         """
@@ -251,9 +277,49 @@ class PrescriptionSite(AuditSite):
 
         export_csv = True if request.GET.get('Export_CSV') == 'export_csv' else False
 
+        def _parse_date(date_value):
+            """Parse a date value coming from a request GET parameter.
+
+            Accepts datetime.date/datetime.datetime instances (returns date),
+            or strings in a number of common formats.
+            Falls back to today's date if parsing fails.
+            """
+            if not date_value:
+                return None
+            if isinstance(date_value, datetime.date):
+                # If it's already a date (or datetime since datetime is subclass), return the date
+                try:
+                    return date_value.date()
+                except Exception:
+                    return date_value
+            if isinstance(date_value, datetime.datetime):
+                return date_value.date()
+            date_str = str(date_value).strip()
+            # Try a number of formats (dd-mm-yyyy is the primary expected format)
+            formats = [
+                '%d-%m-%Y',
+                '%d-%m-%y',
+                '%Y-%m-%d',
+                '%b. %d, %Y',
+                '%b %d, %Y',
+                '%B %d, %Y'
+            ]
+            for fmt in formats:
+                try:
+                    return datetime.datetime.strptime(date_str, fmt).date()
+                except Exception:
+                    continue
+            # As a final attempt, try ISO parsing with dateutil if available
+            try:
+                from dateutil import parser as _parser
+                return _parser.parse(date_str).date()
+            except Exception:
+                log.warning('Could not parse date: %s, defaulting to today', date_str)
+                return datetime.date.today()
+
         if request.GET.get('fromDate'):
             fromDate = request.GET.get('fromDate')
-            fromDate = datetime.datetime.strptime(fromDate, '%d-%m-%Y').date()
+            fromDate = _parse_date(fromDate)
         else:
             # default - beginning of current financial year
             today = datetime.date.today()
@@ -268,7 +334,7 @@ class PrescriptionSite(AuditSite):
 
         if request.GET.get('toDate'):
             toDate = request.GET.get('toDate')
-            toDate = datetime.datetime.strptime(toDate, '%d-%m-%Y').date()
+            toDate = _parse_date(toDate)
         else:
             toDate = datetime.date.today()
 
@@ -313,8 +379,10 @@ class PrescriptionSite(AuditSite):
             'toDate': toDate,
         }
         context.update(extra_context or {})
-        return TemplateResponse(request, "admin/endorse_authorise_summary.html", context,
-                                current_app=self.name)
+        request.current_app=self.name
+        return TemplateResponse(request, "admin/endorse_authorise_summary.html", context)
+        # request.current_app=self.name
+        # return TemplateResponse(request, "admin/endorse_authorise_summary.html", context)
 
     def get_burns(self, fromDate, toDate):
 
@@ -454,12 +522,16 @@ class PrescriptionSite(AuditSite):
             'Shire', 'Burn Purpose/s', 'Program Allocations', 'Land Tenure', 'Success Criteria'])
 
         for burn in query_list:
-            writer.writerow([unicode(s).encode("utf-8") for s in burn])
+            # Ensure all values are text strings for the CSV writer.
+            # In Python 3, `unicode()` does not exist; convert bytes to str
+            # and make None values empty strings.
+            writer.writerow([s.decode('utf-8') if isinstance(s, bytes) else '' if s is None else str(s) for s in burn])
 
         return response
-    export_to_csv.short_description = ugettext_lazy("Export to CSV")
+    export_to_csv.short_description = gettext_lazy("Export to CSV")
 
 
+#site = PrescriptionSite(name='myadmin')
 site = PrescriptionSite()
 
 site.register(User, UserAdmin)
@@ -508,4 +580,4 @@ site.register(PrescribedBurn, PrescribedBurnAdmin)
 site.register(AircraftBurn, AircraftBurnAdmin)
 
 # add our own texify filter to the builtins here.
-add_to_builtins('pbs.prescription.templatetags.texify')
+# add_to_builtins('pbs.prescription.templatetags.texify')

@@ -1,4 +1,4 @@
-{% load staticfiles %}<!doctype html>
+{% load static %}<!doctype html>
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
   <meta charset="utf-8" />
@@ -7,7 +7,7 @@
   <meta name="author" content="{% block page_author %}{% endblock %}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}{% endblock %}</title>
-  <link rel="stylesheet" href="{% static "css/bootstrap.css" %}">
+  <!-- <link rel="stylesheet" href="{% static "css/bootstrap.css" %}">
   <link rel="stylesheet" href="{% static "css/bootstrap-responsive.css" %}">
   <link rel="stylesheet" href="{% static "css/font-awesome.min.css" %}">
   <link rel="stylesheet" href="{% static "css/tablecloth.css" %}">
@@ -17,12 +17,23 @@
   <link rel="stylesheet" href="{% static "css/styles.css" %}">
   <link rel="stylesheet" href="{% static "pbs/css/styles.css" %}">
   <link rel="stylesheet" href="{% static "css/animate.css" %}">
-  <link rel="stylesheet" href="{% static "css/jquery-ui-1.11.4.min.css" %}">
+  <link rel="stylesheet" href="{% static "css/jquery-ui-1.11.4.min.css" %}"> -->
+  <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}?ver={{ GIT_COMMIT_HASH }}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap-responsive.css' %}?ver={{ GIT_COMMIT_HASH }}">
+  <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}?ver={{ GIT_COMMIT_HASH }}">
+  <link rel="stylesheet" href="{% static 'css/tablecloth.css' %}?ver={{ GIT_COMMIT_HASH }}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap-multiselect.css' %}?ver={{ GIT_COMMIT_HASH }}">
+
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}?ver={{ GIT_COMMIT_HASH }}">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}?ver={{ GIT_COMMIT_HASH }}">
+  <link rel="stylesheet" href="{% static 'pbs/css/styles.css' %}?ver={{ GIT_COMMIT_HASH }}">
+  <link rel="stylesheet" href="{% static 'css/animate.css' %}?ver={{ GIT_COMMIT_HASH }}">
+  <link rel="stylesheet" href="{% static 'css/jquery-ui-1.11.4.min.css' %}?ver={{ GIT_COMMIT_HASH }}">
   <link rel="shortcut icon" type="image/png" href="{{STATIC_URL}}favicon.ico"/>
   {% block extrastyle %}{% endblock %}
 
   {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
-  <script src="{% static 'js/jquery-1.9.1.min.js' %}"></script>
+  <!-- <script src="{% static 'js/jquery-1.9.1.min.js' %}"></script>
   <script src="{% static 'js/jquery-ui-1.11.4.min.js' %}"></script>
   <script src="{% static 'js/modernizr.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
@@ -38,7 +49,24 @@
   <script src="{% static 'js/bootstrap-growl.min.js' %}"></script>
   <script src="{% static 'js/bootstrap-multiselect.js' %}"></script>
 
-  <script src="{% static 'pbs/js/is-number.js' %}" type="text/javascript"></script>
+  <script src="{% static 'pbs/js/is-number.js' %}" type="text/javascript"></script> -->
+  <script src="{% static 'js/jquery-1.9.1.min.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/jquery-ui-1.11.4.min.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/modernizr.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/fullcalendar.min.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/gcal.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/tasks.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/jquery.metadata.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/jquery.tablesorter.min.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/jquery.tablecloth.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/jquery-ui-datepicker-1.11.1.min.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/jquery.cookie.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/jquery.blockui.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/bootstrap-growl.min.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+  <script src="{% static 'js/bootstrap-multiselect.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+
+  <script src="{% static 'pbs/js/is-number.js' %}?ver={{ GIT_COMMIT_HASH }}" type="text/javascript"></script>
   <script>
       window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";
       // fix standard addrelated popup closure
@@ -46,7 +74,8 @@
           add_to_cache: function() {},
           redisplay: function() { window.location.reload(true); }
       };
-      $(function() {
+      // $(function() {
+        (function($) {
           $("li.dropdown li.active").parents("li.dropdown").addClass("active");
           function textAreaAdjust(o) {
               o.target.style.height = "1.5em";
@@ -152,9 +181,9 @@
           <ul class="dropdown-menu">
           {% block userlinks %}
           {% url 'django-admindocs-docroot' as docsroot %}
-          {% if docsroot %}
+          <!-- {% if docsroot %}
             <li><a href="{{ docsroot }}">{% trans 'Help' %}</a></li>
-          {% endif %}
+          {% endif %} -->
           {% if perms.auth.change_user %}
             <li><a href="{% url 'admin:auth_user_changelist' %}">Manage Users</a></li>
           {% endif %}
@@ -165,7 +194,8 @@
           {% if user.profile.is_fpc_user and password_change %}
             <li><a href="{{ password_change }}">{% trans 'Change password' %}</a></li>
           {% endif %}
-            <li><a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a></li>
+            <!-- <li><a href="{% url 'admin:logout' %}">{% trans 'Log out1' %}</a></li> -->
+             <li><a href="/logout/">{% trans 'Log out' %}</a></li>
           {% endblock %}
           </ul>
         </li>
@@ -288,8 +318,8 @@
                   <li{% if request.path == partb %} class="active"{% endif %}><a href="{{ partb }}">Part B Summary</a></li>
                   <li{% if request.get_full_path == operational_overview %} class="active"{% endif %}><a href="{{ operational_overview }}">B1 - Operational Overview</a></li>
                   <li{% if request.get_full_path == actions %} class="active"{% endif %}><a href="{{ actions }}">B1 - Plan Actions</a></li>
-                  <li{% if actions|add:"?pre_burn=true" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?pre_burn=true">B1 - Pre-burn actions</a></li>
-                  <li{% if actions|add:"?day_of_burn=true" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?day_of_burn=true">B2 - Day of burn actions</a></li>
+                  <li{% if actions|add:"?pre_burn=True" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?pre_burn=True">B1 - Pre-burn actions</a></li>
+                  <li{% if actions|add:"?day_of_burn=True" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?day_of_burn=True">B2 - Day of burn actions</a></li>
                   <li{% if request.path == sectionb3_trails %} class="active"{% endif %}><a href="{{ sectionb3_trails }}">B3 - Tracks and Trails</a></li>
                   <li{% if request.path == sectionb3_inspection %} class="active"{% endif %}><a href="{{ sectionb3_inspection }}">B3 - Sign Inspection & Surveillance</a></li>
                   <li{% if request.path == sectionb3_roads  %} class="active"{% endif %}><a href="{{ sectionb3_roads }}">B4 - Roads</a></li>
@@ -314,7 +344,7 @@
                 </a>
                 <ul class="dropdown-menu">
                   <li{% if request.path == post_summary %} class="active"{% endif %}><a href="{{ post_summary }}">Part C Summary</a></li>
-                  <li{% if actions|add:"?post_burn=true" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?post_burn=true">C1 - Post burn actions</a></li>
+                  <li{% if actions|add:"?post_burn=True" in request.get_full_path %} class="active"{% endif %}><a href="{{ actions }}?post_burn=True">C1 - Post burn actions</a></li>
                   <li{% if request.path == evaluation %} class="active"{% endif %}><a href="{{ evaluation }}">C2 - Burn evaluation summary</a></li>
                   <li{% if request.path == proposed_action %} class="active"{% endif %}><a href="{{ proposed_action }}">C3 - Lessons learned</a></li>
                   <li{% if request.path == post_burn_checklist %} class="active"{% endif %}><a href="{{ post_burn_checklist }}">C4 - Post burn checklist</a></li>
@@ -346,6 +376,18 @@
     {% block header %}
     {% endblock %}
     {% if not is_popup %}{% block breadcrumbs %}{% endblock %}{% endif %}
+    {% block archive_warning %}
+    {% if current and not current.archive_successful %}
+    <div class="row-fluid">
+      <div class="span12">
+          <div class="alert alert-error">
+            <i class="icon-warning-sign"></i>
+                The latest archive PDF generation was not successful for this Prescription. Please fix the data before proceeding.
+          </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endblock %}
     {% block messages %}
     {% if messages %}
     <div class="row-fluid">
@@ -399,11 +441,16 @@
 
 <script>
 
-// clear the cookie token on page load
-$(document).ready(function() {
+$(document).ready(function($) {
    $.cookie('fileDownloadToken', null, { path: '/' }); //clears this cookie value
    $.removeCookie('fileDownloadToken'); //clears this cookie value
 });
+(function($) {
+// clear the cookie token on page load
+// $(document).ready(function($) {
+//    $.cookie('fileDownloadToken', null, { path: '/' }); //clears this cookie value
+//    $.removeCookie('fileDownloadToken'); //clears this cookie value
+// });
 
 $('.file-download').on('click', function(e) {
     var id = e.target.id
@@ -461,6 +508,22 @@ $('.file-download').on('click', function(e) {
     }
 });
 
+})(django.jQuery);
+$(document).ready(function($) {
+  function textAreaAdjust(o) {
+      o.target.style.height = "1.5em";
+      if (o.target.scrollHeight > $(o.target).height()) {
+        o.target.style.height = "1px";
+        o.target.style.height = (25 + o.target.scrollHeight) + "px";
+      }
+  }
+  $("body textarea").on('keyup' , textAreaAdjust);
+  $("body textarea").trigger("keyup");
+  document.addEventListener('formset:added', (event) => {
+    $(event.target).find('textarea').on('keyup', textAreaAdjust);
+  });
+  document.addEventListener('formset:removed', (event) => {});
+})
 </script>
 
 {% endblock %}

@@ -1,0 +1,4 @@
+10 9 * * *     cd /app && python manage.py appmonitor_check >> logs/appmonitor_check.log 2>&1
+
+# Log Rotate
+1 0 * * *  /bin/log_rotate.sh  >> /app/logs/log_rotate.log 2>&1

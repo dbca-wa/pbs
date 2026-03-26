@@ -3,11 +3,11 @@ from functools import update_wrapper, partial
 from guardian.shortcuts import assign_perm
 
 from django.contrib.admin import SimpleListFilter
-from django.contrib.admin.util import unquote, quote
+from django.contrib.admin.utils import unquote, quote
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from pbs.admin import BaseAdmin, get_permission_codename
 from pbs.prescription.models import Prescription
@@ -47,6 +47,9 @@ class RiskRegisterFilter(SimpleListFilter):
 class RegisterAdmin(PrescriptionMixin, SavePrescriptionMixin,
                     BaseAdmin):
     prescription_filter_field = "prescription"
+    list_display = ("description", "draft_consequence",
+                     "draft_likelihood", "alarp", "final_consequence",
+                     "final_likelihood")
     list_editable = ("description", "draft_consequence",
                      "draft_likelihood", "alarp", "final_consequence",
                      "final_likelihood")
@@ -168,7 +171,7 @@ class RegisterAdmin(PrescriptionMixin, SavePrescriptionMixin,
             url = reverse('admin:risk_treatment_add',
                           args=(quote(self.prescription.pk),),
                           current_app=self.admin_site.name)
-            url += '?register=%d' % obj.pk
+            url += '?register=%d&_popup=1' % obj.pk
             output += (
                 '<br><a id="add_treatment_%(pk)s" '
                 'onclick="return showAddAnotherPopup(this);" '
@@ -236,6 +239,7 @@ class ContextAdmin(PrescriptionMixin, SavePrescriptionMixin,
     list_display_links = (None,)
     list_editable = ("statement",)
     actions = None
+    can_delete = True
 
     def get_readonly_fields(self, request, obj=None):
         """
@@ -262,7 +266,7 @@ class ContextRelevantActionAdmin(PrescriptionMixin, SavePrescriptionMixin,
         obj = self.get_object(request, unquote(object_id))
 
         if (obj is None or not self.has_change_permission(request, obj) or
-                not request.is_ajax() or request.method != "POST"):
+                not request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.method != "POST"):
             return super(ContextRelevantActionAdmin, self).change_view(
                 request, object_id)
         else:
@@ -290,6 +294,7 @@ class ComplexityAdmin(PrescriptionMixin, SavePrescriptionMixin,
 
 class ContingencyActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
     model = ContingencyAction
+    prescription_filter_field = "contingency__prescription"
     fields = ("action",)
     actions = None
 
@@ -322,6 +327,7 @@ class ContingencyActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin
 
 class ContingencyNotificationAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
     model = ContingencyNotification
+    prescription_filter_field = "contingency__prescription"
     fields = ('name', 'location', 'organisation', 'contact_number')
     actions = None
 
@@ -395,15 +401,15 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                       args=(obj.prescription.pk,),
                       current_app=self.admin_site.name)
         if editable:
-            output += '''<a onclick="return showAddAnotherPopup(this);"
-                class="add-another" href="{0}?contingency={1}">
+            output += '''<a  onclick="return showAddAnotherPopup(this);"
+                class="add-another" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add an action</a>'''.format(url, obj.pk)
         # Include a distinctive class name in the "Add" link in order to conditionally
         # remove the stupid thing depending on the user's group membership.
         # We do this because we don't get access to the request object in this method.
         else:
-            output += '''<a onclick="return showAddAnotherPopup(this);"
-                class="add-another hide adminonly" href="{0}?contingency={1}">
+            output += '''<a  onclick="return showAddAnotherPopup(this);"
+                class="add-another hide adminonly" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add an action</a>'''.format(url, obj.pk)
         return output
     display_actions.short_description = "Actions"
@@ -449,14 +455,14 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                       current_app=self.admin_site.name)
         if editable:
             output += '''<a onclick="return showAddAnotherPopup(this);"
-                class="add-another" href="{0}?contingency={1}">
+                class="add-another" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add a notification</a>'''.format(url, obj.pk)
         # Include a distinctive class name in the "Add" link in order to conditionally
         # remove the stupid thing depending on the user's group membership.
         # We do this because we don't get access to the request object in this method.
         else:
             output += '''<a onclick="return showAddAnotherPopup(this);"
-                class="add-another hide adminonly" href="{0}?contingency={1}">
+                class="add-another hide adminonly" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add a notification</a>'''.format(url, obj.pk)
         return output
     display_notifications.short_description = 'Notifications'
@@ -488,8 +494,8 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
     prescription_filter_field = "risk__prescription"
     list_group_by = 'risk_category'
     list_display_links = ('__str__',)
-    list_editable = ("relevant", "pre_burn", "day_of_burn", "post_burn",
-                     "context_statement", "details", "pre_burn_responsible",
+    list_display = ("relevant", "pre_burn", "day_of_burn", "post_burn",
+                     "context_statement", "details",
                      "pre_burn_resolved", "pre_burn_explanation",
                      "pre_burn_completed", "pre_burn_completer",
                      "day_of_burn_situation", "day_of_burn_mission",
@@ -498,6 +504,27 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                      "day_of_burn_completed", "day_of_burn_completer",
                      "post_burn_completed", "post_burn_completer",
                      "day_of_burn_include")
+    # list_editable = ("relevant", "pre_burn", "day_of_burn", "post_burn",
+    #                  "context_statement", "details", "pre_burn_responsible",
+    #                  "pre_burn_resolved", "pre_burn_explanation",
+    #                  "pre_burn_completed", "pre_burn_completer",
+    #                  "day_of_burn_situation", "day_of_burn_mission",
+    #                  "day_of_burn_execution", "day_of_burn_administration",
+    #                  "day_of_burn_command", "day_of_burn_safety",
+    #                  "day_of_burn_completed", "day_of_burn_completer",
+    #                  "post_burn_completed", "post_burn_completer",
+    #                  "day_of_burn_include")
+    list_editable = ("relevant", "pre_burn", "day_of_burn", "post_burn",
+                     "context_statement", "details",
+                     "pre_burn_resolved", "pre_burn_explanation",
+                     "pre_burn_completed", "pre_burn_completer",
+                     "day_of_burn_situation", "day_of_burn_mission",
+                     "day_of_burn_execution", "day_of_burn_administration",
+                     "day_of_burn_command", "day_of_burn_safety",
+                     "day_of_burn_completed", "day_of_burn_completer",
+                     "post_burn_completed", "post_burn_completer",
+                     "day_of_burn_include")
+
     fieldsets = (
         (None, {
             "fields": ('details', 'pre_burn', 'day_of_burn',
@@ -665,21 +692,22 @@ class TreatmentAdmin(PrescriptionMixin, BaseAdmin):
         """
         Add an extra view to handle marking a treatment as complete.
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^complete/prescription/(\d+)/$',
+        urlpatterns = [
+            # '',
+           re_path(r'^complete/prescription/(\d+)/$',
                 wrap(self.mark_as_complete),
                 name='%s_%s_complete' % info),
-        )
+        ]
         return urlpatterns + super(TreatmentAdmin, self).get_urls()
 
     def mark_as_complete(self, request, prescription_id):

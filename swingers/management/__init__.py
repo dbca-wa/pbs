@@ -20,7 +20,8 @@ try:
     # check for all our view permissions after a syncdb
     # this import may fail if the db has not been created yet :(
     # no need to add_view_permissions when there is no db
-    from django.db.models.signals import post_syncdb
-    post_syncdb.connect(add_view_permissions)
+    # from django.db.models.signals import post_syncdb
+    # post_syncdb.connect(add_view_permissions)
+    pass
 except StandardError:
     pass

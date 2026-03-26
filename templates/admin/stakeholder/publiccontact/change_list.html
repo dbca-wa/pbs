@@ -1,5 +1,5 @@
 {% extends "admin/change_list.html" %}
-{% load i18n staticfiles admin_list %}
+{% load i18n static admin_list %}
 
 {% block extrahead %}
 {{ block.super }}
@@ -15,7 +15,7 @@
   // The Public Contact section is always editable, even after a burn is approved/closed.
   (function($) {
     $(function() {
-      $("#result_list tbody tr").tabularFormset({
+      $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
         addText: '<i class="icon-plus"></i> Add another public contact'

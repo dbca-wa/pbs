@@ -1,7 +1,7 @@
 from selenium.common.exceptions import NoSuchElementException
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from pbs.document.models import Document, DocumentCategory, DocumentTag
 from pbs.prescription.models import (Prescription, Purpose, RegionalObjective,

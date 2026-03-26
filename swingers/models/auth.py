@@ -7,29 +7,30 @@ import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
+#from django.utils.encoding import python_2_unicode_compatible
 
 # we can't do `from swingers import models` because that causes circular import
 from swingers.models import Model, ForeignKey, DateTimeField
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 
 
 logger = logging.getLogger("log." + __name__)
 
 
-@python_2_unicode_compatible
+
 class Audit(Model):
     class Meta:
         abstract = True
 
     creator = ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='%(app_label)s_%(class)s_created', editable=False)
+        related_name='%(app_label)s_%(class)s_created', editable=False, on_delete=models.PROTECT)
     modifier = ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='%(app_label)s_%(class)s_modified', editable=False)
+        related_name='%(app_label)s_%(class)s_modified', editable=False, on_delete=models.PROTECT)
     created = DateTimeField(default=timezone.now, editable=False)
     modified = DateTimeField(auto_now=True, editable=False)
 
@@ -38,8 +39,20 @@ class Audit(Model):
         self._changed_data = None
         self._initial = {}
         if self.pk:
+            # Don't use getattr to load field values here because doing so may
+            # trigger descriptors (eg. DeferredAttribute, related fields) which
+            # call ``refresh_from_db`` and in turn instantiate the model
+            # again, leading to infinite recursion. Instead, read raw values
+            # from the instance __dict__ when present and fall back to None.
             for field in self._meta.fields:
-                self._initial[field.attname] = getattr(self, field.attname)
+                if field.attname in self.__dict__:
+                    # get the currently-loaded (raw) value without triggering
+                    # any descriptor access
+                    self._initial[field.attname] = self.__dict__[field.attname]
+                else:
+                    # attribute not present on instance, don't trigger a DB
+                    # refresh here — record as None
+                    self._initial[field.attname] = None
 
     def has_changed(self):
         """
@@ -94,7 +107,7 @@ class Audit(Model):
         return str(self.pk)
 
     def get_absolute_url(self):
-        opts = self._meta.app_label, self._meta.module_name
+        opts = self._meta.app_label, self._meta.model_name
         return reverse("admin:%s_%s_change" % opts, args=(self.pk, ))
 
     def clean_fields(self, exclude=None):

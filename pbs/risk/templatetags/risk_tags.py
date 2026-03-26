@@ -1,6 +1,6 @@
 from django import template
-from django.contrib.admin.util import quote
-from django.core.urlresolvers import reverse
+from django.contrib.admin.utils import quote
+from django.urls import reverse
 
 from pbs.risk.models import Treatment
 

@@ -20,11 +20,11 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin import helpers
-from django.contrib.admin.util import quote, unquote, flatten_fieldsets
+from django.contrib.admin.utils import quote, unquote, flatten_fieldsets
 from django.contrib.auth.models import Group
 from django.core.exceptions import (FieldError, ValidationError,
                                     PermissionDenied)
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction, router
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.forms.models import modelform_factory
@@ -34,9 +34,9 @@ from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
-from django.utils.html import escape
-from django.utils.translation import ugettext as _, ugettext_lazy
+from django.utils.encoding import force_str
+from django.utils.html import escape, format_html
+from django.utils.translation import gettext as _, gettext_lazy
 from django.views.decorators.csrf import csrf_protect
 
 from pbs.admin import BaseAdmin, get_permission_codename
@@ -64,6 +64,7 @@ from pbs.filters import BooleanFieldListFilter,CrossTenureApprovedListFilter,Int
 from django.core.mail import send_mail
 
 from pbs.prescription import fund_allocation
+from django.contrib.auth.models import User
 
 
 csrf_protect_m = method_decorator(csrf_protect)
@@ -137,6 +138,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
     filter_horizontal = ('tenures', 'fuel_types', 'shires',
                          'forecast_areas', 'endorsing_roles')
 
+    
+    # class Media:
+    #     css = {
+    #         'all': ('admin_extra.css',)  # ensure this file is in STATICFILES_DIRS
+    #     }
+
     def _non_calm_tenure(self,obj):
         if obj.non_calm_tenure:
             return "Yes"
@@ -197,68 +204,70 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         Add some extra views for handling the prescription summaries and a page
         to handle selecting Regional Fire Coordinator objectives for a burn.
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^(\d+)/add/objectives/$',
+        urlpatterns = [
+            # '',
+           re_path(r'^(\d+)/add/objectives/$',
                 wrap(self.add_objectives),
                 name='%s_%s_objectives' % info),
-            url(r'^(\d+)/regional_objective/(\d+)/delete$',
+           re_path(r'^(\d+)/regional_objective/(\d+)/delete$',
                 wrap(self.delete_regional_objective),
                 name='%s_%s_delete_regional_objective' % info),
-            url(r'^(\d+)/summary/$',
+           re_path(r'^(\d+)/summary/$',
                 wrap(self.summary),
                 name='%s_%s_summary' % info),
-            url(r'^(\d+)/summary/pre/$',
+           re_path(r'^(\d+)/summary/pre/$',
                 wrap(self.pre_summary),
                 name='%s_%s_pre_summary' % info),
-            url(r'^(\d+)/summary/day/$',
+           re_path(r'^(\d+)/summary/day/$',
                 wrap(self.day_summary),
                 name='%s_%s_day_summary' % info),
-            url(r'^(\d+)/summary/post/$',
+           re_path(r'^(\d+)/summary/post/$',
                 wrap(self.post_summary),
                 name='%s_%s_post_summary' % info),
-            url(r'^(\d+)/summary/pdf/$',
+           re_path(r'^(\d+)/summary/pdf/$',
                 wrap(self.pdf_summary),
                 name='%s_%s_pdf_summary' % info),
-            url(r'^(\d+)/download/$',
+           re_path(r'^(\d+)/download/$',
                 wrap(self.pdflatex),
                 name='%s_%s_download' % info),
-            url(r'^(\d+)/export/$',
+           re_path(r'^(\d+)/export/$',
                 wrap(self.pdflatex),
                 name='%s_%s_export' % info),
-            url(r'^(\d+)/cbas/$',
+           re_path(r'^(\d+)/cbas/$',
                 wrap(self.corporate_approve),
                 name='%s_%s_corporate_approve' % info),
-            url(r'^(\d+)/endorsement/$',
+           re_path(r'^(\d+)/endorsement/$',
                 wrap(self.endorse),
                 name='%s_%s_endorse' % info),
-            url(r'^(\d+)/endorsement/(\d+)/delete$',
+           re_path(r'^(\d+)/endorsement/(\d+)/delete$',
                 wrap(self.delete_endorsement),
                 name='%s_%s_delete_endorsement' % info),
-            url(r'^(\d+)/endorsement/officers$',
+           re_path(r'^(\d+)/endorsement/officers$',
                 wrap(self.endorsing_roles),
                 name='%s_%s_endorsing_roles' % info),
-            url(r'^(\d+)/approval/$',
+           re_path(r'^(\d+)/approval/$',
                 wrap(self.approve),
                 name='%s_%s_approve' % info),
-            url(r'^(\d+)/closure/$',
+           re_path(r'^(\d+)/closure/$',
                 wrap(self.close),
                 name='%s_%s_close' % info),
-            url(r'^(\d+)/sitemap/$',
+           re_path(r'^(\d+)/sitemap/$',
                 wrap(self.sitemap),
                 name='%s_%s_sitemap' % info),
-        )
+        ]
 
         return urlpatterns + super(PrescriptionAdmin, self).get_urls()
+        #return urlpatterns + super().get_urls()
 
     def changelist_view(self, request, extra_context=None):
         # figure out how to auto-select current user's region from
@@ -307,7 +316,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             ])
 
         return response
-    burn_summary_to_csv.short_description = ugettext_lazy("Export Burn Summary to CSV")
+    burn_summary_to_csv.short_description = gettext_lazy("Export Burn Summary to CSV")
 
     def export_to_csv(self, request, queryset):
         # TODO: fix up the date/time formatting to use the default template
@@ -465,7 +474,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             ])
 
         return response
-    export_to_csv.short_description = ugettext_lazy("Export to CSV")
+    export_to_csv.short_description = gettext_lazy("Export to CSV")
 
     def response_post_save_add(self, request, obj):
         """
@@ -562,7 +571,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         """
         Populate some of the foreign keys with initial data.
         """
-        profile = request.user.get_profile()
+        # profile = request.user.get_profile()
+        profile = request.user.profile
         if db_field.name == 'region' and profile.region is not None:
             kwargs['initial'] = profile.region.pk
             return db_field.formfield(**kwargs)
@@ -572,8 +582,18 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             return db_field.formfield(**kwargs)
 
         if db_field.name == 'prescribing_officer':
+            from pbs.prescription.forms import UserChoiceField, UserSelect2Widget, UserSelect2ChoiceField
             kwargs['initial'] = request.user.pk
-            field = db_field.formfield(**kwargs)
+            # kwargs.setdefault('queryset', User.objects.filter(is_active=True))            
+            # Attach the Select2 widget
+            # kwargs['widget'] = UserSelect2Widget(attrs={
+            #     "style": "width: 100%;",
+            #     "class": "select2-field",
+            #     "data-minimum-input-length": "0"
+            # })
+            # return super().formfield_for_foreignkey(db_field, request, **kwargs)
+            # #field = UserSelect2ChoiceField(**kwargs)
+            field = UserChoiceField(**kwargs)
             return field
 
         return super(PrescriptionAdmin, self).formfield_for_foreignkey(
@@ -600,7 +620,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         Returns a Form class for use in the admin add view. This is used by
         add_view and change_view.
         """
-        if self.declared_fieldsets:
+        # if self.declared_fieldsets:
+        if hasattr(self, 'declared_fieldsets'):
             fields = flatten_fieldsets(self.get_fieldsets(request, obj))
         else:
             fields = None
@@ -629,6 +650,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             "formfield_callback": partial(self.formfield_for_dbfield,
                                           request=request),
         }
+        kwargs.pop('change', None)
         defaults.update(kwargs)
 
         try:
@@ -702,9 +724,10 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
 
         context = {
             'current': obj,
+            'current_app':self.admin_site.name,
         }
         return TemplateResponse(request, self.corporate_approval_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def endorse(self, request, object_id, extra_context=None):
         """
@@ -790,8 +813,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'not_endorsed_endorsing_roles': obj.not_endorsed_endorsing_roles,
         }
         return TemplateResponse(request, "admin/prescription/prescription/"
-                                "endorsement.html", context,
-                                current_app=self.admin_site.name)
+                                "endorsement.html", context)
 
     def delete_endorsement(self, request, object_id, endorsement_id,
                            extra_context=None):
@@ -800,7 +822,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key (%key)r'
                             ' does not exist.') %
-                          {'name': force_text(self.opts.verbose_name),
+                          {'name': force_str(self.opts.verbose_name),
                            'key': object_id})
 
         endorsement = obj.endorsement_set.get(pk=unquote(endorsement_id))
@@ -821,11 +843,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         context = {
             'title': "Delete endorsement",
             'current': obj,
-            'endorsement': endorsement
+            'endorsement': endorsement,
+            'current_app': self.admin_site.name,
         }
         context.update(extra_context or {})
 
-        return TemplateResponse(request, "admin/prescription/prescription/delete_endorsement.html", context, current_app=self.admin_site.name)
+        return TemplateResponse(request, "admin/prescription/prescription/delete_endorsement.html", context)
 
     def endorsing_roles(self, request, object_id, extra_context=None):
         """
@@ -844,7 +867,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key (%key)r'
                             ' does not exist.') %
-                          {'name': force_text(self.opts.verbose_name),
+                          {'name': force_str(self.opts.verbose_name),
                            'key': object_id})
 
         if request.method == 'POST':
@@ -878,8 +901,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'errors': None
         }
         return TemplateResponse(request, "admin/prescription/prescription/"
-                                "endorsing_roles.html", context,
-                                current_app=self.admin_site.name)
+                                "endorsing_roles.html", context)
 
     def delete_regional_objective(self, request, object_id, objective_id, extra_context=None):
         obj = self.get_object(request, unquote(object_id))
@@ -887,12 +909,13 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key (%key)r'
                             ' does not exist.') %
-                          {'name': force_text(self.opts.verbose_name),
+                          {'name': force_str(self.opts.verbose_name),
                            'key': object_id})
 
         regional_objective = obj.regional_objectives.get(pk=unquote(objective_id))
 
-        can_delete = request.user.has_perm('prescription.change_prescription') or request.user.is_superuser
+        # can_delete = request.user.has_perm('prescription.change_prescription') or request.user.is_superuser
+        can_delete = (request.user.has_perm('prescription.change_prescription') and obj.check_archive_status(request)) or request.user.is_superuser
         if not can_delete:
             raise PermissionDenied
 
@@ -908,11 +931,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'title': "Remove regional objective from ePFP",
             'current': obj,
             'regional_objective': regional_objective,
-            'can_delete': can_delete
+            'can_delete': can_delete,
+            'current_app': self.admin_site.name,
         }
         context.update(extra_context or {})
 
-        return TemplateResponse(request, "admin/prescription/prescription/delete_regional_objective.html", context, current_app=self.admin_site.name)
+        return TemplateResponse(request, "admin/prescription/prescription/delete_regional_objective.html", context)
 
     def _approve_title(self, obj):
         if obj.approval_status == obj.APPROVAL_DRAFT:
@@ -1077,8 +1101,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'current': obj,
         }
         return TemplateResponse(request, "admin/prescription/prescription/"
-                                "closure.html", context,
-                                current_app=self.admin_site.name)
+                                "closure.html", context)
 
     def add_objectives(self, request, object_id):
         """
@@ -1107,18 +1130,27 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             else:
                 message = "were not changed."
             self.message_user(request, "Regional objectives " + message)
-            url = request.REQUEST.get('next', reverse(
+            # url = request.REQUEST.get('next', reverse(
+            #     'admin:prescription_prescription_detail', args=[str(obj.id)]))
+            url = request.POST.get('next', reverse(
                 'admin:prescription_prescription_detail', args=[str(obj.id)]))
             return HttpResponseRedirect(url)
 
+        can_edit = True
+        if obj.archive_successful==False:
+            if obj.override_admin(request.user):
+                can_edit = True
+            else:
+                can_edit = False
         objectives = RegionalObjective.objects.filter(
             region=obj.region).exclude(pk__in=obj.regional_objectives.all())
         context = {
             'current': obj,
             'objectives': objectives,
+            'current_app': self.admin_site.name,
+            'can_edit': can_edit,
         }
-        return TemplateResponse(request, self.objectives_template,
-                                context, current_app=self.admin_site.name)
+        return TemplateResponse(request, self.objectives_template, context)
 
     def summary(self, request, object_id):
         """
@@ -1129,7 +1161,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key %(key)r'
                             ' does not exist.') %
-                          {'name': force_text(self.opts.verbose_name),
+                          {'name': force_str(self.opts.verbose_name),
                            'key': object_id})
 
         if request.method == "POST":
@@ -1137,23 +1169,33 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                                               instance=obj.pre_state)
             if form.is_valid():
                 form.save()
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     message = "Summary updated."
                     return HttpResponse(json.dumps({'message': message}))
                 else:
                     url = reverse('admin:index')
                     return HttpResponseRedirect(url)
             else:
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return HttpResponse(json.dumps({'errors': form.errors}))
         else:
             form = SummaryCompletionStateForm(instance=obj.pre_state)
+        can_edit = True
+        if obj.archive_successful==False:
+            if obj.override_admin(request.user):
+                can_edit = True
+            else:
+                can_edit = False
         context = {
             'current': obj,
             'form': form,
+            'current_app':self.admin_site.name,
+            'can_edit': can_edit,
         }
         return TemplateResponse(request, self.summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def pre_summary(self, request, object_id):
         """
@@ -1169,16 +1211,25 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         FundingAllocationFormSet = inlineformset_factory(
             parent_model=Prescription, model=FundingAllocation,
             formset=FundingAllocationInlineFormSet,
+            fields='__all__',
             extra=len(funding_choices) - initial_queryset.count())
+        # FundingAllocationFormSet = inlineformset_factory(
+        #     parent_model=Prescription, model=FundingAllocation,
+        #     formset=FundingAllocationInlineFormSet,
+        #     extra=len(funding_choices) - initial_queryset.count(),
+        #     form=AdminPrescriptionSummaryForm)
         # Top up initial data with missing allocations
         existing_allocations = {fa.id: (fa.allocation, fa.proportion) for fa in initial_queryset}
         initial_choices_dict = {k: 0 for k, v in funding_choices}
-        for i, (a, p) in existing_allocations.iteritems():
+        # for i, (a, p) in existing_allocations.iteritems():
+        for i, (a, p) in existing_allocations.items():
             if a in initial_choices_dict:
                 initial_choices_dict.pop(a)
         # initial_choices_dict.update(existing_allocations)
+        # initial_choices = [
+        #     {'prescription': obj.pk, 'allocation': k, 'proportion': v} for k, v in initial_choices_dict.iteritems()]
         initial_choices = [
-            {'prescription': obj.pk, 'allocation': k, 'proportion': v} for k, v in initial_choices_dict.iteritems()]
+            {'prescription': obj.pk, 'allocation': k, 'proportion': v} for k, v in initial_choices_dict.items()]
 
         if request.method == "POST":
             data = request.POST
@@ -1193,13 +1244,15 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             if form_valid and formset_valid:
                 form.save()
                 formset.save()
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     message = obj.__str__() + ' summary updated successfully.'
                     return HttpResponse(json.dumps({'message': message, 'description': obj.description}))
                 else:
                     return HttpResponseRedirect(obj.get_absolute_url())
             else:
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     formset_errors = formset.errors
                     cross_form_errors = formset.non_form_errors()
                     # Apply cross form errors to whole form
@@ -1227,10 +1280,11 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'media': media,
             'max_risk': obj.get_maximum_risk,
             'max_complexity': obj.get_maximum_complexity,
-            'purposes': [p.name for p in obj.purposes.all()]
+            'purposes': [p.name for p in obj.purposes.all()],
+            'current_app': self.admin_site.name
         }
         return TemplateResponse(request, self.pre_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def pdf_summary(self, request, object_id, extra_context=None):
         """
@@ -1239,45 +1293,48 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         obj = self.get_object(request, unquote(object_id))
         title = "PDFs"
 
-        cmd = ['fexsend', '-l', '-v']
-        run = subprocess.Popen(' '.join(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        fex_tokens = run.communicate()[0]
+        #fex is no longer used so commenting out the below code as it returns the empty list
+        # cmd = ['fexsend', '-l', '-v']
+        # run = subprocess.Popen(' '.join(cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # fex_tokens = run.communicate()[0]
+        # import ipdb; ipdb.set_trace()
 
-        token_str = self.__find_between(fex_tokens, '<pre>', '</pre>')
-        tokens = [token for token in token_str.split('<--') if 'dkey' in token]
+        # token_str = self.__find_between(fex_tokens, '<pre>', '</pre>')
+        # tokens = [token for token in token_str.split('<--') if 'dkey' in token]
 
-        fex_file_list = []
-        for token in tokens:
-            pdf = self.__find_between(token, '>', '<')
-            dkey = self.__find_between(token, 'dkey=', '&')
-            expiry = self.__find_between(token, '[', ']')
-            size = self.__find_between(token, '   ', ' [').strip()
-            size = '< 1 MB' if size == '0 MB' else size
-            if not pdf.endswith("_pfp.pdf"):  # exclude non-pfp's
-                continue
+        # fex_file_list = []
+        # for token in tokens:
+        #     pdf = self.__find_between(token, '>', '<')
+        #     dkey = self.__find_between(token, 'dkey=', '&')
+        #     expiry = self.__find_between(token, '[', ']')
+        #     size = self.__find_between(token, '   ', ' [').strip()
+        #     size = '< 1 MB' if size == '0 MB' else size
+        #     if not pdf.endswith("_pfp.pdf"):  # exclude non-pfp's
+        #         continue
 
-            try:
-                timestamp = datetime.strptime(pdf.split('_')[-2], '%Y-%m-%dT%H%M')
-            except ValueError:
-                timestamp = datetime.strptime(pdf.split('_')[-2], '%Y-%m-%dT%H%M%S')
+        #     try:
+        #         timestamp = datetime.strptime(pdf.split('_')[-2], '%Y-%m-%dT%H%M')
+        #     except ValueError:
+        #         timestamp = datetime.strptime(pdf.split('_')[-2], '%Y-%m-%dT%H%M%S')
 
-            fex_file_list.append([
-                pdf,
-                settings.FEX_SVR_HTTP + '/fop/' + dkey + '/' + pdf,
-                size,
-                expiry,
-                timestamp,
-            ])
+        #     fex_file_list.append([
+        #         pdf,
+        #         settings.FEX_SVR_HTTP + '/fop/' + dkey + '/' + pdf,
+        #         size,
+        #         expiry,
+        #         timestamp,
+        #     ])
 
-        fex_file_list = sorted(fex_file_list, key=lambda x: x[4], reverse=True)
-
+        # fex_file_list = sorted(fex_file_list, key=lambda x: x[4], reverse=True)
+        fex_file_list=[]
         context = {
             'title': title,
             'current': obj,
             'fex_file_list': fex_file_list,
+            'current_app': self.admin_site.name
         }
         return TemplateResponse(request, self.pdf_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context )
 
     def __find_between(self, s, first, last):
         """
@@ -1287,7 +1344,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             start = s.index(first) + len(first)
             end = s.index(last, start)
             return s[start:end]
-        except ValueError:
+        except (ValueError, TypeError):
             return ""
 
     def day_summary(self, request, object_id):
@@ -1299,7 +1356,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key (%key)r'
                             ' does not exist.') % {
-                                'name': force_text(self.opts.verbose_name),
+                                'name': force_str(self.opts.verbose_name),
                                 'key': object_id})
 
         if request.method == "POST":
@@ -1307,24 +1364,33 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                                                instance=obj.day_state)
             if form.is_valid():
                 form.save()
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     message = "Summary updated."
                     return HttpResponse(json.dumps({'message': message}))
                 else:
                     url = reverse('admin:index')
                     return HttpResponseRedirect(url)
             else:
-                if request.is_ajax():
+                #if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return HttpResponse(json.dumps({'errors': form.errors}))
         else:
             form = BurnImplementationStateForm(instance=obj.day_state)
-
+        can_edit = True
+        if obj.archive_successful==False:
+            if obj.override_admin(request.user):
+                can_edit = True
+            else:
+                can_edit = False
         context = {
             'current': obj,
             'form': form,
+            'current_app':self.admin_site.name,
+            'can_edit': can_edit,
         }
         return TemplateResponse(request, self.day_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def post_summary(self, request, object_id):
         """
@@ -1335,31 +1401,40 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key (%key)r'
                             ' does not exist.') % {
-                                'name': force_text(self.opts.verbose_name),
+                                'name': force_str(self.opts.verbose_name),
                                 'key': object_id})
 
         if request.method == "POST":
             form = BurnClosureStateForm(request.POST, instance=obj.post_state)
             if form.is_valid():
                 form.save()
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     message = "Summary updated."
                     return HttpResponse(json.dumps({'message': message}))
                 else:
                     url = reverse('admin:index')
                     return HttpResponseRedirect(url)
             else:
-                if request.is_ajax():
+                # if request.is_ajax():
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return HttpResponse(json.dumps({'errors': form.errors}))
         else:
             form = BurnClosureStateForm(instance=obj.post_state)
-
+        can_edit = True
+        if obj.archive_successful==False:
+            if obj.override_admin(request.user):
+                can_edit = True
+            else:
+                can_edit = False
         context = {
             'current': obj,
             'form': form,
+            'current_app': self.admin_site.name,
+            'can_edit': can_edit,
         }
         return TemplateResponse(request, self.post_summary_template,
-                                context, current_app=self.admin_site.name)
+                                context)
 
     def pdflatex(self, request, object_id):
         prescription = self.get_object(request, unquote(object_id))
@@ -1373,33 +1448,33 @@ class PrescriptionMixin(object):
         return super(PrescriptionMixin, self).__init__(model, admin_site)
 
     def get_urls(self):
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^prescription/(\d+)/$',
+        urlpatterns = [
+           re_path(r'^prescription/(\d+)/$',
                 wrap(self.changelist_view),
                 name='%s_%s_changelist' % info),
-            url(r'^add/prescription/(\d+)/$',
+           re_path(r'^add/prescription/(\d+)/$',
                 wrap(self.add_view),
                 name='%s_%s_add' % info),
-            url(r'^(.+)/history/prescription/(\d+)/$',
+           re_path(r'^(.+)/history/prescription/(\d+)/$',
                 wrap(self.history_view),
                 name='%s_%s_history' % info),
-            url(r'^(.+)/delete/prescription/(\d+)/$',
+           re_path(r'^(.+)/delete/prescription/(\d+)/$',
                 wrap(self.delete_view),
                 name='%s_%s_delete' % info),
-            url(r'^(.+)/prescription/(\d+)/$',
+           re_path(r'^(.+)/prescription/(\d+)/$',
                 wrap(self.change_view),
                 name='%s_%s_change' % info)
-        )
+        ]
         return urlpatterns
 
     def get_changelist(self, request, **kwargs):
@@ -1417,11 +1492,30 @@ class PrescriptionMixin(object):
                     return qs.filter(**fields)
                 else:
                     return qs
+                
+            def get_filters(self, request):
+                if self.list_filter is None:
+                    self.list_filter = []
+                return super().get_filters(request)
+                
+            def get_queryset(self, request):
+                qs = super(PrescriptionChangeList, self).get_queryset(request)
+                if admin.prescription is not None:
+                    fields = {
+                        admin.prescription_filter_field: admin.prescription,
+                    }
+                    return qs.filter(**fields)
+                else:
+                    return qs
 
             def url_for_result(self, result):
                 pk = getattr(result, self.pk_attname)
+                # return reverse('admin:%s_%s_change' % (self.opts.app_label,
+                #                                        self.opts.module_name),
+                #                args=(quote(pk), quote(admin.prescription.pk)),
+                #                current_app=self.model_admin.admin_site.name)
                 return reverse('admin:%s_%s_change' % (self.opts.app_label,
-                                                       self.opts.module_name),
+                                                       self.opts.model_name),
                                args=(quote(pk), quote(admin.prescription.pk)),
                                current_app=self.model_admin.admin_site.name)
 
@@ -1449,7 +1543,6 @@ class PrescriptionMixin(object):
 
     def changelist_view(self, request, prescription_id, extra_context=None):
         prescription = self.get_prescription(request, unquote(prescription_id))
-
         if prescription is None:
             raise Http404(_('prescription object with primary key %(key)r '
                             'does not exist.') % {'key': prescription_id})
@@ -1458,13 +1551,22 @@ class PrescriptionMixin(object):
         if not editable or 'id' in editable and len(editable) == 1:
             editable = False
         else:
-            editable = True
-
+            #editable = True
+            #Remove the save button if pdf archive has failed for the prescription
+            if prescription and hasattr(prescription, 'archive_successful'):
+                if prescription.archive_successful:
+                    editable = True
+                else:
+                    if prescription.override_admin(request.user):
+                        editable = True
+                    else:
+                        editable = False
         context = {
             'current': prescription,
             'editable': editable,
         }
         context.update(extra_context or {})
+        #import ipdb; ipdb.set_trace()
         return super(PrescriptionMixin, self).changelist_view(
             request, extra_context=context)
 
@@ -1487,7 +1589,6 @@ class PrescriptionMixin(object):
     def change_view(self, request, object_id, prescription_id,
                     extra_context=None):
         prescription = self.get_prescription(request, unquote(prescription_id))
-
         if prescription is None:
             raise Http404(_('prescription object with primary key %(key)r '
                             'does not exist.') % {'key': prescription_id})
@@ -1497,7 +1598,7 @@ class PrescriptionMixin(object):
             return self.add_view(request, prescription_id=prescription.id,
                                  form_url=reverse(
                                      'admin:%s_%s_add' %
-                                     (opts.app_label, opts.module_name),
+                                     (opts.app_label, opts.model_name),
                                      args=[prescription.id],
                                      current_app=self.admin_site.name))
 
@@ -1508,6 +1609,70 @@ class PrescriptionMixin(object):
 
         return super(PrescriptionMixin, self).change_view(
             request, object_id, extra_context=context)
+    
+    def has_add_permission(self, request, obj=None):
+        """
+        Return True if the given request has permission to add an object.
+        Can be overridden by the user in subclasses.
+        """
+        opts = self.opts
+        codename = get_permission_codename("add", opts)
+        base_permission = request.user.has_perm("%s.%s" % (opts.app_label, codename))
+        prescription = self.prescription
+        if base_permission:
+            if prescription and hasattr(prescription, 'archive_successful'):
+                if prescription.archive_successful:
+                    return base_permission
+                else:
+                    if prescription.override_admin(request.user):
+                        return base_permission
+                    else:
+                        return False
+        return request.user.has_perm("%s.%s" % (opts.app_label, codename))
+    
+    def has_change_permission(self, request, obj=None):
+        """
+        Add object permissions to the check for change permissions.
+        Module-level permissions will trump object-level permissions.
+        """
+        opts = self.opts
+        codename = get_permission_codename('change', opts)
+        base_permission = any([
+            request.user.has_perm("%s.%s" % (opts.app_label, codename)),
+            request.user.has_perm("%s.%s" % (opts.app_label, codename), obj)])
+        prescription = self.prescription
+        if base_permission:
+            if prescription and hasattr(prescription, 'archive_successful'):
+                if prescription.archive_successful:
+                    return base_permission
+                else:
+                    if prescription.override_admin(request.user):
+                        return base_permission
+                    else:
+                        return False
+        return base_permission
+        
+    def has_delete_permission(self, request, obj=None):
+        """
+        Add object permissions to the check for delete permissions.
+        Module-level permissions will trump object-level permissions.
+        """
+        opts = self.opts
+        codename = get_permission_codename('delete', opts)
+        base_permission= any([
+            request.user.has_perm("%s.%s" % (opts.app_label, codename)),
+            request.user.has_perm("%s.%s" % (opts.app_label, codename), obj)])
+        prescription = self.prescription
+        if base_permission:
+            if prescription and hasattr(prescription, 'archive_successful'):
+                if prescription.archive_successful:
+                    return base_permission
+                else:
+                    if prescription.override_admin(request.user):
+                        return base_permission
+                    else:
+                        return False
+        return base_permission
 
     def history_view(self, request, object_id, prescription_id,
                      extra_context=None):
@@ -1517,8 +1682,12 @@ class PrescriptionMixin(object):
             raise Http404(_('prescription object with primary key %(key)r '
                             'does not exist.') % {'key': prescription_id})
 
+        opts = self.opts
+        app_label = opts.app_label
+
         context = {
-            'current': prescription
+            'current': prescription,
+            'app_label': app_label,
         }
         context.update(extra_context or {})
 
@@ -1526,7 +1695,7 @@ class PrescriptionMixin(object):
             request, object_id, extra_context=context)
 
     @csrf_protect_m
-    @transaction.commit_on_success
+    @transaction.atomic
     def delete_view(self, request, object_id, prescription_id,
                     extra_context=None):
         "The 'delete' admin view for this model."
@@ -1542,7 +1711,7 @@ class PrescriptionMixin(object):
         if obj is None:
             raise Http404(
                 _('%(name)s object with primary key %(key)r does '
-                  'not exist.') % {'name': force_text(opts.verbose_name),
+                  'not exist.') % {'name': force_str(opts.verbose_name),
                                    'key': escape(object_id)})
 
         if prescription is None:
@@ -1560,14 +1729,14 @@ class PrescriptionMixin(object):
         if request.POST:    # The user has already confirmed the deletion.
             if perms_needed:
                 raise PermissionDenied
-            obj_display = force_text(obj)
+            obj_display = force_str(obj)
             self.log_deletion(request, obj, obj_display)
             self.delete_model(request, obj)
 
             self.message_user(request, _(
                 'The %(name)s "%(obj)s" was deleted successfully.') % {
-                    'name': force_text(opts.verbose_name),
-                    'obj': force_text(obj_display)},
+                    'name': force_str(opts.verbose_name),
+                    'obj': force_str(obj_display)},
                 messages.SUCCESS)
 
             if self.has_change_permission(request, None):
@@ -1576,7 +1745,7 @@ class PrescriptionMixin(object):
                 else:
                     post_url = reverse(
                         'admin:%s_%s_changelist' % (opts.app_label,
-                                                    opts.module_name),
+                                                    opts.model_name),
                         args=(quote(self.prescription.pk),),
                         current_app=self.admin_site.name)
             else:
@@ -1584,7 +1753,7 @@ class PrescriptionMixin(object):
                                    current_app=self.admin_site.name)
             return HttpResponseRedirect(post_url)
 
-        object_name = force_text(opts.verbose_name)
+        object_name = force_str(opts.verbose_name)
 
         if perms_needed or protected:
             title = _("Cannot delete %(name)s") % {"name": object_name}
@@ -1601,13 +1770,14 @@ class PrescriptionMixin(object):
             "protected": protected,
             "opts": opts,
             "app_label": app_label,
+            "current_app": self.admin_site.name,
         }
         context.update(extra_context or {})
 
         return TemplateResponse(request, self.delete_confirmation_template or [
             "admin/%s/delete_confirmation.html" % app_label,
             "admin/delete_confirmation.html"
-        ], context, current_app=self.admin_site.name)
+        ], context)
 
     def get_readonly_fields(self, request, obj=None):
         """
@@ -1654,14 +1824,16 @@ class PrescriptionMixin(object):
         """
         request = kwargs.pop('request')
         if self.has_delete_permission(request, obj):
-            info = obj._meta.app_label, obj._meta.module_name
+            info = obj._meta.app_label, obj._meta.model_name
             delete_url = reverse('admin:%s_%s_delete' % info,
                                  args=(quote(obj.pk),
                                        quote(self.prescription.pk)))
-            return ('<div><a href="%s" class="inline-deletelink"'
-                    'title="Delete"></a></div>') % delete_url
+            return format_html(
+                '<div><a href="{}" class="inline-deletelink" title="Delete"></a></div>',
+                delete_url
+            )
         else:
-            return ""
+            return format_html('&nbsp;')
 
     def display_add_link(self, request, related):
         def inner(obj):
@@ -1682,30 +1854,54 @@ class PrescriptionMixin(object):
         inner.short_description = related.opts.verbose_name_plural.title()
         return inner
 
+    # def response_add(self, request, obj, post_url_continue=None):
+    #     redirect = request.GET['next'] if "next" in request.GET else None
+    #     if redirect is None:
+    #         opts = obj._meta
+    #         pk_value = obj._get_pk_val()            
+    #         redirect = reverse('admin:%s_%s_change' %
+    #                            (opts.app_label, opts.model_name),
+    #                            args=(pk_value, self.prescription.pk),
+    #                            current_app=self.admin_site.name)
+    #     return super(PrescriptionMixin, self).response_add(
+    #         request, obj, post_url_continue=redirect)
+
     def response_add(self, request, obj, post_url_continue=None):
         redirect = request.GET['next'] if "next" in request.GET else None
+        if redirect:
+            return HttpResponseRedirect(request.GET['next'])
+        opts = obj._meta
+        msg_dict = {'name': force_str(opts.verbose_name),
+                    'obj': force_str(obj)}
         if redirect is None:
-            opts = obj._meta
-            pk_value = obj._get_pk_val()
+            # opts = obj._meta
+            pk_value = obj._get_pk_val()            
             redirect = reverse('admin:%s_%s_change' %
-                               (opts.app_label, opts.module_name),
+                               (opts.app_label, opts.model_name),
                                args=(pk_value, self.prescription.pk),
                                current_app=self.admin_site.name)
-
+        if "_popup" in request.GET:
+            return HttpResponse('<script type="text/javascript">console.log(opener);opener.dismissAddAnotherPopup(window, "%s", "%s");opener.location = opener.location.pathname;</script>' % \
+                # escape() calls force_unicode.
+                (escape(obj._get_pk_val()), escape(obj)))                    
+        if '_save' in request.POST:
+            msg = ('The %(name)s "%(obj)s" was added successfully.' % msg_dict)
+            self.message_user(request, msg, messages.SUCCESS)
+            return self.response_post_save_add(request, obj)
         return super(PrescriptionMixin, self).response_add(
             request, obj, post_url_continue=redirect)
 
     def response_change(self, request, obj):
         opts = self.model._meta
         pk_value = obj._get_pk_val()
-        msg_dict = {'name': force_text(opts.verbose_name),
-                    'obj': force_text(obj)}
+        msg_dict = {'name': force_str(opts.verbose_name),
+                    'obj': force_str(obj)}
         if "_saveasnew" in request.POST:
             msg = ('The %(name)s "%(obj)s" was added successfully. You may ' +
                    ' edit it again below.' % msg_dict)
             self.message_user(request, msg)
             return HttpResponseRedirect(reverse('admin:%s_%s_change' %
-                                        (opts.app_label, opts.module_name),
+                                        (opts.app_label, opts.model_name),
                                         args=(pk_value, self.prescription.pk),
                                         current_app=self.admin_site.name))
         elif "_addanother" in request.POST:
@@ -1713,7 +1909,7 @@ class PrescriptionMixin(object):
                    ' add another %(name)s below.' % msg_dict)
             self.message_user(request, msg)
             return HttpResponseRedirect(reverse('admin:%s_%s_add' %
-                                        (opts.app_label, opts.module_name),
+                                        (opts.app_label, opts.model_name),
                                         args=(self.prescription.pk,),
                                         current_app=self.admin_site.name))
         return super(PrescriptionMixin, self).response_change(request, obj)
@@ -1730,7 +1926,7 @@ class PrescriptionMixin(object):
 
         if self.has_change_permission(request, None):
             post_url = reverse('admin:%s_%s_changelist' %
-                               (opts.app_label, opts.module_name),
+                               (opts.app_label, opts.model_name),
                                args=(quote(self.prescription.pk),),
                                current_app=self.admin_site.name)
         else:
@@ -1751,7 +1947,7 @@ class PrescriptionMixin(object):
 
         if self.has_change_permission(request, None):
             post_url = reverse('admin:%s_%s_changelist' %
-                               (opts.app_label, opts.module_name),
+                               (opts.app_label, opts.model_name),
                                args=(quote(self.prescription.pk),),
                                current_app=self.admin_site.name)
         else:
@@ -1786,6 +1982,7 @@ class SavePrescriptionMixin(object):
         Save the model and assign delete permissions to particular objects.
         Also save user to object if an audit object
         """
+        #import ipdb; ipdb.set_trace()
         try:
             obj.prescription = self.prescription
         except AttributeError:
@@ -1837,6 +2034,7 @@ class RegionalObjectiveAdmin(admin.ModelAdmin):
         obj.modifier = request.user
         obj.save()
 
+
 class SuccessCriteriaAdmin(PrescriptionMixin, SavePrescriptionMixin,
                            BaseAdmin):
     list_display = ("criteria",)
@@ -1855,6 +2053,7 @@ class PriorityJustificationAdmin(PrescriptionMixin, SavePrescriptionMixin,
     list_display_links = (None,)
     list_empty_form = False
     actions = None
+    can_delete = False
 
     def criteria_display(self, obj):
         """
@@ -1863,9 +2062,10 @@ class PriorityJustificationAdmin(PrescriptionMixin, SavePrescriptionMixin,
         return markdownify(obj.criteria)
     criteria_display.short_description = "Criteria"
 
-    def queryset(self, request):
-        qs = super(PriorityJustificationAdmin, self).queryset(request)
-        return qs.filter(relevant=True)
+    def get_queryset(self, request):
+        if self.prescription:
+            qs = self.prescription.priorityjustification_set.all()
+            return qs.filter(relevant=True)
 
     def changelist_view(self, request, prescription_id, extra_context=None):
         current = self.get_prescription(request, unquote(prescription_id))

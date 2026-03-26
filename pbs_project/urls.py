@@ -1,4 +1,8 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include
+from django.urls import re_path, path
+from django.contrib import admin
+from django_media_serv.urls import urlpatterns as media_serv_patterns
+from django.contrib.auth import views as auth_views
 
 """
 some import statmement will load some module (directly or indirectly)
@@ -10,19 +14,38 @@ Solution is using two steps to populate urlpatterns
 2. populate others.
 
 """
-urlpatterns = patterns('',
-    (r'^docs/', include('django.contrib.admindocs.urls')),
-    (r'^', include('django.contrib.auth.urls'))
-)
+# urlpatterns = ['',
+#     (r'^docs/', include('django.contrib.admindocs.urls')),
+#     (r'^', include('django.contrib.auth.urls'))
+# ]
+urlpatterns = [
+    re_path(r'^docs/', include('django.contrib.admindocs.urls')),
+    #re_path(r'^', include('django.contrib.auth.urls')),
+    
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
+    path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path(
+        "password_change/done/",
+        auth_views.PasswordChangeDoneView.as_view(),
+        name="password_change_done",
+    ),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+]+ media_serv_patterns
 
 from django.views.generic.base import RedirectView
 from django_downloadview import ObjectDownloadView
 from pbs.document.models import Document
 from pbs.sites import site
 from pbs.forms import PbsPasswordResetForm
+from pbs.views import sso_logout
 
 from tastypie.api import Api
 from pbs.review.api import PrescribedBurnResource
+from django.contrib.auth.views import PasswordResetView
 
 handler500 = 'pbs.views.handler500'
 # Define the simplest possible view for Document uploads.
@@ -32,15 +55,26 @@ favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 v1_api = Api(api_name='v1')
 v1_api.register(PrescribedBurnResource())
 
-urlpatterns = urlpatterns + patterns('',
-    url(r'^select2/', include('django_select2.urls')),
-    (r'^', include('pbs.registration.urls')),
+urlpatterns = urlpatterns + [
+    # '',
+    #path('admin/', admin.site.urls),
+    #re_path(r'^', include(site.urls)),
+    # re_path("", site.urls),
+    # (r'^', include('pbs.registration.urls')),
+    re_path(r'^', include('pbs.registration.urls')),
+
     # the password reset must come before site.urls, site.urls match all
-    (r'^', include(site.urls)),
-    url(r'^password_reset/$', 'django.contrib.auth.views.password_reset',
-        {'password_reset_form': PbsPasswordResetForm}, name='password_reset'),
-    url(r'^chaining/', include('smart_selects.urls')),
-    url('^documents/(?P<pk>\d+)/download$', document_download, name='document_download'),
-    url(r'^favicon\.ico$', favicon_view, name='favicon_view'),
-    url(r'^api/', include(v1_api.urls)),
-)
+    #re_path(r'^', include((site.urls, 'site'), namespace='site')),
+    #re_path(r'^', include(site.urls)),
+    #re_path(r'^password_reset/$', 'django.contrib.auth.views.password_reset',
+    #     {'password_reset_form': PbsPasswordResetForm}, name='password_reset'),
+    re_path(r'^password_reset/$', PasswordResetView.as_view(form_class=PbsPasswordResetForm), name='password_reset'),
+    re_path(r'^chaining/', include('smart_selects.urls')),
+    re_path(r'^select2/', include("django_select2.urls")),
+    re_path(r'^documents/(?P<pk>\d+)/download$', document_download, name='document_download'),
+    re_path(r'^favicon\.ico$', favicon_view, name='favicon_view'),
+    re_path(r'^api/', include(v1_api.urls)),
+    re_path(r'^logout/$', sso_logout, name='logout'),
+    #path('', site.urls),
+    re_path(r'^', site.urls),
+] 

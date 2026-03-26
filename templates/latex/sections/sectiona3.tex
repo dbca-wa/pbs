@@ -5,17 +5,19 @@
 {% for objective in prescription.objective_set.all %}
 \noindent
 {{ objective.objectives|texify|safe }} \\
-\end{flushleft}
+% \end{flushleft}
 {% empty %}
 No Objectives
 {% endfor %}
+\end{flushleft}
 \subsubsection{Success Criteria}
 \begin{flushleft}
 {% for sc in prescription.successcriteria_set.all %}
 \noindent
 {{ sc.criteria|texify|safe }} \\
-\end{flushleft}
+% \end{flushleft}
 {% empty %}
 No Success Criteria
 {% endfor %}
+\end{flushleft}
 \clearpage

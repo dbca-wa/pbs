@@ -5,7 +5,7 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 from django.core.exceptions import ValidationError
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from pbs.tests import BasePbsTestCase
 
@@ -43,7 +43,7 @@ class ActionTests(BasePbsTestCase):
                                    category=category)
         actions = []
         for name in range(3):
-            action = Action.objects.create(risk=risk, details=force_text(name))
+            action = Action.objects.create(risk=risk, details=force_str(name))
             actions.append(action)
 
         # pop the first item and delete it

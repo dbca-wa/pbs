@@ -11,7 +11,7 @@
 {% document_names_by_category prescription as document_names %}
 {% for category, documents in document_names.items %}
 {% if documents %}
-{{ category }} & {% for document in documents %}{{ document|texify|safe }}\newline {% endfor %} \\
+{{ category|texify|safe }} & {% for document in documents %}{{ document|texify|safe }}\newline {% endfor %} \\
 \hline
 {% endif %}
 {% endfor %}

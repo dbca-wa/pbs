@@ -1,5 +1,5 @@
 {% extends "admin/change_list.html" %}
-{% load i18n staticfiles admin_list pbs_tags %}
+{% load i18n static admin_list pbs_tags %}
 
 {% block extrahead %}
   {{ block.super }}
@@ -13,7 +13,7 @@
   {% if current.is_draft or perms.prescription.can_admin %}
   (function($) {
     $(function() {
-      $("#result_list tbody tr").tabularFormset({
+      $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
         addText: '<i class="icon-plus"></i> Add another track/trail'
@@ -26,7 +26,14 @@
     .upload {
       margin-left: 5px;
       display: inline-block;
-      vertical-align: center;
+      vertical-align: middle;
+    }
+    /* Remove the vLargeTextField min-width in this changelist to prevent columns from forcing page overflow */
+    #result_list textarea.vLargeTextField,
+    #result_list .vLargeTextField {
+      min-width: 0 !important;
+      max-width: 100% !important;
+      height: 53px !important;
     }
   </style>
 {% endblock %}

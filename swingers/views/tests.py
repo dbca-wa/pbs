@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.utils.six import StringIO
 from django.http import HttpRequest, HttpResponse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from swingers.tests.models import Duck
 from swingers.tests.views import create_duck

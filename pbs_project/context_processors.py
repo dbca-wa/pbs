@@ -6,5 +6,6 @@ def standard(request):
     """
     context = {
         'application_version_no': settings.APPLICATION_VERSION_NO,
+        'GIT_COMMIT_HASH': settings.GIT_COMMIT_HASH,
     }
     return context

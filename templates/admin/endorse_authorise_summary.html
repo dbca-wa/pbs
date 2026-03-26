@@ -90,9 +90,9 @@
     <li class="filter-pad">
         <form class="form-inline">
             <label for="id_fromDate" class="control-label">From Date</label>
-            <input type="text" id="id_fromDate" value="{{fromDate}}" name="fromDate"/>
+            <input type="text" id="id_fromDate" value="{{ fromDate|date:'d-m-Y' }}" name="fromDate"/>
             <label for="id_toDate" class="control-label">To Date</label>
-            <input type="text" id="id_toDate" value="{{toDate}}" name="toDate"/>
+            <input type="text" id="id_toDate" value="{{ toDate|date:'d-m-Y' }}" name="toDate"/>
             <button id="submit" class="btn btn-primary">Update</button>
             <input class="hidden" name="report" value="ignitions">
         </form>

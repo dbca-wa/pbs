@@ -2,7 +2,7 @@ from django.db.models import FileField
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import filesizeformat
 
-from south.modelsinspector import add_introspection_rules
+#from south.modelsinspector import add_introspection_rules
 
 import magic
 
@@ -51,6 +51,6 @@ class ContentTypeRestrictedFileField(FileField):
 
         return f
 
-add_introspection_rules([], [
-    "^swingers\.models\.fields\.ContentTypeRestrictedFileField"]
-)
+# add_introspection_rules([], [
+#     "^swingers\.models\.fields\.ContentTypeRestrictedFileField"]
+# )

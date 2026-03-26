@@ -6,7 +6,9 @@
 \hline
 \textbf{Contingency} & \textbf{Trigger} & \textbf{Actions} & \textbf{Notifications}\\
 
- & & & \text{Name} \hspace{1.0in} \text{Organisation} \hspace{0.3in} \text{Location} \hspace{0.3in} \text{Contact No.}\\
+%  & & & \text{Name} \hspace{1.0in} \text{Organisation} \hspace{0.3in} \text{Location} \hspace{0.3in} \text{Contact No.}\\
+& & & \textrm{Name} \hspace{1.0in} \textrm{Organisation} \hspace{0.3in} \textrm{Location} \hspace{0.3in} \textrm{Contact No.}\\
+% & & & \textrm{Name} \hspace{1.0in} \textrm{Organisation} \hspace{0.3in} \textrm{Location} \hspace{0.3in} \textrm{Contact No.}\\
 
 \endhead
 \hline
@@ -15,27 +17,33 @@
 
     {% if contingency.actions_migrated  %}                   % Migrated Actions %
       {% for act in contingency.actions.all %}
-        {{ act.action|texify|safe }}
-      {% endfor %} &
+        {{ act.action|texify|safe }} 
+      {% endfor %} 
+      &
     {% else %}                                               % Old Contigencies %
       {{ contingency.action|texify|safe }} &
     {% endif %}
 
+    % \\
     {% if contingency.notifications_migrated  %}             % Migrated Notifications %
       {% for notify in contingency.notifications.all %}
         \begin{tabular}{ L{3.4cm}  L{2cm}  L{1.9cm}  L{2.25cm} }
-          {{ notify.name|texify|safe }} & {{ notify.organisation|texify|safe }} & {{ notify.location|texify|safe }} & {{ notify.contact_number|texify|safe }}
+          {{ notify.name|texify|safe }} & {{ notify.organisation|texify|safe }} & {{ notify.location|texify|safe }} & {{ notify.contact_number|texify|safe }}\\
         \end{tabular}
         \vspace{2pt}
-        {% endfor %} &
+        {% endfor %} 
 
     {% else %}                                               % Old Notifications %
         \begin{tabular}{ L{3.4cm}  L{2cm}  L{1.9cm}  L{2.25cm} }
-          {{ contingency.notify_name|texify|safe }} & {{ contingency.organisation|texify|safe }} & {{ contingency.location|texify|safe }} & {{ contingency.contact_number|texify|safe }} &
+          % {{ contingency.notify_name|texify|safe }} & {{ contingency.organisation|texify|safe }} & {{ contingency.location|texify|safe }} & {{ contingency.contact_number|texify|safe }} &
+          {{ contingency.notify_name|texify|safe }} & {{ contingency.organisation|texify|safe }} & {{ contingency.location|texify|safe }} & {{ contingency.contact_number|texify|safe }}&\\
+          \hline
         \end{tabular}
         \vspace{2pt}
+        
     {% endif %}
-
+    
+\\
 \hline
 {% endfor %}
 \end{longtabu}

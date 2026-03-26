@@ -11,14 +11,15 @@ import logging
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+# from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Q, Max, Sum
 from django.db.models.signals import post_save, m2m_changed,pre_save
 from django.dispatch import receiver
 from django.forms import ValidationError
 from django.template.defaultfilters import truncatewords
-from django.utils.encoding import python_2_unicode_compatible
+#from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils import timezone
 
@@ -31,7 +32,7 @@ from pbs.risk.models import Register, Risk, Action, Complexity, Context, Treatme
 logger = logging.getLogger("log." + __name__)
 
 
-@python_2_unicode_compatible
+
 class Season(Audit):
     #SEASON_SPRING = 1
     #SEASON_SUMMER = 2
@@ -73,7 +74,7 @@ class RegionManager(models.Manager):
         return self.get(name=name)
 
 
-@python_2_unicode_compatible
+
 class Region(models.Model):
     """
     """
@@ -101,7 +102,7 @@ class DistrictManager(models.Manager):
         return self.get(name=name, region=region)
 
 
-@python_2_unicode_compatible
+
 class District(models.Model):
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     name = models.CharField(max_length=200, unique=True)
@@ -127,7 +128,7 @@ class ShireManager(models.Manager):
         return self.get(name=name, district=district)
 
 
-@python_2_unicode_compatible
+
 class Shire(models.Model):
     district = models.ForeignKey(District, on_delete=models.PROTECT)
     name = models.CharField(max_length=200)
@@ -149,7 +150,7 @@ class Shire(models.Model):
         unique_together = ('name', 'district')
 
 
-@python_2_unicode_compatible
+
 class FuelType(models.Model):
     """
     Note that this model type is now referred to as "fuel type" in
@@ -165,7 +166,7 @@ class FuelType(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
+
 class Tenure(models.Model):
     name = models.CharField(max_length=200)
 
@@ -176,7 +177,7 @@ class Tenure(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
+
 class Purpose(models.Model):
     name = models.CharField(max_length=200)
     display_order = models.PositiveIntegerField(default=1)
@@ -188,7 +189,7 @@ class Purpose(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
+
 class ForecastArea(models.Model):
     districts = models.ManyToManyField(District)
     name = models.CharField(max_length=200)
@@ -205,7 +206,7 @@ class EndorsingRoleManager(models.Manager):
         return self.get(name=name)
 
 
-@python_2_unicode_compatible
+
 class EndorsingRole(models.Model):
     name = models.CharField(max_length=320)
     index = models.PositiveSmallIntegerField()
@@ -223,7 +224,7 @@ class EndorsingRole(models.Model):
         ordering = ['index']
 
 
-@python_2_unicode_compatible
+
 class Prescription(Audit):
     """
     A Prescription is the core object in the system. It should contain all the
@@ -361,9 +362,13 @@ class Prescription(Audit):
         default=False, verbose_name="Last Season Unknown?")
     last_year_unknown = models.BooleanField(
         default=False, verbose_name="Last Year Unknown?")
-    contentious = models.NullBooleanField(
+    # contentious = models.NullBooleanField(
+    #     choices=YES_NO_NULL_CHOICES,
+    #     default=None, help_text="Is this burn contentious?")
+    contentious = models.BooleanField(
         choices=YES_NO_NULL_CHOICES,
-        default=None, help_text="Is this burn contentious?")
+        default=None, help_text="Is this burn contentious?",
+        null=True, blank=True)
     contentious_rationale = models.TextField(
         help_text="If this burn is contentious, a short explanation of why",
         verbose_name="Rationale", null=True, blank=True)
@@ -389,7 +394,7 @@ class Prescription(Audit):
         help_text="Percentage of the planned area that will be treated (%)")
     location = models.CharField(
         help_text="Example: Nollajup Nature Reserve - 8.5 KM S of Boyup Brook",
-        max_length="320", blank=True, null=True)
+        max_length=320, blank=True, null=True)
     area = models.DecimalField(
         verbose_name="Planned Burn Area", max_digits=12, decimal_places=1,
         help_text="Planned burn area (in ha)",
@@ -465,14 +470,18 @@ class Prescription(Audit):
     #       Can the burn be completed safely without the inclusion of other tenure? : (Yes or No selection)
     #       Risk based issues if other tenure not included (free text field)
     #   If 'No' selected, additional fields are greyed out, and left blank as not applicable
-    non_calm_tenure = models.NullBooleanField(verbose_name="Non-CALM Act Tenure")
-    non_calm_tenure_approved = models.NullBooleanField(verbose_name="Cross Tenure Approved?")
+    # non_calm_tenure = models.NullBooleanField(verbose_name="Non-CALM Act Tenure")
+    # non_calm_tenure_approved = models.NullBooleanField(verbose_name="Cross Tenure Approved?")
+    non_calm_tenure = models.BooleanField(verbose_name="Non-CALM Act Tenure", null=True, blank=True,)
+    non_calm_tenure_approved = models.BooleanField(verbose_name="Cross Tenure Approved?", null=True, blank=True)
     non_calm_tenure_included = models.TextField(verbose_name="Non-CALM Act Tenure Included", blank=True,null=True)
     non_calm_tenure_value = models.TextField(verbose_name="Public Value in Burn", blank=True,null=True)
     non_calm_tenure_complete = models.PositiveSmallIntegerField(
         verbose_name="Can the burn be completed safely without the inclusion of other tenure?",
         choices=NON_CALM_TENURE_COMPLETE_CHOICES, null=True,blank=True)
     non_calm_tenure_risks = models.TextField(verbose_name="Risks based issues if other tenure not included", blank=True,null=True)
+    #Field to record if the Prescription archive pdf has been generated successfully. Set to False when pdf is failed.
+    archive_successful = models.BooleanField(default=True)
 
     def __str__(self):
         return self.burn_id
@@ -558,10 +567,12 @@ class Prescription(Audit):
         if not self.pk:
             prescriptions = Prescription.objects.filter(
                 district=self.district).order_by('burn_id')
-            values = map(lambda burn_id: int(burn_id.split('_')[1]),
+            mapped_obj = map(lambda burn_id: int(burn_id.split('_')[1]),
                          prescriptions.values_list('burn_id', flat=True))
+            values=list(mapped_obj)
 
             # Don't recycle values because its a really bad idea.
+            # count=sum(1 for _ in values)
             if len(values) == 0:
                 burn_id = 1
             else:
@@ -574,7 +585,8 @@ class Prescription(Audit):
             self.ignition_status = self.IGNITION_COMPLETE
             self.ignition_status_modified = timezone.now()
         else:
-            if self.areaachievement_set.all().count() > 0:
+            # if self.areaachievement_set.all().count() > 0:
+            if self.pk and self.areaachievement_set.all().count() > 0:
                 self.ignition_status = self.IGNITION_COMMENCED
                 self.ignition_status_modified = timezone.now()
             else:
@@ -585,11 +597,12 @@ class Prescription(Audit):
         # for all child Contingency objects.
         # If both are True, mark the contingencies_migrated field as True
         # otherwise mark it False.
-        for c in self.contingencies.all():
-            if c.actions_migrated and c.notifications_migrated:
-                self.contingencies_migrated = True
-            else:
-                self.contingencies_migrated = False
+        if self.pk:
+            for c in self.contingencies.all():
+                if c.actions_migrated and c.notifications_migrated:
+                    self.contingencies_migrated = True
+                else:
+                    self.contingencies_migrated = False
 
         # for consistency - migration from year to financial_year
         if self.financial_year:
@@ -1031,7 +1044,18 @@ class Prescription(Audit):
         or extension.
         """
 
-        return ((self.get_maximum_risk.final_risk_level !=
+        # return ((self.get_maximum_risk.final_risk_level !=
+        #          self.get_maximum_risk.LEVEL_VERY_HIGH) and
+        #         # draft
+        #         (self.can_approve and
+        #          self.approval_status == self.APPROVAL_DRAFT) or
+        #         # submitted
+        #         self.approval_status == self.APPROVAL_SUBMITTED or
+        #         # extension
+        #         (self.approval_status == self.APPROVAL_APPROVED and
+        #          self.current_approval and
+        #          self.current_approval.extension_count < 3))
+        return ((self.get_maximum_risk and self.get_maximum_risk.final_risk_level !=
                  self.get_maximum_risk.LEVEL_VERY_HIGH) and
                 # draft
                 (self.can_approve and
@@ -1225,10 +1249,9 @@ class Prescription(Audit):
         context_map_modified = self.document_set.tag_names(
             "Context Map").aggregate(Max('modified'))["modified__max"]
         return max([modified for modified in
-                    self.priorities.modified, self.context_statements.modified,
+                    [self.priorities.modified, self.context_statements.modified,
                     critical_stakeholders_modified, context_map_modified,
-                    self.created
-                    if modified is not None])
+                    self.created] if modified is not None])
 
     def sectiona3_modified(self):
         objectives_modified = self.objective_set.aggregate(
@@ -1236,8 +1259,8 @@ class Prescription(Audit):
         successcriteria_modified = self.successcriteria_set.aggregate(
             Max('modified'))["modified__max"]
         return max([modified for modified in
-                    objectives_modified, successcriteria_modified,
-                    self.created
+                    [objectives_modified, successcriteria_modified,
+                    self.created]
                     if modified is not None])
 
     def sectionb5_modified(self):
@@ -1250,9 +1273,9 @@ class Prescription(Audit):
         ea_modified = self.exclusionarea_set.aggregate(
             Max('modified'))["modified__max"]
         return max([modified for modified in
-                    bp_modified, ep_modified,
+                    [bp_modified, ep_modified,
                     ls_modified, ea_modified,
-                    self.created
+                    self.created]
                     if modified is not None])
 
     @property
@@ -1289,7 +1312,18 @@ class Prescription(Audit):
     
     def archived_pdfs(self):
         directory = self.archived_pdf_directory()
-        archived_pdfs = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and f.endswith('.pdf')]
+        # If the directory does not exist, return an empty list rather than
+        # raising FileNotFoundError.
+        if not os.path.isdir(directory):
+            return []
+        try:
+            archived_pdfs = [
+                f for f in os.listdir(directory)
+                if os.path.isfile(os.path.join(directory, f)) and f.endswith('.pdf')
+            ]
+        except (OSError, PermissionError):
+            # In case of any unexpected OS error, return an empty list.
+            return []
         return archived_pdfs
 
     def uploaded_doc_directory(self):
@@ -1298,10 +1332,35 @@ class Prescription(Audit):
     
     def uploaded_docs(self):
         directory = self.uploaded_doc_directory()
-        uploaded_docs = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f)) and self.burn_id in f]
+        # If the uploads directory does not exist, return an empty list.
+        if not os.path.isdir(directory):
+            return []
+        try:
+            uploaded_docs = [
+                f for f in os.listdir(directory)
+                if os.path.isfile(os.path.join(directory, f)) and self.burn_id in f
+            ]
+        except (OSError, PermissionError):
+            return []
         return uploaded_docs
-        
 
+    def override_admin(self, user):
+        try:
+            override_admin_group= Group.objects.get(name='Override Application Administrator')
+            return user.groups.filter(name=override_admin_group.name).exists()
+        except:
+            return False
+        
+    def check_archive_status(self,request):
+        if self.archive_successful:
+            return True
+        else:
+            if self.override_admin(request.user):
+                return True
+            else:
+                return False
+        return True
+    
     class Meta:
         verbose_name = 'Prescribed Fire Plan'
         verbose_name_plural = 'Prescribed Fire Plans'
@@ -1313,7 +1372,7 @@ class Prescription(Audit):
         )
 
 
-@python_2_unicode_compatible
+
 class FundingAllocation(models.Model):
     """
     Allow multiple funding allocations for a Prescription.
@@ -1370,7 +1429,7 @@ class FundingAllocation(models.Model):
         super(FundingAllocation, self).save(*args, **kwargs)
 
 
-@python_2_unicode_compatible
+
 class PriorityJustification(Audit):
     PRIORITY_UNRATED = 0
     PRIORITY_LOW = 1
@@ -1415,7 +1474,7 @@ class PriorityJustification(Audit):
                                   'it has been given a rationale.')
 
 
-@python_2_unicode_compatible
+
 class RegionalObjective(Audit):
     """
     """
@@ -1446,7 +1505,7 @@ class RegionalObjective(Audit):
         verbose_name_plural = 'Regional Fire Management Plan Objectives'
 
 
-@python_2_unicode_compatible
+
 class Objective(Audit):
     """
     """
@@ -1465,7 +1524,7 @@ class Objective(Audit):
         ordering = ["created"]
 
 
-@python_2_unicode_compatible
+
 class SuccessCriteria(Audit):
     """
     """
@@ -1486,7 +1545,7 @@ class SuccessCriteria(Audit):
         ordering = ["created"]
 
 
-@python_2_unicode_compatible
+
 class SMEAC(models.Model):
     category = models.CharField(max_length=200)
 
@@ -1499,7 +1558,7 @@ class DefaultBriefingChecklist(models.Model):
     title = models.CharField(max_length=200)
 
 
-@python_2_unicode_compatible
+
 class BriefingChecklist(Audit):
     title = models.TextField(verbose_name="Topic")
     prescription = models.ForeignKey(Prescription, on_delete=models.PROTECT)
@@ -1516,7 +1575,7 @@ class BriefingChecklist(Audit):
         return '{0}|{1}'.format(self.smeac, truncatewords(self.title, 8))
 
 
-@python_2_unicode_compatible
+
 class Endorsement(Audit):
     ENDORSED_CHOICES = (
         (None, ''),
@@ -1525,7 +1584,8 @@ class Endorsement(Audit):
     )
     prescription = models.ForeignKey(Prescription, on_delete=models.PROTECT)
     role = models.ForeignKey(EndorsingRole, on_delete=models.PROTECT)
-    endorsed = models.NullBooleanField(choices=ENDORSED_CHOICES, default=None)
+    # endorsed = models.NullBooleanField(choices=ENDORSED_CHOICES, default=None)
+    endorsed = models.BooleanField(choices=ENDORSED_CHOICES, default=None, blank=True, null=True)
 
     def __str__(self):
         if self.endorsed is not None:
@@ -1538,7 +1598,7 @@ class Endorsement(Audit):
         ordering = ['role']
 
 
-@python_2_unicode_compatible
+
 class Approval(Audit):
     prescription = models.ForeignKey(Prescription, on_delete=models.PROTECT)
     initial_valid_to = models.DateField(
@@ -1646,7 +1706,12 @@ def update_justification(sender, instance, action, reverse, model, pk_set,
             logger.debug("Updating priority justifications...")
             qs = instance.priorityjustification_set
             qs.filter(purpose__in=pk_set).update(relevant=True)
-            qs.filter(~Q(purpose__in=pk_set)).update(relevant=False)
+            logger.debug("Priority justifications updated...")
+    elif action == 'post_remove':
+        if pk_set is not None:
+            logger.debug("Updating priority justifications...")
+            qs = instance.priorityjustification_set
+            qs.filter(purpose__in=pk_set).update(relevant=False)
             logger.debug("Priority justifications updated...")
 
 
@@ -1704,9 +1769,62 @@ def prepare_archive_prescription(sender,instance,update_fields=None,**kwargs):
             #ignore
             pass
 
+# @receiver(post_save,sender=Prescription)
+# def archive_prescription(sender,instance,created,**kwargs):
+#     logger = logging.getLogger("pdf_debugging")
+#     from pbs.utils import pdflatex
+#     if created:
+#         return
+#     elif not hasattr(instance,"previous_status"):
+#         return
+    
+#     changed_status = None
+#     for key in status_keys:
+#         if getattr(instance,key) != instance.previous_status[key]:
+#             changed_status = key
+#             break
+
+#     if not changed_status:
+#         return
+
+#     changed_status_modified = status_modified_map[changed_status]
+#     status = status_display_map[changed_status](getattr(instance,changed_status))
+#     previous_status = status_display_map[changed_status](instance.previous_status[changed_status])
+
+#     if changed_status_modified:
+#             modified = timezone.localtime(getattr(instance,changed_status_modified))
+#     else:
+#         modified = timezone.localtime(timezone.now())
+
+#     timestamp = modified.strftime("%Y-%m-%dT%H%M%S")
+#     archivename = "{0}_{1}_{2}_{3}_{4}".format(instance.burn_id,changed_status,previous_status,status,timestamp)
+#     now = timezone.now()
+#     with pdflatex(instance,template="pfp",downloadname=archivename,embed=True,headers=True,title="Prescribed Fire Plan") as pdfresult:
+#         logger.debug(pdfresult.__dict__)
+#         if pdfresult.succeed:
+#             directory = os.path.join(settings.MEDIA_ROOT, 'snapshots', instance.financial_year.replace("/","-"), instance.burn_id)
+#             if not os.path.exists(directory):
+#                 os.makedirs(directory)
+#             shutil.move(pdfresult.pdf_file,os.path.join(directory,"{}.pdf".format(archivename)))
+#         else:
+#             title = 'PDF production failed when attempting to archive Prescription: {}'.format(instance)
+#             logger.warning(title)
+#             if settings.NOTIFICATION_EMAIL:
+#                 local_time = timezone.localtime(now)
+#                 email_from = settings.FEX_MAIL
+#                 message = (
+#                     'An attempt was made to create an archive for Prescription: {} at {}. \n\n'
+#                     'The archive attempt failed to generate the required pdf.'.format(instance, local_time)
+#                 )
+#                 send_mail(title, message, email_from, settings.NOTIFICATION_EMAIL.split(","), fail_silently=True)
+#             else:
+#                 logger.warning('ENV NOTIFICATION_EMAIL is not set. Unable to send notification email.')
+
 @receiver(post_save,sender=Prescription)
 def archive_prescription(sender,instance,created,**kwargs):
     logger = logging.getLogger("pdf_debugging")
+    if getattr(instance, '_updating_pdf_status', False): # prevent recursive call
+        return
     from pbs.utils import pdflatex
     if created:
         return
@@ -1740,10 +1858,16 @@ def archive_prescription(sender,instance,created,**kwargs):
             directory = os.path.join(settings.MEDIA_ROOT, 'snapshots', instance.financial_year.replace("/","-"), instance.burn_id)
             if not os.path.exists(directory):
                 os.makedirs(directory)
-            shutil.move(pdfresult.pdf_file,os.path.join(directory,"{}.pdf".format(archivename)))
+            source_file = pdfresult.pdf_file
+            shutil.copyfile(source_file, os.path.join(directory,"{}.pdf".format(archivename)))
+            os.remove(source_file)
+            instance._updating_pdf_status = True
+            Prescription.objects.filter(pk=instance.pk).update(archive_successful=True)
         else:
             title = 'PDF production failed when attempting to archive Prescription: {}'.format(instance)
             logger.warning(title)
+            instance._updating_pdf_status = True
+            Prescription.objects.filter(pk=instance.pk).update(archive_successful=False)
             if settings.NOTIFICATION_EMAIL:
                 local_time = timezone.localtime(now)
                 email_from = settings.FEX_MAIL
@@ -1754,3 +1878,24 @@ def archive_prescription(sender,instance,created,**kwargs):
                 send_mail(title, message, email_from, settings.NOTIFICATION_EMAIL.split(","), fail_silently=True)
             else:
                 logger.warning('ENV NOTIFICATION_EMAIL is not set. Unable to send notification email.')
+
+import reversion                                               
+
+reversion.register(Prescription, follow=[ "fundingallocation_set","priorityjustification_set","briefingchecklist_set", "endorsement_set", "approval_set", "objective_set", "successcriteria_set",#Prescription
+                                        "operationaloverview_set","burningprescription_set", "edgingplan_set","lightingsequence_set", "exclusionarea_set", #Implementation
+                                        "postburnchecklist_set", "post_state","areaachievement_set","proposedaction_set", "day_state",  #Report
+                                        "burnstate", "prescribed_burn", "aircraft_burns",   #review
+                                        "register_set", "risk_set", "context_set", "complexity_set", "contingency_set", #Risk
+                                        "criticalstakeholder_set", #Stakeholder
+                                        "document_set", #Document 
+                                        ])
+reversion.register(FundingAllocation)
+reversion.register(PriorityJustification)
+reversion.register(BriefingChecklist)
+reversion.register(Endorsement)
+reversion.register(Approval)
+reversion.register(Objective)
+reversion.register(SuccessCriteria)
+
+
+

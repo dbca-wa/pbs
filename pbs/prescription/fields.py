@@ -3,7 +3,7 @@ from pbs.prescription.widgets import LocationWidget
 
 
 class LocationMultiField(forms.MultiValueField):
-    widget = LocationWidget
+    widget = LocationWidget()
 
     def __init__(self, *args, **kwargs):
 

@@ -14,19 +14,20 @@ from pbs.report.models import AreaAchievement
 from datetime import datetime, date, timedelta
 from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import itertools
-from django.contrib.admin.util import quote, unquote, flatten_fieldsets
+from django.contrib.admin.utils import quote, unquote, flatten_fieldsets
 from django.conf import settings
 from pbs.admin import BaseAdmin
 from pbs.prescription.admin import PrescriptionMixin
 from django.contrib import admin, messages
 from functools import update_wrapper, partial
 from django.core.exceptions import (FieldError, ValidationError,
-                                    PermissionDenied)
+                                    PermissionDenied, ObjectDoesNotExist)
+from django.db import ProgrammingError, OperationalError
 from django.forms.models import modelform_factory
 from django.contrib.admin import helpers
-from django.utils.translation import ugettext as _, ugettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy
 import unicodecsv
 import json
 import os
@@ -38,6 +39,7 @@ import sys, traceback
 from django.db import IntegrityError
 from django.forms import ModelChoiceField, ChoiceField
 import requests
+from pbs.utils.pdf import PdflatexResult
 
 import logging
 logger = logging.getLogger('pbs')
@@ -47,26 +49,42 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
     SDO Burn State Report
     """
     epfp_review_template = 'admin/review/epfp_review_summary.html'
-    fmsb_group = Group.objects.get(name='Fire Management Services Branch')
-    drfms_group = Group.objects.get(name='Director Fire and Regional Services')
+    # fmsb_group = Group.objects.get(name='Fire Management Services Branch')
+    # drfms_group = Group.objects.get(name='Director Fire and Regional Services')
+    if settings.COLLECTSTATIC_ACTIVATED is True:
+        fmsb_group = None
+        drfms_group = None
+        pass
+    else:
+        fmsb_group = Group.objects.get(name='Fire Management Services Branch')
+        drfms_group = Group.objects.get(name='Director Fire and Regional Services')
+        # try:
+        #     fmsb_group = Group.objects.get(name='Fire Management Services Branch')
+        # except (Group.DoesNotExist, ObjectDoesNotExist, ProgrammingError):
+        #     fmsb_group = None
+        # try:
+        #     drfms_group = Group.objects.get(name='Director Fire and Regional Services')
+        # except (Group.DoesNotExist, ObjectDoesNotExist, ProgrammingError):
+        #     drfms_group = None
 
     def get_urls(self):
         """
         Add a view to clear the current prescription from the session
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        urlpatterns = patterns(
-            '',
-            url(r'^epfp-review/$',
+        urlpatterns = [
+            # '',
+           re_path(r'^epfp-review/$',
                 wrap(self.epfp_review_summary),
                 name='epfp_review_summary'),
-        )
+        ]
 
         return urlpatterns + super(BurnStateAdmin, self).get_urls()
 
@@ -129,8 +147,10 @@ class BurnStateAdmin(DetailAdmin, BaseAdmin):
         ).exclude(Q(non_calm_tenure=True) & ~Q(non_calm_tenure_approved=True)).order_by('burn_id')
 
         # Use the region from the request.
-        if request.REQUEST.has_key('region'):
-            region = request.REQUEST.get('region', None)
+        # if request.GET.has_key('region'):
+        #     region = request.GET.get('region', None)
+        if 'region' in request.GET:
+            region = request.GET.get('region', None)
         else:
             region = None
         # If no region in the request, use the user's profile.
@@ -176,19 +196,33 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         return True if request.user.is_superuser else False
 
     def get_form(self, request, obj=None, **kwargs):
-        if request.GET.has_key('form'):
+        # if request.GET.has_key('form'):
+        #import ipdb; ipdb.set_trace()
+        if 'form' in request.GET:
             self.form = None
-            if request.REQUEST.get('form')=='add_fire':
+            # if request.REQUEST.get('form')=='add_fire':
+            #     self.form = FireForm
+            # if request.REQUEST.get('form')=='edit_fire':
+            #     self.form = FireEditForm
+            # if request.REQUEST.get('form')=='add_burn':
+            #     self.form = PrescribedBurnForm
+            # if request.REQUEST.get('form')=='add_active_burn':
+            #     self.form = PrescribedBurnActiveForm
+            # if request.REQUEST.get('form')=='edit_active_burn':
+            #     self.form = PrescribedBurnEditActiveForm
+            # if request.REQUEST.get('form')=='edit_burn':
+            #     self.form = PrescribedBurnEditForm
+            if request.GET.get('form')=='add_fire':
                 self.form = FireForm
-            if request.REQUEST.get('form')=='edit_fire':
+            if request.GET.get('form')=='edit_fire':
                 self.form = FireEditForm
-            if request.REQUEST.get('form')=='add_burn':
+            if request.GET.get('form')=='add_burn':
                 self.form = PrescribedBurnForm
-            if request.REQUEST.get('form')=='add_active_burn':
+            if request.GET.get('form')=='add_active_burn':
                 self.form = PrescribedBurnActiveForm
-            if request.REQUEST.get('form')=='edit_active_burn':
+            if request.GET.get('form')=='edit_active_burn':
                 self.form = PrescribedBurnEditActiveForm
-            if request.REQUEST.get('form')=='edit_burn':
+            if request.GET.get('form')=='edit_burn':
                 self.form = PrescribedBurnEditForm
 
             if self.form:
@@ -199,16 +233,16 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """ view to render the FMSB Report form """
         context = {'form': CsvForm()}
         csv_template = 'admin/review/prescribedburn/csv_form.html'
-        return TemplateResponse(request, csv_template, context, current_app=self.admin_site.name)
+        return TemplateResponse(request, csv_template, context)
 
     def response_post_save_change(self, request, obj):
         """
         Override the redirect url after successful save of an existing PrescribedBurn
         """
         if 'edit_fire' in request.META.get('HTTP_REFERER') or 'edit_active_burn' in request.META.get('HTTP_REFERER'):
-            url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.REQUEST['date'])
+            url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.GET['date'])
         elif 'edit_burn' in request.META.get('HTTP_REFERER'):
-            url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.REQUEST['date'])
+            url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.GET['date'])
         else:
             url = reverse('admin:daily_burn_program')
 
@@ -220,11 +254,11 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Override the redirect url after successful save of a new PrescribedBurn
         """
-        if request.REQUEST.has_key('form'):
-            if 'add_fire' in request.REQUEST['form'] or 'add_active_burn' in request.REQUEST['form']:
-                url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.REQUEST['date'])
-            if 'add_burn' in request.REQUEST['form']:
-                url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.REQUEST['date'])
+        if 'form' in request.GET:
+            if 'add_fire' in request.GET['form'] or 'add_active_burn' in request.GET['form']:
+                url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.POST['date'])
+            if 'add_burn' in request.GET['form']:
+                url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.POST['date'])
         else:
             url = reverse('admin:daily_burn_program')
 
@@ -236,57 +270,58 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Add an extra view to handle marking a treatment as complete.
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^review/(\d+)/$',
+        urlpatterns = [
+            
+           re_path(r'^review/(\d+)/$',
                 wrap(self.changelist_view),
                 name='review_review_changelist'),
-            url(r'^add/burn/(\d+)/$',
+           re_path(r'^add/burn/(\d+)/$',
                 wrap(self.add_view),
                 name='%s_%s_add' % info),
-            url(r'^daily-burn-program/$',
+           re_path(r'^daily-burn-program/$',
                 wrap(self.daily_burn_program),
                 name='daily_burn_program'),
             #url(r'^district_action/([\w\,]+)/$',
-            url(r'^district_action/$',
+           re_path(r'^district_action/$',
                 wrap(self.district_action_view),
                 name='district_action_view'),
             #url(r'^region_action/([\w\,]+)/$',
-            url(r'^region_action/$',
+           re_path(r'^region_action/$',
                 wrap(self.region_action_view),
                 name='region_action_view'),
-            url(r'^daily-burn-program/fire_action',
+           re_path(r'^daily-burn-program/fire_action',
                 wrap(self.action_view),
                 name='action_view'),
-            url(r'^daily-burn-program/epfp',
+           re_path(r'^daily-burn-program/epfp',
                 wrap(self.prescription_view),
                 name='prescription_view'),
-            url(r'^daily-burn-program/export_csv/$',
+           re_path(r'^daily-burn-program/export_csv/$',
                 wrap(self.export_to_csv),
                 name='daily_burn_program_exportcsv'),
-            url(r'^daily-burn-program/pdf',
+           re_path(r'^daily-burn-program/pdf',
                 wrap(self.pdflatex),
                 name='create_dailyburns_pdf'),
-            url(r'^csv',
+           re_path(r'^csv',
                 wrap(self.csv_view),
                 name='csv_view'),
             #url(r'^bulk_delete/([\w\,]+)/$',
-            url(r'^bulk_delete/$',
+           re_path(r'^bulk_delete/$',
                 wrap(self.bulk_delete),
                 name='bulk_delete'),
-            url(r'^help',
+           re_path(r'^help',
                 wrap(self.help_view),
                 name='help_view'),
-        )
+        ]
         return urlpatterns + super(PrescribedBurnAdmin, self).get_urls()
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -381,9 +416,12 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         Used for pre-populating location and tenures fields in PrescribedBurnForm, via ajax call
         also for calculating and returning the bushfire_id string for the FireForm
         """
-        if request.is_ajax():
-            if request.REQUEST.has_key('burn_id'):
-                burn_id = str( request.REQUEST.get('burn_id') )
+        # if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # if request.REQUEST.has_key('burn_id'):
+            if 'burn_id' in request.GET:
+                # burn_id = str( request.REQUEST.get('burn_id') )
+                burn_id = str( request.GET.get('burn_id') )
                 #logger.info('burn_id {}'.format(burn_id))
                 p = Prescription.objects.filter(burn_id=burn_id)[0]
                 tenures = ', '.join([i.name for i in p.tenures.all()])
@@ -414,7 +452,8 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
                     }
                 return HttpResponse(json.dumps(d))
 
-            if request.REQUEST.has_key('district_id') and request.REQUEST.get('form_name')=='add_fire':
+            # if request.REQUEST.has_key('district_id') and request.REQUEST.get('form_name')=='add_fire':
+            if 'district_id' in request.GET and request.GET.get('form_name')=='add_fire':
                 try:
                     bfrs_base_url = settings.BFRS_URL if settings.BFRS_URL.endswith('/') else settings.BFRS_URL + os.sep
                     params = '&district_id={}'.format(request.GET.get('district_id'))
@@ -428,8 +467,9 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
                     resp = [{u'fire_number': u'BFRS lookup Failed', u'name': u'', u'tenure__name': u'', u'other_tenure': u''}]
                 return HttpResponse(json.dumps({'fire_numbers': resp}))
 
-            if request.REQUEST.has_key('region') and request.REQUEST.get('region') and request.REQUEST.has_key('form_name') and request.REQUEST.get('form_name'):
-                if request.REQUEST.get('form_name') == 'add_burn':
+            # if request.REQUEST.has_key('region') and request.REQUEST.get('region') and request.REQUEST.has_key('form_name') and request.REQUEST.get('form_name'):
+            if 'region' in request.GET and request.GET.get('region') and 'form_name' in request.GET and request.GET.get('form_name'):
+                if request.GET.get('form_name') == 'add_burn':
                     # Display prescriptions that have a current approval and
                     #have been reviewed since last approval creation date
                     presc_ids = [a.prescription.pk for a in Approval.objects.filter(valid_to__gte=date.today()) if a.prescription.current_fmsb_record.count() > 0]  #and a.prescription.current_drfms_record.count() > 0]
@@ -448,7 +488,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
                     presc_ids = list(set([a.prescription.pk for a in AreaAchievement.objects.filter(ignition__gte=lastyear)]))
                     qs = Prescription.objects.filter(pk__in=presc_ids).exclude(ignition_status=Prescription.IGNITION_NOT_STARTED).distinct()
 
-                qs = qs.filter(region=request.REQUEST.get('region')).order_by('-burn_id')
+                qs = qs.filter(region=request.GET.get('region')).order_by('-burn_id')
 
                 #burn_ids = ["<option value={}>{}</option>".format(p.id, p.burn_id) for p in qs]
                 burn_ids = ModelChoiceField(queryset=qs).widget.render(value="pk_prescription", name="prescription")
@@ -460,20 +500,20 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Separated into own method to allow further validation at specifically - District level
         """
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
-        if request.REQUEST.has_key('action'):
-            action = request.REQUEST.get('action', None)
+        if 'action' in request.GET:
+            action = request.GET.get('action', None)
 
-        if request.REQUEST.has_key('date'):
-            dt = datetime.strptime(request.REQUEST.get('date'), '%Y-%m-%d').date()
+        if 'date' in request.GET:
+            dt = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
 
         referrer_url = request.META.get('HTTP_REFERER')
-        if request.REQUEST.has_key('object_ids'):
-            object_ids = request.REQUEST.get('object_ids', None)
+        if 'object_ids' in request.GET:
+            object_ids = request.GET.get('object_ids', None)
             if not object_ids:
                 message = "No rows were selected"
                 self.message_user(request, message, level=messages.ERROR)
@@ -486,7 +526,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
 
         objects = PrescribedBurn.objects.filter(id__in=object_ids)
 
-        if not request.POST.has_key('multiple_approval'):
+        if not 'multiple_approval' in request.POST:
             # if key not present, request is not from multiple_confirm.html template, then
             # we must check if we have distinct districts > 1, and get confirmation to proceed
             distinct = objects.distinct('district')
@@ -630,20 +670,20 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Separated into own method to allow further validation at Region level
         """
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
-        if request.REQUEST.has_key('action'):
-            action = request.REQUEST.get('action', None)
+        if 'action' in request.GET:
+            action = request.GET.get('action', None)
 
-        if request.REQUEST.has_key('date'):
-            dt = datetime.strptime(request.REQUEST.get('date'), '%Y-%m-%d').date()
+        if 'date' in request.GET:
+            dt = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
 
         referrer_url = request.META.get('HTTP_REFERER')
-        if request.REQUEST.has_key('object_ids'):
-            object_ids = request.REQUEST.get('object_ids', None)
+        if 'object_ids' in request.GET:
+            object_ids = request.GET.get('object_ids', None)
             if not object_ids:
                 message = "No rows were selected"
                 self.message_user(request, message, level=messages.ERROR)
@@ -656,7 +696,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
 
         objects = PrescribedBurn.objects.filter(id__in=object_ids)
 
-        if not request.POST.has_key('multiple_approval'):
+        if not 'multiple_approval' in request.POST:
             # if key not present, request is not from multiple_confirm.html template, then
             # we must check if we have distinct regions > 1, and get confirmation to proceed
             distinct = objects.distinct('region')
@@ -806,7 +846,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             msg_type = "danger"
             return HttpResponse(json.dumps({"redirect": referrer_url, "message": message, "type": msg_type}))
 
-        if request.POST.has_key('action'):
+        if 'action' in request.POST:
             action = request.POST['action']
         else:
             raise Http404('Could not get Update Action command')
@@ -815,15 +855,15 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             BurnProgramLink.populate() # update the BurnProgramLink links
             return HttpResponse(json.dumps({"redirect": referrer_url, "message": "Updated Daily Burn Links", "type": "info"}))
 
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
-        if request.POST.has_key('date'):
+        if 'date' in request.POST:
             dt = datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
 
-        if request.POST.has_key('data') :
+        if 'data' in request.POST:
             if len(request.POST['data']) == 0: # and action != "Copy Records":
                 message = "No rows were selected"
                 msg_type = "danger"
@@ -984,8 +1024,8 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             )
             return HttpResponseRedirect(referrer_url)
 
-        if request.REQUEST.has_key('object_ids'):
-            object_ids = request.REQUEST.get('object_ids', None)
+        if 'object_ids' in request.GET:
+            object_ids = request.GET.get('object_ids', None)
             if not object_ids:
                 message = "No rows were selected"
                 self.message_user(request, message, level=messages.ERROR)
@@ -1030,17 +1070,22 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Display a list of the current day's planned burns
         """
+        #import ipdb; ipdb.set_trace()
         report_set = {'epfp_planned', 'epfp_fireload', 'epfp_summary'}
         report = request.GET.get('report', 'epfp_planned')
         if report not in report_set:
             report = 'epfp_planned'
 
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        # if request.REQUEST.has_key('report'):
+        #     report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
         dt = None
-        if request.REQUEST.has_key('date'):
-            dt = request.REQUEST.get('date', None)
+        # if request.REQUEST.has_key('date'):
+        #     dt = request.REQUEST.get('date', None)
+        if 'date' in request.GET:
+            dt = request.GET.get('date', None)
             if dt:
                 dt = datetime.strptime(dt, '%Y-%m-%d')
         if not dt:
@@ -1315,12 +1360,12 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         return unset_objects
 
     def export_to_csv(self, request, extra_context=None):
-        if request.GET.has_key('toDate') and request.GET.has_key('fromDate'):
+        if 'toDate' in request.GET and 'fromDate' in request.GET:
             fromDate = datetime.strptime(request.GET.get('fromDate'), '%Y-%m-%d').date()
             toDate = datetime.strptime(request.GET.get('toDate'), '%Y-%m-%d').date()
             burns = PrescribedBurn.objects.filter(date__range=[fromDate, toDate])
             filename = 'export_daily_burn_program_{0}-{1}.csv'.format(fromDate.strftime('%d%b%Y'), toDate.strftime('%d%b%Y'))
-        elif request.GET.has_key('date'):
+        elif 'date' in request.GET:
             report_date = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
             burns = PrescribedBurn.objects.filter(date=report_date)
             filename = 'export_daily_burn_program_{0}.csv'.format(report_date.strftime('%d%b%Y'))
@@ -1406,23 +1451,23 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             "Rolled"])
 
         for row in query_list:
-            writer.writerow([unicode(s).encode("utf-8") for s in row])
+            writer.writerow([s.decode('utf-8') if isinstance(s, bytes) else '' if s is None else str(s) for s in row])
 
         return response
-    export_to_csv.short_description = ugettext_lazy("Export to CSV")
+    export_to_csv.short_description = gettext_lazy("Export to CSV")
 
     def pdflatex(self, request):
         logger = logging.getLogger('pdf_debugging')
         logger.info("_________________________ START ____________________________")
         logger.info("Starting a PDF output: {}".format(request.get_full_path()))
 
-        if request.GET.has_key('date'):
+        if 'date' in request.GET:
             report_date = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
         prescribed_burns = PrescribedBurn.objects.filter(date=report_date).distinct()
 
-        if request.GET.has_key('region'):
+        if 'region' in request.GET:
             region = request.GET.get('region', None)
             prescribed_burns = prescribed_burns.filter(region=region)
             region_name = Region.objects.get(id=int(region)).name
@@ -1510,9 +1555,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         logger.info('Starting render_to_string step')
         err_msg = None
         try:
-            output = render_to_string(
-                "latex/" + template + ".tex", context,
-                context_instance=RequestContext(request))
+            output = render_to_string("latex/" + template + ".tex", context)
         except Exception as e:
             import traceback
             err_msg = u"PDF tex template render failed (might be missing attachments):"
@@ -1523,13 +1566,21 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
 
         texpath = os.path.join(directory, texname)
         with open(texpath, "w") as f:
-            f.write(output.encode('utf-8'))
+            f.write(output)
             logger.info("Writing to {}".format(directory + texname))
 
         logger.info("Starting PDF rendering process ...")
         cmd = ['latexmk', '-f', '-silent', '-pdf', '-outdir={}'.format(directory), texpath]
         logger.info("Running: {0}".format(" ".join(cmd)))
         subprocess.call(cmd)
+        pdffile = os.path.join(directory, filename)
+        result = PdflatexResult()
+        if os.path.exists(pdffile):
+            result.pdf_file = pdffile
+            logger.info("PDF output for {0} successful".format(downloadname)) 
+        else:
+            err_msg = u"PDF generation failed for "
+            result.err_msg = "{0}\n\n{1}".format(err_msg, downloadname)
 
         logger.info("Cleaning up ...")
         cmd = ['latexmk', '-c', '-outdir={}'.format(directory), texpath]
@@ -1538,7 +1589,8 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         subprocess.call(cmd)
 
         logger.info("Reading PDF output from {}".format(filename))
-        response.write(open(directory + filename).read())
+        with open(result.pdf_file, 'rb') as f:
+            response.write(f.read())
         logger.info("Finally: returning PDF response.")
         return response
 
@@ -1558,10 +1610,10 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         return Group.objects.get(name='State Aviation Officer')
 
     def get_form(self, request, obj=None, **kwargs):
-        if request.GET.has_key('form'):
-            if request.REQUEST.get('form')=='add_aircraft_burn':
+        if 'form' in request.GET:
+            if request.GET.get('form')=='add_aircraft_burn':
                 return AircraftBurnForm
-            if request.REQUEST.get('form')=='edit_aircraft_burn':
+            if request.GET.get('form')=='edit_aircraft_burn':
                 return AircraftBurnEditForm
 
 #    def response_post_save_change(self, request, obj):
@@ -1595,31 +1647,32 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Add an extra view to handle marking a treatment as complete.
         """
-        from django.conf.urls import patterns, url
+        #from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^aircraft-burn-program/$',
+        urlpatterns = [
+            # '',
+           re_path(r'^aircraft-burn-program/$',
                 wrap(self.aircraft_burn_program),
                 name='aircraft_burn_program'),
-            url(r'^help',
+           re_path(r'^help',
                 wrap(self.help_view),
                 name='help_aircraft_view'),
-            url(r'^bulk_delete/([\w\,]+)/$',
+           re_path(r'^bulk_delete/([\w\,]+)/$',
                 wrap(self.bulk_delete),
                 name='bulk_aircraft_delete'),
-            url(r'^aircraft-burn-program/pdf',
+           re_path(r'^aircraft-burn-program/pdf',
                 wrap(self.pdflatex),
                 name='create_aircraftburns_pdf'),
 
-        )
+        ]
         return urlpatterns + super(AircraftBurnAdmin, self).get_urls()
 
     def help_view(self, request, extra_context=None):
@@ -1665,11 +1718,11 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         report_set = {'epfp_aircraft'}
         report = request.GET.get('report', 'epfp_aircraft')
 
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
-        if request.REQUEST.has_key('date'):
-            dt = request.REQUEST.get('date', None)
+        if 'date' in request.GET:
+            dt = request.GET.get('date', None)
             if dt:
                 dt = datetime.strptime(dt, '%Y-%m-%d')
         else:
@@ -1687,8 +1740,8 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
             #qs_burn = qs_burn.filter(form_name=PrescribedBurn.FORM_268A)
             form = AircraftBurnFilterForm(request.GET)
 
-        if request.REQUEST.has_key('region'):
-            region = request.REQUEST.get('region', None)
+        if 'region' in request.GET:
+            region = request.GET.get('region', None)
             if region:
                 qs_aircraft = qs_aircraft.filter(prescription__region=region)
 
@@ -1704,19 +1757,19 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         return TemplateResponse(request, "admin/epfp_daily_burn_program.html", context)
 
     def action_view(self, request, extra_context=None):
-        if request.REQUEST.has_key('report'):
-            report = request.REQUEST.get('report', None)
+        if 'report' in request.GET:
+            report = request.GET.get('report', None)
 
-        if request.POST.has_key('date'):
+        if 'date' in request.POST:
             dt = datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
 
         referrer_url = request.META.get('HTTP_REFERER')
-        if request.POST.has_key('action'):
+        if 'action' in request.POST:
             action = request.POST['action']
 
-            if request.POST.has_key('data'):
+            if 'data' in request.POST:
                 if len(request.POST['data']) == 0: # and action != "Copy Records":
                     message = "No rows were selected"
                     msg_type = "danger"
@@ -1932,7 +1985,7 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
 
     def pdflatex(self, request):
         #import ipdb; ipdb.set_trace()
-        if request.GET.has_key('date'):
+        if 'date' in request.GET:
             report_date = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
@@ -2004,9 +2057,7 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
         logger.debug('Starting  render_to_string step')
         err_msg = None
         try:
-            output = render_to_string(
-                "latex/" + template + ".tex", context,
-                context_instance=RequestContext(request))
+            output = render_to_string("latex/" + template + ".tex", context)
         except Exception as e:
             import traceback
             err_msg = u"PDF tex template render failed (might be missing attachments):"
@@ -2017,7 +2068,7 @@ class AircraftBurnAdmin(DetailAdmin, BaseAdmin):
 
         texpath = os.path.join(directory, texname)
         with open(texpath, "w") as f:
-            f.write(output.encode('utf-8'))
+            f.write(output)
             logger.debug("Writing to {}".format(texpath))
 
         logger.debug("Starting PDF rendering process ...")

@@ -7,7 +7,7 @@
                     <div class="control-group {{ fieldset.classes }}{% if not field.is_readonly and field.errors %} error{% endif %}">
                     {% if field.is_checkbox %}
                       <div class="controls">
-                        {{ field.field }}<label class="checkbox inline">{{ field.field.label }}</label>{% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
+                        {{ field.field }}<label class="checkbox inline">{{ field.field.label }}</label>{% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}
                     {% else %}
                     <label class="control-label{% if field.field.field.required %} required{% endif %}{% if not field.is_first %} inline {% endif %}">{{ field.field.label }}:</label>
                         <div class="controls">
@@ -16,7 +16,7 @@
                         {% else %}
                             {{ field.field }}
                         {% endif %}
-                        {% if line.fields|length_is:'1' %}
+                        {% if line.fields|length == 1 %}
                         <span class="help-inline">
                         {% for error in field.field.errors %}{{ error }}{% endfor %}
                         </span>

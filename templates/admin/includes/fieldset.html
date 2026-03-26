@@ -12,7 +12,7 @@
                 <div class="span{% if not field.is_readonly and field.errors %} alert alert-error{% endif %}">
                     {% if field.is_checkbox %}
                         <div class="controls">
-                        {{ field.field }}<label class="checkbox inline">{{ field.field.label }}</label>{% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
+                        {{ field.field }}<label class="checkbox inline">{{ field.field.label }}</label>{% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}
                     {% else %}
                         {% if not field.field.is_hidden %}
                         <label class="control-label{% if field.field.field.required %} required{% endif %}{% if not field.is_first %} inline {% endif %}{% if field.is_readonly %} muted{% endif %}">{{ field.field.label|capfirst }}{% if field.field.field.required %}*{% endif %}:</label>

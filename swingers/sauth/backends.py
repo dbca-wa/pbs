@@ -66,8 +66,8 @@ class EmailBackend(ObjectPermissionBackend):
                     user.first_name, user.last_name = first_name, last_name
                     user.save()
                 return user
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 return None
 
     def get_user(self, user_id):

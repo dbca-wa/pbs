@@ -19,6 +19,7 @@ class EdgingPlanForm(HelperModelForm):
 
     class Meta:
         model = EdgingPlan
+        fields = '__all__'
 
 
 class LightingSequenceForm(HelperModelForm):
@@ -43,3 +44,4 @@ class LightingSequenceForm(HelperModelForm):
 
     class Meta:
         model = LightingSequence
+        fields = '__all__'

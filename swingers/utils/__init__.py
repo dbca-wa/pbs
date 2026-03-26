@@ -2,7 +2,7 @@ from __future__ import (division, print_function, unicode_literals,
                         absolute_import)
 from django.template.defaultfilters import slugify
 
-from itertools import chain, islice, izip
+from itertools import chain, islice
 from unidecode import unidecode
 
 import binascii
@@ -157,12 +157,12 @@ def shorthash(obj):
 
 
 def get_random_datetime(year=random.choice(
-        xrange(datetime.datetime.today().year - 5,
+        range(datetime.datetime.today().year - 5,
                datetime.datetime.today().year + 5))):
     """Return a random datetime object (year can be optionally specified).
 
     - use get_random_datetime().date() to get a random date object."""
-    choice = lambda x: random.choice(xrange(1, x))
+    choice = lambda x: random.choice(range(1, x))
     return datetime.datetime(year, choice(12), choice(27), choice(24),
                              choice(60), choice(60))
 
@@ -185,7 +185,7 @@ def chomsky(times=1, line_length=100):
         phraselist = map(lambda x: x.strip(), part.splitlines())
         random.shuffle(phraselist)
         parts.append(phraselist)
-    output = chain(*islice(izip(*parts), 0, times))
+    output = chain(*islice(zip(*parts), 0, times))
     return textwrap.fill(' '.join(output), line_length)
 
 LEADINS = """To characterize a linguistic level L,

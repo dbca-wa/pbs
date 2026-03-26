@@ -3,13 +3,16 @@ from __future__ import absolute_import, unicode_literals
 from functools import update_wrapper
 
 from django.contrib.admin import ModelAdmin
-from django.contrib.admin.util import unquote
+# from django.contrib.admin.util import unquote
+from django.contrib.admin.utils import unquote
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.html import escape
-from django.utils.translation import ugettext as _
-from django.utils.encoding import force_text
+# from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _
+# from django.utils.encoding import force_str
+from django.utils.encoding import force_str
 
 
 class RegionAdmin(ModelAdmin):
@@ -55,36 +58,36 @@ class DetailAdmin(ModelAdmin):
         )
 
     def get_urls(self):
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns(
-            '',
-            url(r'^$',
+        urlpatterns = [
+           re_path(r'^$',
                 wrap(self.changelist_view),
                 name='%s_%s_changelist' % info),
-            url(r'^add/$',
+           re_path(r'^add/$',
                 wrap(self.add_view),
                 name='%s_%s_add' % info),
-            url(r'^(\d+)/history/$',
+           re_path(r'^(\d+)/history/$',
                 wrap(self.history_view),
                 name='%s_%s_history' % info),
-            url(r'^(\d+)/delete/$',
+           re_path(r'^(\d+)/delete/$',
                 wrap(self.delete_view),
                 name='%s_%s_delete' % info),
-            url(r'^(\d+)/change/$',
+           re_path(r'^(\d+)/change/$',
                 wrap(self.change_view),
                 name='%s_%s_change' % info),
-            url(r'^(\d+)/$',
+           re_path(r'^(\d+)/$',
                 wrap(self.detail_view),
                 name='%s_%s_detail' % info),
-        )
+        ]
         return urlpatterns
 
     def detail_view(self, request, object_id, extra_context=None):
@@ -98,26 +101,34 @@ class DetailAdmin(ModelAdmin):
         if obj is None:
             raise Http404(_('%(name)s object with primary key %(key)r does '
                             'not exist.') % {
-                                'name': force_text(opts.verbose_name),
+                                'name': force_str(opts.verbose_name),
                                 'key': escape(object_id)})
 
         context = {
-            'title': _('Detail %s') % force_text(opts.verbose_name),
+            'title': _('Detail %s') % force_str(opts.verbose_name),
             'object_id': object_id,
             'original': obj,
-            'is_popup': "_popup" in request.REQUEST,
+            # 'is_popup': "_popup" in request.REQUEST,
+            'is_popup': "_popup" in request.GET,
             'media': self.media,
             'app_label': opts.app_label,
             'opts': opts,
             'has_change_permission': self.has_change_permission(request, obj),
+            'current_app': self.admin_site.name
         }
         context.update(extra_context or {})
+        # return TemplateResponse(request, self.detail_template or [
+        #     "admin/%s/%s/detail.html" % (opts.app_label,
+        #                                  opts.object_name.lower()),
+        #     "admin/%s/detail.html" % opts.app_label,
+        #     "admin/detail.html"
+        # ], context, current_app=self.admin_site.name)
         return TemplateResponse(request, self.detail_template or [
             "admin/%s/%s/detail.html" % (opts.app_label,
                                          opts.object_name.lower()),
             "admin/%s/detail.html" % opts.app_label,
             "admin/detail.html"
-        ], context, current_app=self.admin_site.name)
+        ], context)
 
     def queryset(self, request):
         qs = super(DetailAdmin, self).queryset(request)

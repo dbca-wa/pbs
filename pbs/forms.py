@@ -7,8 +7,10 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
 from django.utils.html import format_html_join, format_html
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+# from django.utils.encoding import force_text
+from django.utils.encoding import force_str
+# from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 from datetime import date
@@ -94,7 +96,7 @@ class SessionPersistenceMixin(object):
             #form status found in session
             if persistent_fields:
                 #partial persistent, add missing field value from default_initial
-                for key,value in (kwargs.get("initial") or self.default_initial() or {}).iteritems():
+                for key,value in (kwargs.get("initial") or self.default_initial() or {}).items():
                     if key not in initial:
                         initial[key] = value
 
@@ -158,7 +160,7 @@ class SessionPersistenceMixin(object):
         """
         return self.request.session.get(self.session_key)
 
-class PbsErrorList(forms.util.ErrorList):
+class PbsErrorList(forms.utils.ErrorList):
     # custom error classes
     def as_ul(self):
         if not self:
@@ -166,7 +168,7 @@ class PbsErrorList(forms.util.ErrorList):
         return format_html(
             '<ul class="errorlist alert alert-block alert-error fade in">'
             '{0}</ul>', format_html_join('', '<li>{0}</li>',
-                                         ((force_text(e),) for e in self)
+                                         ((force_str(e),) for e in self)
                                          )
         )
 
@@ -195,7 +197,8 @@ class PbsModelForm(forms.models.ModelForm):
         field.to_python() instead of datetime.strptime() but I guess we'll
         wait for django 1.6 :)
         """
-        if self._changed_data is None:
+        self._changed_data=self.changed_data
+        if self.changed_data:
             self._changed_data = self.changed_data
             if bool(self._changed_data):
                 for index, name in enumerate(self._changed_data):

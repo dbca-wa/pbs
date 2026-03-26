@@ -3,8 +3,9 @@ from django.db.models.query import QuerySet
 from django.db.models.sql.query import Query
 
 from django.contrib.gis.db import models as geo_models
-from django.contrib.gis.db.models.query import GeoQuerySet
-from django.contrib.gis.db.models.sql.query import GeoQuery
+# from django.contrib.gis.db.models.query import GeoQuerySet
+# from django.contrib.gis.db.models.sql.query import GeoQuery
+from django.db.models import Q, QuerySet
 
 import copy
 
@@ -52,14 +53,24 @@ class ActiveQuerySet(QuerySet):
     delete.alters_data = True
 
 
-class ActiveGeoQuerySet(ActiveQuerySet, GeoQuerySet):
-    def __init__(self, model, query=None, using=None):
-        # the model needs to be defined so that we can construct our custom
-        # query
-        if query is None:
-            query = GeoQuery(model)
-            query.add_q(geo_models.Q(effective_to__isnull=True))
-        return super(ActiveGeoQuerySet, self).__init__(model, query, using)
+#Original before python3 upgrade
+# class ActiveGeoQuerySet(ActiveQuerySet, GeoQuerySet):
+#     def __init__(self, model, query=None, using=None):
+#         # the model needs to be defined so that we can construct our custom
+#         # query
+#         if query is None:
+#             query = GeoQuery(model)
+#             query.add_q(geo_models.Q(effective_to__isnull=True))
+#         return super(ActiveGeoQuerySet, self).__init__(model, query, using)
+
+class ActiveGeoQuerySet(ActiveQuerySet):
+   def __init__(self, model=None, query=None, using=None):
+       # the model needs to be defined so that we can construct our custom query
+       if query is None:
+           query = QuerySet(model)
+           query = query.filter(Q(effective_to__isnull=True))
+       super().__init__(model=model, query=query.query, using=using)
+
 
 
 class ActiveModelManager(models.Manager):
@@ -79,6 +90,11 @@ class ActiveModelManager(models.Manager):
         return getattr(self.get_query_set(), attr, *args)
 
 
-class ActiveGeoModelManager(ActiveModelManager, geo_models.GeoManager):
-    def get_query_set(self):
-        return ActiveGeoQuerySet(self.model)
+#Original before python3 upgrade
+# class ActiveGeoModelManager(ActiveModelManager, geo_models.GeoManager):
+#     def get_query_set(self):
+#         return ActiveGeoQuerySet(self.model)
+
+class ActiveGeoModelManager(ActiveModelManager, models.Manager):
+    def get_queryset(self):
+        return ActiveGeoQuerySet(self.model, using=self._db)

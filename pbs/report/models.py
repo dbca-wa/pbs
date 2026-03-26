@@ -8,7 +8,6 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 from django.core.validators import MinValueValidator
 
 from swingers.models.auth import Audit
@@ -98,7 +97,7 @@ class SummaryCompletionState(AbstractState):
     section has been fully completed.
     """
     prescription = models.OneToOneField(
-        Prescription, related_name='pre_state')
+        Prescription, related_name='pre_state', on_delete=models.PROTECT)
     summary = models.BooleanField(choices=BOOL_CHOICES, default=False)
     context_statement = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
@@ -241,28 +240,39 @@ class BurnImplementationState(AbstractState):
     been fully completed.
     """
     prescription = models.OneToOneField(
-        Prescription, related_name='day_state')
+        Prescription, related_name='day_state', on_delete=models.PROTECT)
     overview = models.BooleanField(choices=BOOL_CHOICES, default=False)
-    pre_actions = models.NullBooleanField(choices=NULL_CHOICES, default=False)
-    actions = models.NullBooleanField(choices=NULL_CHOICES, default=False)
-    roads = models.NullBooleanField(choices=NULL_CHOICES, default=False)
-    traffic = models.NullBooleanField(choices=NULL_CHOICES, default=False)
-    tracks = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    # pre_actions = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    # actions = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    # roads = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    # traffic = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    # tracks = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    pre_actions = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
+    actions = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
+    roads = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
+    traffic = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
+    tracks = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
     burning_prescription = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
-    fuel_assessment = models.NullBooleanField(
-        choices=NULL_CHOICES, default=False)
-    edging_plan = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    # fuel_assessment = models.NullBooleanField(
+    #     choices=NULL_CHOICES, default=False)
+    # edging_plan = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    fuel_assessment = models.BooleanField(
+        choices=NULL_CHOICES, default=False, null=True, blank=True)
+    edging_plan = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
     contingency_plan = models.BooleanField(choices=BOOL_CHOICES, default=False)
     lighting_sequence = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
-    exclusion_areas = models.NullBooleanField(
-        choices=NULL_CHOICES, default=False)
+    # exclusion_areas = models.NullBooleanField(
+    #     choices=NULL_CHOICES, default=False)
+    exclusion_areas = models.BooleanField(
+        choices=NULL_CHOICES, default=False, null=True, blank=True)
     organisational_structure = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
     briefing = models.BooleanField(choices=BOOL_CHOICES, default=False)
     operation_maps = models.BooleanField(choices=BOOL_CHOICES, default=False)
-    aerial_maps = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    # aerial_maps = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    aerial_maps = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
 
     def clean_overview(self):
         overviews = self.prescription.operationaloverview_set.all()
@@ -685,12 +695,16 @@ class PostBurnChecklist(Audit):
     def clean(self, *args, **kwargs):
         super(PostBurnChecklist, self).clean(*args, **kwargs)
 
-        if self.completed_on is not None and not self.completed_by:
-            raise ValidationError("Please specify who completed this action.")
+        if self.relevant:
+            if self.completed_on is not None and not self.completed_by:
+                raise ValidationError("Please specify who completed this action.")
 
-        if self.completed_by and self.completed_on is None:
-            raise ValidationError("Please specify when was this action "
-                                  "completed.")
+            if self.completed_by and self.completed_on is None:
+                raise ValidationError("Please specify when was this action "
+                                    "completed.")
+        else:
+            self.completed_on = None
+            self.completed_by = None
 
     class Meta:
         ordering = ["pk"]
@@ -705,23 +719,33 @@ class BurnClosureState(AbstractState):
     section has been fully completed.
     """
     prescription = models.OneToOneField(
-        Prescription, related_name='post_state')
-    post_actions = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+        Prescription, related_name='post_state', on_delete=models.PROTECT)
+    # post_actions = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    post_actions = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
     evaluation_summary = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
-    evaluation = models.NullBooleanField(choices=NULL_CHOICES, default=False)
-    post_ignitions = models.NullBooleanField(
-        choices=NULL_CHOICES, default=False)
-    aerial_intensity = models.NullBooleanField(
-        choices=NULL_CHOICES, default=False)
-    satellite_intensity = models.NullBooleanField(
-        choices=NULL_CHOICES, default=False)
-    other = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    # evaluation = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    evaluation = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
+    # post_ignitions = models.NullBooleanField(
+    #     choices=NULL_CHOICES, default=False)
+    # aerial_intensity = models.NullBooleanField(
+    #     choices=NULL_CHOICES, default=False)
+    # satellite_intensity = models.NullBooleanField(
+    #     choices=NULL_CHOICES, default=False)
+    # other = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    post_ignitions = models.BooleanField(
+        choices=NULL_CHOICES, default=False, null=True, blank=True)
+    aerial_intensity = models.BooleanField(
+        choices=NULL_CHOICES, default=False, null=True, blank=True)
+    satellite_intensity = models.BooleanField(
+        choices=NULL_CHOICES, default=False, null=True, blank=True)
+    other = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
     post_burn_checklist = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
     closure_declaration = models.BooleanField(
         choices=BOOL_CHOICES, default=False)
-    signage = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    # signage = models.NullBooleanField(choices=NULL_CHOICES, default=False)
+    signage = models.BooleanField(choices=NULL_CHOICES, default=False, null=True, blank=True)
 
     def clean_evaluation(self):
         evaluations = self.prescription.proposedaction_set.all().count()
@@ -822,7 +846,7 @@ class BurnClosureState(AbstractState):
                                   "closed.")
 
 
-@python_2_unicode_compatible
+
 class AreaAchievement(Audit):
     prescription = models.ForeignKey(Prescription, on_delete=models.PROTECT)
     #Jira issue PBS-1407
@@ -901,7 +925,7 @@ class Evaluation(Audit):
         (ACHIEVED_PARTIAL, "Partially"),
     )
     criteria = models.OneToOneField(
-        SuccessCriteria, verbose_name="Success Criteria")
+        SuccessCriteria, verbose_name="Success Criteria", on_delete=models.PROTECT)
     achieved = models.PositiveSmallIntegerField(
         choices=ACHIEVED_CHOICES, blank=True, null=True,
         verbose_name="Success Criteria Achieved?")
@@ -942,7 +966,7 @@ class ProposedAction(Audit):
 
 
 class ClosureDeclaration(Audit):
-    prescription = models.OneToOneField(Prescription)
+    prescription = models.OneToOneField(Prescription, on_delete=models.PROTECT)
     closed = models.BooleanField(default=False)
 
 
@@ -971,3 +995,10 @@ def create_evaluation(sender, instance, created, **kwargs):
     """
     if created:
         Evaluation.objects.create(criteria=instance)
+
+import reversion
+reversion.register(PostBurnChecklist)
+reversion.register(BurnClosureState)
+reversion.register(AreaAchievement)
+reversion.register(ProposedAction)
+reversion.register(BurnImplementationState)

@@ -5,14 +5,14 @@ from functools import partial, update_wrapper
 
 from django_downloadview import ObjectDownloadView
 from django.contrib import messages
-from django.contrib.admin.util import quote, unquote
-from django.core.urlresolvers import reverse
+from django.contrib.admin.utils import quote, unquote
+from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from .models import Document, DocumentTag, DocumentCategory
 from .forms import DocumentForm
@@ -150,6 +150,20 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
               
 
                 return qs
+            
+            def get_queryset(self, request):
+                qs = super(DocumentChangeList, self).get_queryset(request)
+                category = re.findall("/category/(.+)/", request.path)
+                tag = re.findall("/tag/(.+)/", request.path)
+
+                if category:
+                    category = category[0].replace('_', ' ')
+                    qs = qs.filter(tag__category__name__iexact=category)
+                if tag:
+                    tag = tag[0].replace('_', ' ')
+                    #only show non-archived documents for tag view
+                    qs = qs.filter(tag__name__iexact=tag,document_archived=False)
+                return qs
 
         return DocumentChangeList
 
@@ -177,8 +191,8 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
             extra_context = extra_context or {}
             extra_context.update({
                 'title': (_('Add %s %s') %
-                         (force_text(tag.name),
-                          force_text(opts.verbose_name)))
+                         (force_str(tag.name),
+                          force_str(opts.verbose_name)))
             })
 
         # I think the approach is to capture and validate the form on post,
@@ -210,14 +224,14 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         """
         request = kwargs.pop('request')
         if self.has_delete_permission(request, obj):
-            info = obj._meta.app_label, obj._meta.module_name
+            info = obj._meta.app_label, obj._meta.model_name
             delete_url = reverse('admin:%s_%s_delete' % info,
                                  args=(quote(obj.pk),
                                        quote(self.prescription.pk)))
             return ('<a href="%s" class="btn btn-mini alert-error" '
                     'title="Delete"><i class="icon-trash"></i></a>') % delete_url
         else:
-            return ""
+            return format_html('&nbsp;')
 
     def category_view(self, request, prescription_id, category_name,
                       extra_context=None):
@@ -233,7 +247,7 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         except DocumentCategory.DoesNotExist:
             raise Http404(
                 _('%(name)s object with primary key %(key)r does not exist.') %
-                {'name': force_text(opts.verbose_name), 'key': escape(category_name)}
+                {'name': force_str(opts.verbose_name), 'key': escape(category_name)}
             )
 
         context = {
@@ -248,13 +262,14 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         Wraps the change list with some extra tag related information.
         """
         tag = unquote(tag_name.replace("_", " "))
+        opts = DocumentCategory._meta
 
         try:
             document_tag = DocumentTag.objects.get(name__iexact=tag)
         except DocumentTag.DoesNotExist:
             raise Http404(
                 _('%(name)s object with primary key %(key)r does not exist.') %
-                {'name': force_text(opts.verbose_name), 'key': escape(tag)}
+                {'name': force_str(opts.verbose_name), 'key': escape(tag)}
             )
 
         context = {
@@ -269,17 +284,19 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
         Add some extra views for handling the prescription summaries and a page
         to handle selecting Regional Fire Coordinator objectives for a burn.
         """
-        from django.conf.urls import patterns, url
+        # from django.conf.urls import url
+        from django.urls import re_path
 
         def wrap(view):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
 
-        info = self.model._meta.app_label, self.model._meta.module_name
+        info = self.model._meta.app_label, self.model._meta.model_name
 
-        urlpatterns = patterns('',
-            url(r'^prescription/(.+)/all/$',
+        urlpatterns = [
+            # '',
+           re_path(r'^prescription/(.+)/all/$',
                 wrap(self.changelist_view),
                 {"extra_context": {
                     "title": "Documents",
@@ -291,12 +308,12 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
                         "Context Map", "Prescribed Burning SMEAC Checklist")
                 }},
                 name='%s_%s_all' % info),
-            url(r'^prescription/(.+)/category/(.+)/$',
+           re_path(r'^prescription/(.+)/category/(.+)/$',
                 wrap(self.category_view),
                 name='%s_%s_category' % info),
-            url(r'^prescription/(.+)/tag/(.+)/$',
+           re_path(r'^prescription/(.+)/tag/(.+)/$',
                 wrap(self.tag_view),
                 name='%s_%s_tag' % info)
-        )
+        ]
 
         return urlpatterns + super(DocumentAdmin, self).get_urls()

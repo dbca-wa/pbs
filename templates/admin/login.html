@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n staticfiles %}
+{% load i18n static %}
 
 {% block extrahead %}
 <link rel="stylesheet" href="{% static 'pbs/css/login.css' %}">
@@ -35,8 +35,9 @@
 {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
 </p>
 {% endif %}
-{% if form.non_field_errors or form.this_is_the_login_form.errors %}
-{% for error in form.non_field_errors|add:form.this_is_the_login_form.errors %}
+
+{% if form.non_field_errors %}
+{% for error in form.non_field_errors %}
 <p class="errornote">
     {{ error }}
 </p>
@@ -86,6 +87,6 @@ $.backstretch("{% static 'pbs/img/login_background.jpg' %}");
 {% block footer %}
 <footer class="white navbar-fixed-bottom">
     Don't have an account yet?
-    <a class="btn btn-black" href="{% url 'registration_register' %}">Register</a> <em>(FPC users only)</em>
+    <a class="btn btn-black" href="">Register</a> <em>(FPC users only)</em>
 </footer>
 {% endblock %}
