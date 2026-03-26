@@ -21,6 +21,7 @@ from pbs.admin import BaseAdmin
 from pbs.prescription.admin import PrescriptionMixin, SavePrescriptionMixin
 from pbs.prescription.actions import delete_selected, archive_documents
 from django.shortcuts import redirect
+from django.utils.html import format_html
 
 
 class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
