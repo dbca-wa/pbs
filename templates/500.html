@@ -16,13 +16,13 @@
 <div class="topmast">
   <div class="container">
     <div class="masthead">
-      <div class="row-fluid">
-        <div class="span8">
+      <div class="row">
+        <div class="col-8">
           <div class="agency-freespace">
-            <a class="brand pull-left">
+            <a class="brand float-start">
               <img src="{% static 'pbs/img/waTextBlack_80-bluebg.gif' %}" alt="Government of Western Australia" />
             </a>
-            <h1 id="site-title" class="site-logo pull-left">
+            <h1 id="site-title" class="site-logo float-start">
                 <img src="{% static 'pbs/img/logo-dpaw.gif' %}" alt="Department of Parks and Wildlife" />
                 Department of <br><strong>Parks and Wildlife</strong>
             </h1>
@@ -36,7 +36,7 @@
   <div class="page-container">
     <div class="container">
     <div class="row">
-      <div class="span12">
+      <div class="col-12">
         <h3>Internal server error</h3>
         <p>We have encountered a problem processing your request.</p>
         {% if request.sentry.id %}
@@ -53,8 +53,8 @@
 </div>
 <footer class="footer">
   <div class="container-fluid">
-    <div class="span12">
-    <p class="pull-right">&copy; 2013 Department of Parks and Wildlife</p>
+    <div class="col-12">
+    <p class="float-end">&copy; 2013 Department of Parks and Wildlife</p>
     </div>
   </div>
 </footer>

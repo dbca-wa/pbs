@@ -64,7 +64,7 @@
 
 {% block extra-forms %}
 <div class="row">
-<div class="span5">
+<div class="col-5">
 <h1>Burn Objectives</h1>
 {% if current.objective_set.all.count > 0 %}
     <ul>
@@ -76,7 +76,7 @@
     <span>There are no burn objectives associated with this burn.</span>
 {% endif %}
 </div>
-<div class="span5 offset1">
+<div class="col-5 offset1">
 <h1>Burn Purposes</h1>
 <ul>
     {% for purpose in current.purposes.all %}

@@ -37,7 +37,7 @@
 {% block contentwrapper %}
 {% url 'admin:prescription_priorityjustification_changelist' current.id as priority_justification %}
 <div class="row">
-<div class="span12">
+<div class="col-12">
 <h1>Summary &amp; Approval</h1>
 {% if current.is_draft or perms.prescription.can_admin %}
 <div id="id_pageerrors"><span id="id__all__"></span></div>
@@ -285,7 +285,7 @@
         {% for fundform in formset %}
         <tr>
             {{ fundform.id  }}
-            <td class="hide"> {{ fundform.prescription }}</td>
+            <td class="d-none"> {{ fundform.prescription }}</td>
             <th> Allocation code </th>
             <td >{{ fundform.allocation }}</td>
             <th> Proportion of funding [%] </th>
@@ -295,9 +295,9 @@
     </tbody>
 </table>
 <div class="navbar navbar-fixed-bottom">
-  <div class="navbar-inner">
+  <div class="">
     <div class="container">
-        <a id="id_save_button" href="#" class="btn pull-right btn-success">{% trans 'Save' %}</a>
+        <a id="id_save_button" href="#" class="btn float-end btn-success">{% trans 'Save' %}</a>
     </div>
   </div>
 </div>
@@ -504,9 +504,9 @@ var ajaxPost = function(evt) {
     $('p').remove('.text-error');
     $('[id^=id_]').parent().removeClass('error');
     $('div#id_pageerrors').removeClass('error alert alert-success').text('');
-    $('#id_biodiversity_text').parent().removeClass('alert-error').addClass('alert-info');
-    $('#id_bushfire_risk_text').parent().removeClass('alert-error').addClass('alert-info');
-    $('#id_vegetation_text').parent().removeClass('alert-error').addClass('alert-info');
+    $('#id_biodiversity_text').parent().removeClass('alert-danger').addClass('alert-info');
+    $('#id_bushfire_risk_text').parent().removeClass('alert-danger').addClass('alert-info');
+    $('#id_vegetation_text').parent().removeClass('alert-danger').addClass('alert-info');
     select_to_values();
     var target = $(evt.target);
     var request = $.ajax({

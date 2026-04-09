@@ -11,14 +11,14 @@
 
 {% block contentwrapper %}
 <div class="row">
-<div class="span12">
+<div class="col-12">
 <ul class="nav nav-tabs">
     <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">Overview</a></li>
     <li class="active"><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a></li>
     <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
     <li><a href="{% url 'admin:prescription_prescription_post_summary' current.id %}">Part C</a></li>
 </ul>
-<h1>Part A Summary &#x2010; Summary and Approval <a value="Preview Part A" class="btn pull-right" href="{{ download_pdf }}?template=parta"><i class="icon-print"></i> Preview Part A</a></h1>
+<h1>Part A Summary &#x2010; Summary and Approval <a value="Preview Part A" class="btn float-end" href="{{ download_pdf }}?template=parta"><i class="icon-print"></i> Preview Part A</a></h1>
 <h2>Completion Checklist</h2>
 <div id="message"></div>
 <form action="" method="post">{% csrf_token %}

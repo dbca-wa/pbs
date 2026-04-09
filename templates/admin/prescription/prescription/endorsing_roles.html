@@ -62,7 +62,7 @@ The maximum level of risk of the ePFP is {{ current.maximum_risk }} and requires
 {% endif %}
 {% endcomment %}
 <h4>Additional Endorsing Roles</h4>
-{% if form.form.endorsing_roles.errors %}<div class="alert alert-error"><p>{% for error in form.form.endorsing_roles.errors %}{{ error }}{% endfor %}</p></div>{% endif %}
+{% if form.form.endorsing_roles.errors %}<div class="alert alert-danger"><p>{% for error in form.form.endorsing_roles.errors %}{{ error }}{% endfor %}</p></div>{% endif %}
 <form action="" method="post">{% csrf_token %}
   <div>
     <div class="controls-row control-group">

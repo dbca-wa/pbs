@@ -170,15 +170,15 @@ $(document).ready(function() {
 
 {% block contentwrapper %}
 <div class="row">
-<div class="{% block contentclass %}{% if cl.has_filters %}span9{% else %}span12{% endif %}{% endblock %}">
+<div class="{% block contentclass %}{% if cl.has_filters %}col-9{% else %}col-12{% endif %}{% endblock %}">
   {% block pretitle %}{% endblock %}
   {% block content_title %}{{ block.super }}{% endblock %}
   {% block content %}
   {% block object-tools %}
     {% if has_add_permission %}
-      <div class="object-tools pull-right">
+      <div class="object-tools float-end">
         {% block object-tools-items %}
-        <a class="btn btn-small btn-info" href="{% if current %}{% url cl.opts|admin_urlname:'add' current.id %}{% else %}{% url cl.opts|admin_urlname:'add' %}{% endif %}{% if is_popup %}?_popup=1{% endif %}">
+        <a class="btn btn-sm btn-info" href="{% if current %}{% url cl.opts|admin_urlname:'add' current.id %}{% else %}{% url cl.opts|admin_urlname:'add' %}{% endif %}{% if is_popup %}?_popup=1{% endif %}">
           <i class="icon-plus icon-white"></i>
           {% blocktrans with cl.opts.verbose_name as name %}Create {{ name }}{% endblocktrans %}
         </a>
@@ -187,11 +187,11 @@ $(document).ready(function() {
     {% endif %}
   {% endblock %}
   {% if cl.formset.errors %}
-  <p class="errornote alert alert-block alert-error fade in">
+  <p class="errornote alert alert-block alert-danger fade in">
     <i class="icon-warning-sign"></i> {% blocktrans count cl.formset.errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
   </p>
   {% for error in cl.formset.non_form_errors %}
-    <p class="errornote alert alert-block alert-error fade in">
+    <p class="errornote alert alert-block alert-danger fade in">
     <i class="icon-warning-sign"></i> {{ error }}
     </p>
   {% endfor %}
@@ -218,12 +218,12 @@ $(document).ready(function() {
     {% block submit-line %}
     {% if editable %}
     <div class="navbar navbar-fixed-bottom">
-      <div class="navbar-inner">
+      <div class="">
         <div class="container">
             <input type="submit"
                    id="id_save_submit_button"
                    name="_save"
-                   class="btn pull-right btn-success"
+                   class="btn float-end btn-success"
                    value="{% trans 'Save' %}"/>
         </div>
         <script src="{% static 'js/view-port.js' %}"></script>
@@ -240,7 +240,7 @@ $(document).ready(function() {
 </div>
 {% block filters %}
 {% if cl.has_filters %}
-<div class="span3">
+<div class="col-3">
   <h5>Filter</h5>
   <ul class="nav nav-list">
       {% for spec in cl.filter_specs %}

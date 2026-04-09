@@ -61,7 +61,7 @@ select, button{
 {% comment %}
 {% if report == "epfp_planned_burns" %}
 <div class="row">
-  <div class="span12 filter-top-pad">
+  <div class="col-12 filter-top-pad">
       <p>Click on row to view the special conditions</p>
   </div>
 </div>
@@ -219,7 +219,7 @@ select, button{
     {% endcomment %}
 
 <div class="dropdown btn btn-medium" style="float: right">
-  <a id="dropdown_btn" data-target="#" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+  <a id="dropdown_btn" data-bs-target="#" href="#" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
     Create PDF / Report
     <span class="caret"></span>
   </a>
@@ -250,10 +250,10 @@ select, button{
 {% if report == "epfp_planned" %}
 <div>
     {% comment %}
-    <a class="btn btn-small btn-info" style="float: right" href="{{ add_prescribed_burn }}"><i class="icon-plus icon-white"></i> Add Planned Burn</a>
+    <a class="btn btn-sm btn-info" style="float: right" href="{{ add_prescribed_burn }}"><i class="icon-plus icon-white"></i> Add Planned Burn</a>
     {% endcomment %}
-    <a class="btn btn-small btn-help" style="float: right" href="{% url 'admin:help_view' %}?report=epfp_planned"><i class="icon-info"></i> Help</a>
-    <a class="btn btn-small btn-info" style="float: right" href="{% url 'admin:review_prescribedburn_add' %}?form=add_burn"><i class="icon-plus icon-white"></i> Add Planned Burn</a>
+    <a class="btn btn-sm btn-help" style="float: right" href="{% url 'admin:help_view' %}?report=epfp_planned"><i class="icon-info"></i> Help</a>
+    <a class="btn btn-sm btn-info" style="float: right" href="{% url 'admin:review_prescribedburn_add' %}?form=add_burn"><i class="icon-plus icon-white"></i> Add Planned Burn</a>
 
     <span>Action</span>
     <select id="actions">
@@ -270,13 +270,13 @@ select, button{
         <option value="9">Update Daily Burn Links</option>
     {% endif %}
     </select>
-    <button id="update-button" class="btn btn-small btn-info" type="button" disabled>Go</button>
+    <button id="update-button" class="btn btn-sm btn-info" type="button" disabled>Go</button>
 </div>
 
 
 {% comment %}
-<a class="btn btn-small btn-info" href="{{ add_planned_burn }}?next={{ request.get_full_path }}">
-<a class="btn btn-small btn-info" href="{{ add_planned_burn }}">
+<a class="btn btn-sm btn-info" href="{{ add_planned_burn }}?next={{ request.get_full_path }}">
+<a class="btn btn-sm btn-info" href="{{ add_planned_burn }}">
     <i class="icon-plus icon-white"></i> Add Planned Burn
 </a>
 {% endcomment %}
@@ -296,9 +296,9 @@ select, button{
       <th rowspan="2"></th>
     </tr>
     <tr>
-        <th nowrap><div class="text-center" data-toggle="tooltip" title="District Nomination">District <i class="icon-sort"></i><br>Submit</div></th>
-        <th nowrap><div class="text-center" data-toggle="tooltip" title="Regional Endorsement">Region <i class="icon-sort"></i><br>Endorse</div></th>
-        <th nowrap><div class="text-center" data-toggle="tooltip" title="State Approval">State <i class="icon-sort"></i><br>Approval</div></th>
+        <th nowrap><div class="text-center" data-bs-toggle="tooltip" title="District Nomination">District <i class="icon-sort"></i><br>Submit</div></th>
+        <th nowrap><div class="text-center" data-bs-toggle="tooltip" title="Regional Endorsement">Region <i class="icon-sort"></i><br>Endorse</div></th>
+        <th nowrap><div class="text-center" data-bs-toggle="tooltip" title="State Approval">State <i class="icon-sort"></i><br>Approval</div></th>
     </tr>
 
   </thead>
@@ -306,22 +306,22 @@ select, button{
   {% comment %}{% autopaginate qs_burn 25 %} {% endcomment%}
     {% for qs in qs_burn %}
     {% if qs.prescription %}
-    <tr class="row-vm" data-toggle="myCollapse" data-target="#{{qs.id}}">
+    <tr class="row-vm" data-bs-toggle="myCollapse" data-bs-target="#{{qs.id}}">
       <td><input type="checkbox" name="chkbox" value={{ qs.id  }}  /></td>
-      <td nowrap><a data-toggle="tooltip" title="Click to view prescription" href="{% url 'admin:prescription_prescription_detail' qs.prescription.id %}">{{ qs.prescription.burn_id }}</a>{% if qs.rolled %}<font color="red"> (r)</font>{% endif %}</td>
-      <td><div data-toggle="tooltip" title="Click on row to open / close additional details">{{ qs.prescription.name }}</div></td>
+      <td nowrap><a data-bs-toggle="tooltip" title="Click to view prescription" href="{% url 'admin:prescription_prescription_detail' qs.prescription.id %}">{{ qs.prescription.burn_id }}</a>{% if qs.rolled %}<font color="red"> (r)</font>{% endif %}</td>
+      <td><div data-bs-toggle="tooltip" title="Click on row to open / close additional details">{{ qs.prescription.name }}</div></td>
       <td>{{ qs.location }}</td>
       <td>{% if qs.planned_area == None and qs.planned_distance == None%}<div class="text-center"><font color="red">Unset</font></div>{% else %}<div class="text-center">{{ qs.planned_area_str }}</div>{% endif %}</td>
       <td><div class="text-center">{{ qs.est_start }}</div></td>
-      <td>{% if qs.user_a_record %}<div class="text-center" data-toggle="tooltip" title="{{ qs.user_a_record }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
-      <td>{% if qs.srm_a_record %}<div class="text-center" data-toggle="tooltip" title="{{ qs.srm_a_record  }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
-      <td>{% if qs.sdo_a_record %}<div class="text-center" data-toggle="tooltip" title="{{ qs.sdo_a_record  }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
-      <td >{% if qs.has_conditions %}<div class="text-center" data-toggle="tooltip" title="Click on row to open / close additional details"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
+      <td>{% if qs.user_a_record %}<div class="text-center" data-bs-toggle="tooltip" title="{{ qs.user_a_record }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
+      <td>{% if qs.srm_a_record %}<div class="text-center" data-bs-toggle="tooltip" title="{{ qs.srm_a_record  }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
+      <td>{% if qs.sdo_a_record %}<div class="text-center" data-bs-toggle="tooltip" title="{{ qs.sdo_a_record  }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
+      <td >{% if qs.has_conditions %}<div class="text-center" data-bs-toggle="tooltip" title="Click on row to open / close additional details"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
       <td>
-        <a data-toggle="tooltip" title="Edit" id="edit-plannedburn" href="{% url 'admin:review_prescribedburn_change' qs.id %}?form=edit_burn" class="btn btn-mini alert-error"><i class="icon-edit"></i></a>
+        <a data-bs-toggle="tooltip" title="Edit" id="edit-plannedburn" href="{% url 'admin:review_prescribedburn_change' qs.id %}?form=edit_burn" class="btn btn-sm alert-danger"><i class="icon-edit"></i></a>
       </td>
       <td>
-        <a data-toggle="tooltip" title="Delete" id="delete-plannedburn" href="{% url 'admin:bulk_delete' %}?object_ids={{qs.id}}" class="btn btn-mini alert-error"><i class="icon-trash"></i></a>
+        <a data-bs-toggle="tooltip" title="Delete" id="delete-plannedburn" href="{% url 'admin:bulk_delete' %}?object_ids={{qs.id}}" class="btn btn-sm alert-danger"><i class="icon-trash"></i></a>
       </td>
     </tr>
     <tr class="myCollapse row-details expand-child" id="{{qs.id}}">
@@ -432,11 +432,11 @@ select, button{
 {% if report == "epfp_fireload" %}
 <div>
     {% comment %}
-    <a class="btn btn-small btn-info" style="float: right" href="{% url 'admin:addfire_view' %}"><i class="icon-plus icon-white"></i> Add Bushfire</a>
+    <a class="btn btn-sm btn-info" style="float: right" href="{% url 'admin:addfire_view' %}"><i class="icon-plus icon-white"></i> Add Bushfire</a>
     {% endcomment %}
-    <a class="btn btn-small btn-help" style="float: right" href="{% url 'admin:help_view' %}?report=epfp_fireload"><i class="icon-info"></i> Help</a>
-    <a class="btn btn-small btn-danger" style="float: right" href="{% url 'admin:review_prescribedburn_add' %}?form=add_fire"><i class="icon-plus icon-white"></i> Add Bushfire</a>
-    <a class="btn btn-small btn-info" style="float: right" href="{% url 'admin:review_prescribedburn_add' %}?form=add_active_burn"><i class="icon-plus icon-white"></i> Add Burn</a>
+    <a class="btn btn-sm btn-help" style="float: right" href="{% url 'admin:help_view' %}?report=epfp_fireload"><i class="icon-info"></i> Help</a>
+    <a class="btn btn-sm btn-danger" style="float: right" href="{% url 'admin:review_prescribedburn_add' %}?form=add_fire"><i class="icon-plus icon-white"></i> Add Bushfire</a>
+    <a class="btn btn-sm btn-info" style="float: right" href="{% url 'admin:review_prescribedburn_add' %}?form=add_active_burn"><i class="icon-plus icon-white"></i> Add Burn</a>
 
     <span>Action</span>
     <select id="actions">
@@ -449,7 +449,7 @@ select, button{
     <option value="6">Delete State Acknowledgement</option>
     <option value="7">Delete Record</option>
     </select>
-    <button id="update-button" class="btn btn-small btn-info" type="button" disabled>Go</button>
+    <button id="update-button" class="btn btn-sm btn-info" type="button" disabled>Go</button>
 </div>
 
 
@@ -477,17 +477,17 @@ select, button{
   <tbody>
     {% comment %}{% autopaginate qs_burn 25 %} {% endcomment%}
     {% for qs in qs_fireload %}
-    <tr class="row-vm" data-toggle="myCollapse" data-target="#{{qs.id}}">
+    <tr class="row-vm" data-bs-toggle="myCollapse" data-bs-target="#{{qs.id}}">
       <td><input type="checkbox" name="chkbox" value={{ qs.id  }}  /></td>
       <td nowrap>
         {% if qs.prescription %}
-           <a data-toggle="tooltip" title="Click to view prescription" href="{% url 'admin:prescription_prescription_detail' qs.prescription.id %}">{{ qs.prescription.burn_id  }}</a>
+           <a data-bs-toggle="tooltip" title="Click to view prescription" href="{% url 'admin:prescription_prescription_detail' qs.prescription.id %}">{{ qs.prescription.burn_id  }}</a>
         {% else %}
            {{ qs.fire_id  }}
         {% endif %}
         {% if qs.rolled %}<font color="red"> (r)</font>{% endif %}
       </td>
-      <td><div data-toggle="tooltip" title="Click on row to open / close additional details">{{ qs.name }}</div></td>
+      <td><div data-bs-toggle="tooltip" title="Click on row to open / close additional details">{{ qs.name }}</div></td>
       <td>{{ qs.fire_type }}</td>
 
       <!--td>{% if qs.active %}<div class="text-center"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% elif qs.active == None %}<span style="display:none">1</span><font color="red">Unset</font>{% else %}<div class="text-center"><span style="display:none">0</span><i class="icon-remove text-error"></i></div>{% endif %}</td-->
@@ -495,17 +495,17 @@ select, button{
 
       <td>{% if qs.further_ignitions_req %}<div class="text-center"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
 
-      <td>{% if qs.user_b_record %}<div class="text-center" data-toggle="tooltip" title="{{ qs.user_b_record  }}"><div class="text-center"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
-      <td>{% if qs.srm_b_record %}<div class="text-center" data-toggle="tooltip" title="{{ qs.srm_b_record  }}"><div class="text-center"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
-      <td>{% if qs.sdo_b_record %}<div class="text-center" data-toggle="tooltip" title="{{ qs.sdo_b_record  }}"><div class="text-center"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
+      <td>{% if qs.user_b_record %}<div class="text-center" data-bs-toggle="tooltip" title="{{ qs.user_b_record  }}"><div class="text-center"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
+      <td>{% if qs.srm_b_record %}<div class="text-center" data-bs-toggle="tooltip" title="{{ qs.srm_b_record  }}"><div class="text-center"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
+      <td>{% if qs.sdo_b_record %}<div class="text-center" data-bs-toggle="tooltip" title="{{ qs.sdo_b_record  }}"><div class="text-center"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
 
       <td>{% if qs.area == None and qs.distance == None%}<div class="text-center"><font color="red">Unset</font></div>{% else %}<div class="text-center">{{ qs.area_str }}</div>{% endif %}</td>
       {% if qs.prescription %}
-        <td><a data-toggle="tooltip" title="Edit" id="edit-burn" href="{% url 'admin:review_prescribedburn_change' qs.id %}?form=edit_active_burn" class="btn btn-mini alert-error"><i class="icon-edit"></i></a></td>
+        <td><a data-bs-toggle="tooltip" title="Edit" id="edit-burn" href="{% url 'admin:review_prescribedburn_change' qs.id %}?form=edit_active_burn" class="btn btn-sm alert-danger"><i class="icon-edit"></i></a></td>
       {% else %}
-        <td><a data-toggle="tooltip" title="Edit" id="edit-burn" href="{% url 'admin:review_prescribedburn_change' qs.id %}?form=edit_fire" class="btn btn-mini alert-error"><i class="icon-edit"></i></a></td>
+        <td><a data-bs-toggle="tooltip" title="Edit" id="edit-burn" href="{% url 'admin:review_prescribedburn_change' qs.id %}?form=edit_fire" class="btn btn-sm alert-danger"><i class="icon-edit"></i></a></td>
       {% endif %}
-      <td><a data-toggle="tooltip" title="Delete" id="delete-burn" href="{% url 'admin:review_prescribedburn_delete' qs.id %}" class="btn btn-mini alert-error"><i class="icon-trash"></i></a></td>
+      <td><a data-bs-toggle="tooltip" title="Delete" id="delete-burn" href="{% url 'admin:review_prescribedburn_delete' qs.id %}" class="btn btn-sm alert-danger"><i class="icon-trash"></i></a></td>
     </tr>
     <tr class="myCollapse row-details expand-child" id="{{qs.id}}">
        {% comment %}
@@ -600,11 +600,11 @@ select, button{
   <tbody>
     {% comment %}{% autopaginate qs_burn 25 %} {% endcomment%}
     {% for qs in qs_burn %}
-    <tr class="row-vm" data-toggle="myCollapse" data-target="#{{qs.id}}">
+    <tr class="row-vm" data-bs-toggle="myCollapse" data-bs-target="#{{qs.id}}">
       <td></td>
       <td>
         {% if qs.prescription %}
-           <a data-toggle="tooltip" title="Click to view prescription" href="{% url 'admin:prescription_prescription_detail' qs.prescription.id %}">{{ qs.prescription.burn_id }}</a>
+           <a data-bs-toggle="tooltip" title="Click to view prescription" href="{% url 'admin:prescription_prescription_detail' qs.prescription.id %}">{{ qs.prescription.burn_id }}</a>
         {% else %}
             {{ qs.ignition_id }}
         {% endif %}
@@ -630,8 +630,8 @@ select, button{
 {% comment %}
 {% if report == "epfp_aircraft" %}
 <div>
-    <a class="btn btn-small btn-help" style="float: right" href="{% url 'admin:help_aircraft_view' %}?report=epfp_aircraft"><i class="icon-info"></i> Help</a>
-    <a class="btn btn-small btn-info" style="float: right" href="{% url 'admin:review_aircraftburn_add' %}?form=add_aircraft_burn"><i class="icon-plus icon-white"></i> Add Aircraft</a>
+    <a class="btn btn-sm btn-help" style="float: right" href="{% url 'admin:help_aircraft_view' %}?report=epfp_aircraft"><i class="icon-info"></i> Help</a>
+    <a class="btn btn-sm btn-info" style="float: right" href="{% url 'admin:review_aircraftburn_add' %}?form=add_aircraft_burn"><i class="icon-plus icon-white"></i> Add Aircraft</a>
 
     <span>Action</span>
     <select id="actions">
@@ -644,7 +644,7 @@ select, button{
     <option value="6">Delete State Aviation Approval</option>
     <option value="7">Delete Record</option>
     </select>
-    <button id="update-button" class="btn btn-small btn-info" type="button" disabled>Go</button>
+    <button id="update-button" class="btn btn-sm btn-info" type="button" disabled>Go</button>
 </div>
 
 <table id="aircraft-table" class="main-table table table-hover table-compressed">
@@ -675,16 +675,16 @@ select, button{
   </thead>
   <tbody>
     {% for qs in qs_aircraft %}
-    <tr class="row-vm" data-toggle="myCollapse" data-target="#{{qs.id}}">
+    <tr class="row-vm" data-bs-toggle="myCollapse" data-bs-target="#{{qs.id}}">
       <td><input type="checkbox" name="chkbox" value={{ qs.id  }}  /></td>
-      <td><a data-toggle="tooltip" title="Click to view prescription" href="{% url 'admin:prescription_prescription_detail' qs.prescription.id %}">{{ qs.prescription.burn_id }}</a></td>
+      <td><a data-bs-toggle="tooltip" title="Click to view prescription" href="{% url 'admin:prescription_prescription_detail' qs.prescription.id %}">{{ qs.prescription.burn_id }}</a></td>
       <td>{{ qs.prescription.name }}</td>
       <td>{{ qs.area }}</td>
       <td>{{ qs.est_start }}</td>
       <td>{{ qs.bombing_duration }}</td>
-      <td>{% if qs.regional_approval %}<div class="text-center" data-toggle="tooltip" title="{{ qs.regional_approval }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
-      <td>{% if qs.state_duty_approval %}<div class="text-center" data-toggle="tooltip" title="{{ qs.state_duty_approval }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
-      <td>{% if qs.state_aviation_approval %}<div class="text-center" data-toggle="tooltip" title="{{ qs.state_aviation_approval }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
+      <td>{% if qs.regional_approval %}<div class="text-center" data-bs-toggle="tooltip" title="{{ qs.regional_approval }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
+      <td>{% if qs.state_duty_approval %}<div class="text-center" data-bs-toggle="tooltip" title="{{ qs.state_duty_approval }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
+      <td>{% if qs.state_aviation_approval %}<div class="text-center" data-bs-toggle="tooltip" title="{{ qs.state_aviation_approval }}"><span style="display:none">2</span><i class="icon-ok text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>
       <td>{{ qs.min_smc }}</td>
       <td>{{ qs.max_fdi }}</td>
       <td>{{ qs.sdi_per_day }}</td>
@@ -692,8 +692,8 @@ select, button{
       <td>{{ qs.aircraft_rego }}</td>
       <td>{{ qs.arrival_time }}</td>
       <td>{{ qs.program }}</td>
-      <td><a data-toggle="tooltip" title="Edit" id="edit-aircraftburn" href="{% url 'admin:review_aircraftburn_change' qs.id %}?form=edit_aircraft_burn" class="btn btn-mini alert-error"><i class="icon-edit"></i></a></td>
-      <td><a data-toggle="tooltip" title="Delete" id="delete-aircraftburn" href="{% url 'admin:bulk_delete' %}?object_ids={{qs.id}}" class="btn btn-mini alert-error"><i class="icon-trash"></i></a></td>
+      <td><a data-bs-toggle="tooltip" title="Edit" id="edit-aircraftburn" href="{% url 'admin:review_aircraftburn_change' qs.id %}?form=edit_aircraft_burn" class="btn btn-sm alert-danger"><i class="icon-edit"></i></a></td>
+      <td><a data-bs-toggle="tooltip" title="Delete" id="delete-aircraftburn" href="{% url 'admin:bulk_delete' %}?object_ids={{qs.id}}" class="btn btn-sm alert-danger"><i class="icon-trash"></i></a></td>
     </tr>
     {% endfor %}
 
@@ -967,7 +967,7 @@ $('#update-button').click(function(){
     }
 
 }); 
-$('[data-toggle="tooltip"]').tooltip(); 
+$('[data-bs-toggle="tooltip"]').tooltip(); 
 $('#id_approval_status').prop("multiple", "multiple");  
 $('#_id_approval_status').multiselect();    
 $('#id_approval_status').multiselect({  

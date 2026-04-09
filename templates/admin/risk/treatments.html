@@ -22,7 +22,7 @@
             {% if current.is_draft or perms.prescription.can_admin %}
             <input id="id_form-{{ forloop.counter0 }}-id" type="hidden" name="form-{{ forloop.counter0 }}-id" value="{{ treatment.id }}">
             <input id="id_form-{{ forloop.counter0 }}-complete" name="form-{{ forloop.counter0 }}-complete" type="checkbox"{% if treatment.complete %} checked="checked"{% endif %}>
-            <img class="hide" src="{% static 'img/spinner.gif' %}" alt="Saving ..." />
+            <img class="d-none" src="{% static 'img/spinner.gif' %}" alt="Saving ..." />
             {% else %}
             {{ treatment.complete|yesno|capfirst }}
             {% endif %}

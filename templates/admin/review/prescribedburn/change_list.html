@@ -11,7 +11,7 @@
 {% comment %}
 {% block filters %}
 {% if cl.has_filters %}
-<div class="span3 hide">
+<div class="col-3 d-none">
   <ul class="nav nav-list">
       {% for spec in cl.filter_specs %}
         {% admin_list_filter cl spec %}
@@ -26,26 +26,26 @@
 {% block object-tools %}{% endblock %}
 
 </div>
-<button id="toggletools" type="button" class="btn btn-success btn-small pull-right" style="margin-top:0px;">
+<button id="toggletools" type="button" class="btn btn-success btn-sm float-end" style="margin-top:0px;">
     Search and Column tools
 </button>
 </div>
-<div class="row toggletools hide">
-    <div class="span12">
+<div class="row toggletools d-none">
+    <div class="col-12">
         <div class="alert alert-success">
             <strong>Filter</strong>
             <div class="row">
-                <div class="filter-tools btn-group span12" style="white-space:normal;">
+                <div class="filter-tools btn-group col-12" style="white-space:normal;">
                     <form id="id_form_filtering" action="/prescription/prescription/" method="post">
                         {% csrf_token %}
-                        <div class="span8" >
+                        <div class="col-8" >
                             {% multiselect_form %}
                         </div>
-                        <div class="span3">
-                            <div class="search-tools span3 hide" ></div>
+                        <div class="col-3">
+                            <div class="search-tools col-3 d-none" ></div>
                             <div>
                                 <input type="submit"
-                                       class="btn btn-success btn-small btn-block"
+                                       class="btn btn-success btn-sm btn-block"
                                        style="float:right"
                                        value="Update selection">
                             </div>
@@ -55,15 +55,15 @@
             </div>
         </div>
     </div>
-    <div class="span12">
+    <div class="col-12">
         <div class="alert alert-info">
             <strong>Show/Hide Columns</strong>
             <div class="column-tools btn-group" style="white-space:normal;">
-                <button id="template-button" class="btn btn-small btn-info hide">template-button</button>
+                <button id="template-button" class="btn btn-sm btn-info d-none">template-button</button>
             </div>
         </div>
     </div>
-    <div class="span12">
+    <div class="col-12">
         <a id="id_filter_url" class="btn btn-success btn-block" href="">Update selection</a>
         <br />
     </div>
@@ -79,7 +79,7 @@ $(document).ready(function() {
             buttonText: function() {
                 return $(self).attr('title');
             },
-            buttonClass: "btn btn-small",
+            buttonClass: "btn btn-sm",
             checkboxName: $(self).attr("id")
         });
     });
@@ -151,8 +151,8 @@ $(document).ready(function() {
     $("div.search-tools").append($("div#toolbar form").css({"margin": 0}));
 
     // upgrade django's filters into more compact dropdowns
-    //var filters = $("div.span3 ul.nav-list").parents("div.span3").addClass("hide");
-    var filters = $("div.span3 ul.nav-list");
+    //var filters = $("div.col-3 ul.nav-list").parents("div.col-3").addClass("hide");
+    var filters = $("div.col-3 ul.nav-list");
     var templateFilterDropdown = $("#template-filter-dropdown");
     var filterDiv = $("div.filter-tools");
     filters.find("li.nav-header").each(function() {
@@ -176,7 +176,7 @@ $(document).ready(function() {
                             .clone()
     var button = myRegion.find("a")
                             .clone()
-                            .addClass("btn btn-small")
+                            .addClass("btn btn-sm")
                             .prepend("My Region (")
                             .append(")");
     if(myRegion.hasClass("active")) {
@@ -318,8 +318,8 @@ $(document).ready(function() {
     // ---------------------------------------------------------
 });
 </script>
-<div id="tablemask" class="hide row">
-<div class="span12">
+<div id="tablemask" class="d-none row">
+<div class="col-12">
     {{ block.super }}
 </div>
 </div>

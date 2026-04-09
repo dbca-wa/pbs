@@ -38,7 +38,7 @@
 
 {% block content %}
 <div class="row">
-  <div class="span12 filter-top-pad">
+  <div class="col-12 filter-top-pad">
       <p>Click on each row to view a summary for each burn, and to mark each as reviewed.</p>
   </div>
 </div>
@@ -73,7 +73,7 @@
   <tbody>
     {% autopaginate prescriptions 25 %}
     {% for prescription in prescriptions %}
-    <tr class="row-vm" data-toggle="myCollapse" data-target="#{{prescription.id}}">
+    <tr class="row-vm" data-bs-toggle="myCollapse" data-bs-target="#{{prescription.id}}">
       <td>{{ prescription.burn_id }}</td>
       <td>{{ prescription.name }}</td>
       <td>
@@ -81,7 +81,7 @@
         {% for records in prescription.current_fmsb_record %}
           {{ records.record }}
           {% if request.user.username == records.user.username %}
-          <a id="delete-fmsb-review" href="{% url 'admin:review_burnstate_delete' records.id %}" class="btn btn-mini alert-error"><i class="icon-trash"></i></a>
+          <a id="delete-fmsb-review" href="{% url 'admin:review_burnstate_delete' records.id %}" class="btn btn-sm alert-danger"><i class="icon-trash"></i></a>
           {% endif %}
           <br>
         {% endfor %}
@@ -92,7 +92,7 @@
         {% for records in prescription.current_drfms_record %}
           {{ records.record }}
           {% if request.user.username == records.user.username %}
-          <a id="delete-drfms-review" href="{% url 'admin:review_burnstate_delete' records.id %}" class="btn btn-mini alert-error"><i class="icon-trash"></i></a>
+          <a id="delete-drfms-review" href="{% url 'admin:review_burnstate_delete' records.id %}" class="btn btn-sm alert-danger"><i class="icon-trash"></i></a>
           {% endif %}
           <br>
         {% endfor %}

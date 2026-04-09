@@ -59,9 +59,9 @@
 {% if objectives or current.regional_objectives.all %}
 <div class="form-actions">
     <div class="navbar navbar-fixed-bottom">
-      <div class="navbar-inner">
+      <div class="">
         <div class="container">
-          <input type="submit" name="_save" class="btn pull-right btn-success" value="{% trans 'Save' %}" {% if not can_edit %}disabled{% endif %}/>
+          <input type="submit" name="_save" class="btn float-end btn-success" value="{% trans 'Save' %}" {% if not can_edit %}disabled{% endif %}/>
         </div>
       </div>
     </div>

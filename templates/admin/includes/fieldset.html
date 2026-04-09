@@ -1,6 +1,6 @@
 <fieldset class="module aligned ">
     {% if fieldset.name %}
-        <a data-toggle="collapse" data-target="#{{ fieldset.name|slugify }}" ><h2>{{ fieldset.name }}</h2></a>
+        <a data-bs-toggle="collapse" data-bs-target="#{{ fieldset.name|slugify }}" ><h2>{{ fieldset.name }}</h2></a>
     {% endif %}
     <div class="{{ fieldset.classes }}" id="{{ fieldset.name|slugify }}">
     {% if fieldset.description %}
@@ -9,7 +9,7 @@
     {% for line in fieldset %}
         <div class="controls-row control-group">
             {% for field in line %}
-                <div class="span{% if not field.is_readonly and field.errors %} alert alert-error{% endif %}">
+                <div class="span{% if not field.is_readonly and field.errors %} alert alert-danger{% endif %}">
                     {% if field.is_checkbox %}
                         <div class="controls">
                         {{ field.field }}<label class="checkbox inline">{{ field.field.label }}</label>{% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}

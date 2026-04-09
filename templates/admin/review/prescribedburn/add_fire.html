@@ -35,7 +35,7 @@
 
 {% block contentwrapper %}
 <div class="row">
-<div class="span12">
+<div class="col-12">
 <div id="id_pageerrors"><span id="id__all__"></span></div>
 <form action="" method="post">{% csrf_token %}
   <table class="table table-bordered table-striped table-condensed">
@@ -78,9 +78,9 @@
 
     {{ form.date }}
 <div class="navbar navbar-fixed-bottom">
-  <div class="navbar-inner">
+  <div class="">
     <div class="container">
-        <a id="id_save_button" href="#" class="btn pull-right btn-success">{% trans 'Save' %}</a>
+        <a id="id_save_button" href="#" class="btn float-end btn-success">{% trans 'Save' %}</a>
     </div>
   </div>
 </div>

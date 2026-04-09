@@ -14,13 +14,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="span12">
-<div class="span10">
+<div class="col-12">
+<div class="col-10">
     <h3><a href="{{ overview }}">ePFP Overview</a></h3>
 </div>
 </div>
-<div class="span12">
-<div class="span3">
+<div class="col-12">
+<div class="col-3">
 <h3><a href="{{ parta }}">Part A</a></h3>
 <ul>
     <li><a href="{{ parta }}"><i class="icon-dashboard"></i> Part A Summary</a></li>
@@ -34,7 +34,7 @@
     <li><a href="{{ sectiona6 }}"><i class="icon-warning-sign"></i> Risk Register</a></li>
 </ul>
 </div>
-<div class="span4">
+<div class="col-4">
 <h3><a href="{{ partb }}">Part B</a></h3>
 <ul>
     <li><a href="{{ partb }}"><i class="icon-dashboard"></i> Part B Summary</a></li>
@@ -56,7 +56,7 @@
     <li><a href="{{ area_achievement }}"><i class="icon-fire"></i> DoB achievement update</a></li>
 </ul>
 </div>
-<div class="span3">
+<div class="col-3">
 <h3><a href="{{ post_summary}}">Part C</a></h3>
 <ul>
     <li><a href="{{ post_summary }}"><i class="icon-dashboard"></i> Part C Summary</a></li>
@@ -68,14 +68,14 @@
 </ul>
 </div>
 </div>
-<div class="span12">
-<div class="span3">
+<div class="col-12">
+<div class="col-3">
 <h3><a href="{{ documents }}">Part D</a></h3>
 <ul>
     <li><a href="{{ upload_document }}"><i class="icon-plus"></i> Upload Document </a></li>
 </ul>
 </div>
-<div class="span3">
+<div class="col-3">
 {% if perms.add_regionalobjective %}
 <h3><a href="{% url 'admin:site_admin' %}">Administration</a></h3>
 <ul>

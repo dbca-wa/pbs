@@ -12,13 +12,13 @@
 <div class="topmast">
 <div class="container">
   <div class="masthead">
-    <div class="row-fluid">
-      <div class="span8">
+    <div class="row">
+      <div class="col-8">
         <div class="agency-freespace">
-          <a class="brand pull-left">
+          <a class="brand float-start">
             <img src="/static/pbs/img/waTextBlack_80-bluebg.gif" alt="Government of Western Australia" />
           </a>
-          <h1 id="site-title" class="site-logo pull-left">
+          <h1 id="site-title" class="site-logo float-start">
               <img src="/static/pbs/img/logo-dpaw.gif" alt="Department of Parks and Wildlife" />
               Department of <br><strong>Parks and Wildlife</strong>
           </h1>
@@ -29,7 +29,7 @@
 </div>
 </div>
 <form action="{{ app_path }}" method="post" id="login-form" class="form form-horizontal login-form">{% csrf_token %}
-  <div class="unsupported alert alert-error hide"><h4><i class="icon-warning-sign"></i> Your browser is unsupported. Upgrade <a href="http://whatbrowser.org/">here</a>.</h4></div>
+  <div class="unsupported alert alert-danger d-none"><h4><i class="icon-warning-sign"></i> Your browser is unsupported. Upgrade <a href="http://whatbrowser.org/">here</a>.</h4></div>
 {% if form.errors and not form.non_field_errors and not form.this_is_the_login_form.errors %}
 <p class="errornote">
 {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}

@@ -32,7 +32,7 @@
 
 {% block contentwrapper %}
 <div class="row">
-<div class="span9">
+<div class="col-9">
 <ul class="nav nav-tabs">
     <li class="active"><a href="{{ overview }}">Overview</a></li>
     <li><a href="{{ parta }}">Part A</a></li>
@@ -169,7 +169,7 @@
   </tbody>
 </table>
 </div>
-<div class="span3">
+<div class="col-3">
   <ul class="nav nav-list">
     <li class="nav-header">Actions</li>
     <li><a href="{{ sectiona1 }}"><i class="icon-pencil"></i> Summary & Approval</a></li>
@@ -202,7 +202,7 @@
               {% endif %}
           </a>
         {% if perms.prescription.can_admin and current.has_corporate_approval %}
-          <a id="delete-corporate-approval" href="{% url 'admin:prescription_prescription_corporate_approve' current.pk %}" class="btn btn-mini alert-error"><i class="icon-trash"></i></a>
+          <a id="delete-corporate-approval" href="{% url 'admin:prescription_prescription_corporate_approve' current.pk %}" class="btn btn-sm alert-danger"><i class="icon-trash"></i></a>
         {% endif %}
       </div>
     </li>

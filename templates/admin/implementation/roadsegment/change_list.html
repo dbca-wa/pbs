@@ -45,7 +45,7 @@
 {% load risk_tags %}
 {% show_treatments "Traffic Management Plan" %}
 <h1>Roads Associated With the Burn Plan</h1>
-<p>You can find the standard traffic control diagrams on the <a class="btn btn-small btn-info" href="https://dpaw.sharepoint.com/sites/fmsb/Doctrine%20library/SOP064%20Traffic%20Management%20Plan%20for%20Prescribed%20Burning.PDF" target="_blank"><b>ePFP website</b></a></p>
+<p>You can find the standard traffic control diagrams on the <a class="btn btn-sm btn-info" href="https://dpaw.sharepoint.com/sites/fmsb/Doctrine%20library/SOP064%20Traffic%20Management%20Plan%20for%20Prescribed%20Burning.PDF" target="_blank"><b>ePFP website</b></a></p>
 {% endblock %}
 
 {% block pre-submit-line %}
@@ -58,7 +58,7 @@
 {% else %}
 <p>There are no standard traffic control diagrams selected.
 {% endif %}
-<h4>Custom<a href="{{ upload_document }}?tag={{ "Traffic Diagrams"|tag_id }}&next={{ request.get_full_path }}" class="pull-right btn btn-small btn-info"><i class="icon-plus"></i> Upload Custom Traffic Control Diagram</a></h4>
+<h4>Custom<a href="{{ upload_document }}?tag={{ "Traffic Diagrams"|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="icon-plus"></i> Upload Custom Traffic Control Diagram</a></h4>
 {% filter_by_tag_name current.document_set "Traffic Diagrams" as document_set %}
 {% include "admin/document_list.html" with document_type="Traffic Control Diagrams" %}
 

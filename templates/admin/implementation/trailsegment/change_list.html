@@ -76,7 +76,7 @@
 {% block object-tools %}{% endblock %}
 
 {% block pre-submit-line %}
-<h1>Diversion Maps<a href="{{ upload_document }}?tag={{ "Track Trail Diversion Map"|tag_id }}&next={{ request.get_full_path }}" class="pull-right btn btn-small btn-info"><i class="icon-plus"></i> Upload Diversion Map</a></h1>
+<h1>Diversion Maps<a href="{{ upload_document }}?tag={{ "Track Trail Diversion Map"|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="icon-plus"></i> Upload Diversion Map</a></h1>
 {% filter_by_tag_name current.document_set "Track Trail Diversion Map" as document_set %}
 {% include "admin/document_list.html" with document_type="Diversion Map" %}
 {% endblock %}

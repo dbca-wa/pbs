@@ -38,7 +38,7 @@
 
 {% block content %}
 <div class="row">
-  <div class="span12 filter-top-pad">
+  <div class="col-12 filter-top-pad">
       <p>Click on each row to view a summary for each burn, and to mark each as reviewed.</p>
   </div>
 </div>
@@ -112,7 +112,7 @@
   <tbody>
     {% autopaginate queryset 25 %}
     {% for qs in queryset %}
-    <tr class="row-vm" data-toggle="myCollapse" data-target="#{{qs.id}}">
+    <tr class="row-vm" data-bs-toggle="myCollapse" data-bs-target="#{{qs.id}}">
       <td><a href="{% url 'admin:prescription_prescription_detail' qs.prescription.id %}">{{ qs.prescription.burn_id }}</a></td>
       <td>{{ qs.prescription.name }}</td>
       <td>{{ qs.prescription.location }}</td>

@@ -171,7 +171,7 @@
   <li{% if request.get_full_path == risk_register|add:"?section=final" %} class="active"{% endif %}><a href="{% url 'admin:risk_register_changelist' current.id %}?section=final">Treatments & final risk assessment</a></li>
 </ul>
 <h5>Refer to APPENDIX 8 (page 84) of the Prescribed Burn Planning Manual for the Prescribed Burn Risk Tables.
-<a class="btn pull-right btn-small btn-info" href="https://dpaw.sharepoint.com/sites/Fire/SitePages/Fire-Manuals.aspx" target="_blank"><i class='icon-download-alt'></i> Download the Prescribed Burn Planning Manual</a></h5>
+<a class="btn float-end btn-sm btn-info" href="https://dpaw.sharepoint.com/sites/Fire/SitePages/Fire-Manuals.aspx" target="_blank"><i class='icon-download-alt'></i> Download the Prescribed Burn Planning Manual</a></h5>
 {% if not current.can_corporate_approve %}
 <div class="alert clearfix">
     <strong>Warning!</strong> In order to edit this section, you need to complete all Corporate information.
@@ -182,4 +182,4 @@
 {% block object-tools %}{% endblock %}
 
 {% block filters %}{% endblock %}
-{% block contentclass %}span12{% endblock %}
+{% block contentclass %}col-12{% endblock %}

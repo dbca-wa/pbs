@@ -1,8 +1,8 @@
 {% load i18n admin_urls %}
 <div class="navbar navbar-fixed-bottom">
-  <div class="navbar-inner">
+  <div class="">
     <div class="container">
-      <p class="pull-right">
+      <p class="float-end">
         {% if show_save %}<input type="submit" value="{% trans 'Save' %}" class="btn btn-primary btn-success" name="_save" {{ onclick_attrib }}/>{% endif %}
         {% if show_save_and_add_another and save_add_another_model %}<input type="submit" value="{% trans 'Save and add another' %}" class="btn btn-info" name="_addanother" {{ onclick_attrib }}/>{% endif %}
         {% if show_save_as_new %}<input type="submit" value="{% trans 'Save as new' %}" name="_saveasnew" class="btn" {{ onclick_attrib }}/>{%endif%}

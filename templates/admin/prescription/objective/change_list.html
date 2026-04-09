@@ -48,7 +48,7 @@
       <td>{{ objective.objectives }}</td>
       <td>
         {% if 'prescription.delete_regionalobjective' in request.user.get_all_permissions %}
-          <a href="{% url 'admin:prescription_prescription_delete_regional_objective' current.id objective.id %}" class="btn btn-mini alert-error" title="Delete regional objective"><i class="icon-trash"></i></a>
+          <a href="{% url 'admin:prescription_prescription_delete_regional_objective' current.id objective.id %}" class="btn btn-sm alert-danger" title="Delete regional objective"><i class="icon-trash"></i></a>
         {% endif %}
       </td>
     </tr>

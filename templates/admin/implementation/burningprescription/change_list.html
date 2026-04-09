@@ -34,16 +34,16 @@
 
 {% block pre-submit-line %}
 <h1>Fuel Assessment Summary</h1>
-<p class="pull-right">
-<a href="{{ upload_document }}?tag={{ "Fuel Assessment Summary_FIRE 872"|tag_id }}&next={{ request.get_full_path }}" class="btn btn-small btn-info"><i class="icon-plus"></i> Upload Fuel Assessment Summary</a>
-<a class="btn btn-small btn-info" href="https://fmsb.dpaw.wa.gov.au/images/documents/fire_doctrine/forms/FIRE_872_Fuel_Assessment_Summary_Final_20130902.docx" target="_blank"><i class='icon-download-alt'></i> Download the FIRE 872 template</a>
+<p class="float-end">
+<a href="{{ upload_document }}?tag={{ "Fuel Assessment Summary_FIRE 872"|tag_id }}&next={{ request.get_full_path }}" class="btn btn-sm btn-info"><i class="icon-plus"></i> Upload Fuel Assessment Summary</a>
+<a class="btn btn-sm btn-info" href="https://fmsb.dpaw.wa.gov.au/images/documents/fire_doctrine/forms/FIRE_872_Fuel_Assessment_Summary_Final_20130902.docx" target="_blank"><i class='icon-download-alt'></i> Download the FIRE 872 template</a>
 </p>
 {% filter_by_tag_name current.document_set "Fuel Assessment Summary_FIRE 872" as document_set %}
 {% include "admin/document_list.html" with document_type="Fuel Assessment Summary FIRE 872" %}
 <h1>Fire Behaviour Calculations</h1>
-<p class="pull-right">
-<a href="{{ upload_document }}?tag={{ "Fire Behaviour Calculation"|tag_id }}&next={{ request.get_full_path }}" class="btn btn-small btn-info"><i class="icon-plus"></i> Upload Fire Behaviour Calculations</a>
-<a class="btn btn-small btn-info" href="https://fmsb.dpaw.wa.gov.au/images/documents/fire_doctrine/forms/FIRE_873_Forest_Fuels_Calculation_Sheet_Final_20130715.docx" target="_blank"><i class='icon-download-alt'></i> Download the FIRE 873 template</a>
+<p class="float-end">
+<a href="{{ upload_document }}?tag={{ "Fire Behaviour Calculation"|tag_id }}&next={{ request.get_full_path }}" class="btn btn-sm btn-info"><i class="icon-plus"></i> Upload Fire Behaviour Calculations</a>
+<a class="btn btn-sm btn-info" href="https://fmsb.dpaw.wa.gov.au/images/documents/fire_doctrine/forms/FIRE_873_Forest_Fuels_Calculation_Sheet_Final_20130715.docx" target="_blank"><i class='icon-download-alt'></i> Download the FIRE 873 template</a>
 </p>
 {% filter_by_tag_name current.document_set "Fire Behaviour Calculation" as document_set %}
 {% include "admin/document_list.html" with document_type="Fire Behaviour Calculation" %}

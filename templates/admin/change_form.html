@@ -27,7 +27,7 @@
     {% block object-tools %}
         {% if change %}
             {% if not is_popup %}
-                <div class="object-tools pull-right">
+                <div class="object-tools float-end">
                 {% block object-tools-items %}
                     <div class="btn-group">
                         <a class="btn"
@@ -60,7 +60,7 @@
                             {% endblock %}
                         {% endif %}
                         {% if errors %}
-                            <p class="errornote alert alert-block alert-error fade in">
+                            <p class="errornote alert alert-block alert-danger fade in">
                                 {% blocktrans count counter=errors|length %}
                                 Please correct the error below.
                                 {% plural %}
