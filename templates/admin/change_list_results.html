@@ -43,21 +43,21 @@
       $("td.column-relevant > input:checkbox").change(function() {
         var row = $(this).parent().parent();
         if (this.checked) {
-          row.find('input').removeAttr('disabled').removeClass('hide');
-          row.find('textarea').removeAttr('disabled').removeClass('hide');
-          row.find('select').removeAttr('disabled').removeClass('hide');
-          row.find('.label').removeClass('hide');
-          row.find('.btn').removeClass('hide');
-          row.find('.datetimeshortcuts').removeClass('hide');
+          row.find('input').removeAttr('disabled').removeClass('d-none');
+          row.find('textarea').removeAttr('disabled').removeClass('d-none');
+          row.find('select').removeAttr('disabled').removeClass('d-none');
+          row.find('.label').removeClass('d-none');
+          row.find('.btn').removeClass('d-none');
+          row.find('.datetimeshortcuts').removeClass('d-none');
           row.removeClass('disabled');
         } else {
-          row.find('input').attr('disabled', 'disabled').addClass('hide');
-          $(this).removeAttr('disabled').removeClass('hide');
-          row.find('textarea').attr('disabled', 'disabled').addClass('hide');
-          row.find('select').attr('disabled', 'disabled').addClass('hide');
-          row.find('.label').addClass('hide');
-          row.find('.btn').addClass('hide');
-          row.find('.datetimeshortcuts').addClass('hide');
+          row.find('input').attr('disabled', 'disabled').addClass('d-none');
+          $(this).removeAttr('disabled').removeClass('d-none');
+          row.find('textarea').attr('disabled', 'disabled').addClass('d-none');
+          row.find('select').attr('disabled', 'disabled').addClass('d-none');
+          row.find('.label').addClass('d-none');
+          row.find('.btn').addClass('d-none');
+          row.find('.datetimeshortcuts').addClass('d-none');
           row.addClass('disabled');
         }
         fixToggleSectionCheckbox(this);

@@ -117,7 +117,7 @@ $(document).ready(function($) {
             cclass = cclass.split(" ")[0]
         } else {
             // Hide the table if it's empty (columns have no id's)
-            $('table#result_list thead').addClass('hide');
+            $('table#result_list thead').addClass('d-none');
             return false;
         }
         if ($.inArray(cclass, untoggleable_columns) > -1) {
@@ -129,10 +129,10 @@ $(document).ready(function($) {
         newbutton.text(name);
         if ($.inArray(cclass, hidden_columns) > -1) {
             var index = $("th.column-" + cclass).index() + 1;
-            $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').addClass("hide");
+            $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').addClass("d-none");
             newbutton.removeClass("btn-info");
         }
-        newbutton.removeClass("hide");
+        newbutton.removeClass("d-none");
         $("div.column-tools").append(newbutton);
 
     });
@@ -140,11 +140,11 @@ $(document).ready(function($) {
         var button = $(evt.target)
         var index = $("th.column-" + button.attr("data-cclass")).index() + 1;
         if (button.hasClass("btn-info")) {
-            $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').addClass("hide");
+            $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').addClass("d-none");
             button.removeClass("btn-info");
             hidden_columns.push(button.attr("id").slice(7));
         } else {
-            $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').removeClass("hide");
+            $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').removeClass("d-none");
             button.addClass("btn-info");
             hidden_columns = $.grep(hidden_columns, function(value) {return button.attr("id").search(value) != 7});
         }
@@ -154,7 +154,7 @@ $(document).ready(function($) {
     $("div.search-tools").append($("div#toolbar form").css({"margin": 0}));
 
     // upgrade django's filters into more compact dropdowns
-    //var filters = $("div.col-3 ul.nav-list").parents("div.col-3").addClass("hide");
+    //var filters = $("div.col-3 ul.nav-list").parents("div.col-3").addClass("d-none");
     var filters = $("div.col-3 ul.nav-list");
     var templateFilterDropdown = $("#template-filter-dropdown");
     var filterDiv = $("div.filter-tools");
@@ -169,7 +169,7 @@ $(document).ready(function($) {
             button.addClass("btn-success");
         }
         filterDiv.append(dropdown);
-        dropdown.removeClass("hide");
+        dropdown.removeClass("d-none");
     });
 
     {% if request.user.profile.region %}
@@ -190,15 +190,15 @@ $(document).ready(function($) {
     filterDiv.prepend(button);
     {% endif %}
 
-    $("#tablemask").removeClass("hide");
+    $("#tablemask").removeClass("d-none");
     toolsButton.click(function() {
-        if (tools.hasClass("hide")) {
+        if (tools.hasClass("d-none")) {
             Vis.ensureToolsVisible(tools, toolsButton, myStore, visKey);
         } else {
             Vis.ensureToolsHidden(tools, toolsButton, myStore, visKey);
         }
     });
-    if ($('table#result_list thead').hasClass('hide')) {
+    if ($('table#result_list thead').hasClass('d-none')) {
         toolsButton.click();
     }
 

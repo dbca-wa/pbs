@@ -63,9 +63,9 @@
     $('input:checkbox').change(function() {
         var uploadLink = $('#' + $(this).attr('id') + '_upload');
         if ($(this).is(':checked')) {
-            uploadLink.removeClass('hide');
+            uploadLink.removeClass('d-none');
         } else {
-            uploadLink.addClass('hide');
+            uploadLink.addClass('d-none');
         }
     });
     $('input:checkbox').change();
