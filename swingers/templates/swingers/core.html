@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,18 +8,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>{{ pagetitle }}</title>
-    <!-- HTML5 compatiblity shims -->
-    <script src="{{ CDNJS_URL }}jquery/1.8.2/jquery.min.js"></script>
-    <script src="{{ CDNJS_URL }}webshims/1.9.3/js-webshim/minified/extras/modernizr-custom.js"></script>
-    <script src="{{ CDNJS_URL }}webshims/1.9.3/js-webshim/minified/polyfiller.js"></script>
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'js/modernizr.js' %}"></script>
 
     {% block basehead %}{% endblock %}
     {% block extrahead %}{% endblock %}
 
     <!-- Included CSS Files -->
-    <!-- template based on the Twitter Bootstrap toolkit -->
-    <link rel="stylesheet" href="{{ STATIC_URL}}css/bootstrap.css" />
-    <link rel="stylesheet" href="{{ STATIC_URL}}css/style.css" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap5.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 
     <!-- Django template variable for any extra CSS to be inserted in every template at the project level -->
     {{ extrastyle|safe }}
