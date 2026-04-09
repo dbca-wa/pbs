@@ -30,7 +30,7 @@
 .myCollapse {
       display: none;
 }
-.myCollapse.in {
+.myCollapse.show {
       display: table-row;
 }
 </style>
@@ -193,7 +193,7 @@
 
 <script>
 $(function(){
-     $("[data-toggle=myCollapse]").click(function( ev ) {
+     $("[data-bs-toggle=myCollapse]").click(function( ev ) {
        ev.preventDefault();
        var target;
        if (this.hasAttribute('data-target')) {
@@ -201,7 +201,7 @@ $(function(){
        } else {
      target = $(this.getAttribute('href'));
        };
-       target.toggleClass("in");
+       target.toggleClass("show");
      });
 
      $("#sorted-table td a").on('click', function (e) { e.stopPropagation(); })

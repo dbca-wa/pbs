@@ -31,7 +31,7 @@
 .myCollapse {
       display: none;
 }
-.myCollapse.in {
+.myCollapse.show {
       display: table-row;
 }
 
@@ -53,8 +53,6 @@ select, button{
 {% endblock %}
 
 {% block extrastyle %}
-
-<link rel="stylesheet" href="{% static "css/jquery-ui-1.11.4.min.css" %}">
 {% endblock %}
 
 {% block content %}
@@ -721,7 +719,7 @@ select, button{
 <script>
 
 $(function(){
-     $("[data-toggle=myCollapse]").click(function( ev ) {
+     $("[data-bs-toggle=myCollapse]").click(function( ev ) {
        ev.preventDefault();
        var target;
        if (this.hasAttribute('data-target')) {
@@ -729,7 +727,7 @@ $(function(){
        } else {
          target = $(this.getAttribute('href'));
        };
-       target.toggleClass("in");
+       target.toggleClass("show");
      });
 
      $("#planned-table td a").on('click', function (e) { e.stopPropagation(); });
