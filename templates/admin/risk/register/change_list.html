@@ -113,7 +113,7 @@
       $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
-        addText: '<i class="icon-plus"></i> Add another risk register item'
+        addText: '<i class="fa-solid fa-plus"></i> Add another risk register item'
       });
     });
   })(django.jQuery);
@@ -143,17 +143,17 @@
 
 {% block pretitle %}
 <ul class="nav nav-tabs">
-    <li><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="icon-legal"></i> Risk management context statement</a></li>
-    <li><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="icon-user"></i> Critical stakeholders</a></li>
-    <li><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="icon-legal"></i> Actions</a></li>
-    <li class="active"><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="icon-warning-sign"></i> Risk register</a></li>
+    <li><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Risk management context statement</a></li>
+    <li><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="fa-solid fa-user"></i> Critical stakeholders</a></li>
+    <li><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Actions</a></li>
+    <li class="active"><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="fa-solid fa-triangle-exclamation"></i> Risk register</a></li>
 </ul>
 {% endblock %}
 
 {% block content_title %}
 {% url 'admin:risk_register_changelist' current.id as risk_register %}
 <h1>Prescribed Burn Risk Register</h1>
-<h4><i class="icon-warning-sign"></i> <strong>
+<h4><i class="fa-solid fa-triangle-exclamation"></i> <strong>
     <span id="currentLevelOfRiskLabel">
         {% if request.get_full_path == risk_register %}
             Draft ePFP Risk Level is </strong>
@@ -171,7 +171,7 @@
   <li{% if request.get_full_path == risk_register|add:"?section=final" %} class="active"{% endif %}><a href="{% url 'admin:risk_register_changelist' current.id %}?section=final">Treatments & final risk assessment</a></li>
 </ul>
 <h5>Refer to APPENDIX 8 (page 84) of the Prescribed Burn Planning Manual for the Prescribed Burn Risk Tables.
-<a class="btn float-end btn-sm btn-info" href="https://dpaw.sharepoint.com/sites/Fire/SitePages/Fire-Manuals.aspx" target="_blank"><i class='icon-download-alt'></i> Download the Prescribed Burn Planning Manual</a></h5>
+<a class="btn float-end btn-sm btn-info" href="https://dpaw.sharepoint.com/sites/Fire/SitePages/Fire-Manuals.aspx" target="_blank"><i class='fa-solid fa-download'></i> Download the Prescribed Burn Planning Manual</a></h5>
 {% if not current.can_corporate_approve %}
 <div class="alert clearfix">
     <strong>Warning!</strong> In order to edit this section, you need to complete all Corporate information.

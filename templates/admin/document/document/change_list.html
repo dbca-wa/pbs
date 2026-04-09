@@ -47,19 +47,19 @@
 {% block content_title %}
 {{ block.super }}
 {% if tags.0.name and tags.0.name.lower != 'operations map' and tags.0.name.lower != 'aerial burn map' and tags.0.name.lower != 'context map' and tags.0.name.lower != 'prescribed burning organisational structure and communications plan' %}
-<h5><a class="btn btn-sm btn-info" href="{{ download_pdf }}?template=form-{{ tags.0.name|slugify }}&download=true"><i class='icon-download-alt'></i> Download the {{ tags.0.name }} template</a></h5>
+<h5><a class="btn btn-sm btn-info" href="{{ download_pdf }}?template=form-{{ tags.0.name|slugify }}&download=true"><i class='fa-solid fa-download'></i> Download the {{ tags.0.name }} template</a></h5>
 {% elif tags.0.name and tags.0.name.lower == 'prescribed burning organisational structure and communications plan' %}
-<h5><a class="btn btn-sm btn-info" href="{% static 'pbs/docs/org_chart.pdf' %}"><i class='icon-download-alt'></i> Download the Organisational Structure and Communications Plan template</a></h5>
+<h5><a class="btn btn-sm btn-info" href="{% static 'pbs/docs/org_chart.pdf' %}"><i class='fa-solid fa-download'></i> Download the Organisational Structure and Communications Plan template</a></h5>
 {% endif %}
 {% endblock %}
 {% block object-tools-items %}
 {% if tags|length == 1 %}
 <a class="btn btn-sm btn-info" href="{{ upload_document }}?tag={{ tags.0.id }}&next={{ request.get_full_path }}">
-    <i class="icon-plus icon-white"></i> Add document
+    <i class="fa-solid fa-plus text-white"></i> Add document
 </a>
 {% else %}
 <a class="btn btn-sm btn-info" href="{{ upload_document }}?next={{ request.get_full_path }}">
-    <i class="icon-plus icon-white"></i> Add document
+    <i class="fa-solid fa-plus text-white"></i> Add document
 </a>
 {% endif %}
 {% comment %}
@@ -69,12 +69,12 @@
 {% if tags.count == 1 %}
     {% for tag in tags %}
     <a class="btn btn-sm btn-success" href="{% url 'admin:document_document_add' current.id %}?tag={{ tag.id }}&next={{ request.get_full_path }}">
-        <i class="icon-plus icon-white"></i>Add {{ descriptor }}</a>
+        <i class="fa-solid fa-plus text-white"></i>Add {{ descriptor }}</a>
     {% endfor %}
     {% else %}
     <div class="dropdown">
         <a class="dropdown-toggle btn btn-sm btn-success" id="dLabel" role="button" data-bs-toggle="dropdown" data-bs-target="#" href="/page.html">
-            <i class="icon-plus icon-white"></i> Add <b class="caret"></b>
+            <i class="fa-solid fa-plus text-white"></i> Add <b class="caret"></b>
         </a>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
         {% for tag in tags %}

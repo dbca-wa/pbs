@@ -124,26 +124,26 @@
     <tr>
       <td>
           {% if current.has_corporate_approval %}
-            <span class="badge badge-success"><i class="icon-ok"></i> approved on {{ current.planning_status_modified|date }}</span>
+            <span class="badge badge-success"><i class="fa-solid fa-check"></i> approved on {{ current.planning_status_modified|date }}</span>
           {% elif current.planning_status == current.PLANNING_SUBMITTED %}
-            <span class="badge badge-warning"><i class="icon-minus"></i> submitted on {{ current.planning_status_modified|date }}</span>
+            <span class="badge badge-warning"><i class="fa-solid fa-minus"></i> submitted on {{ current.planning_status_modified|date }}</span>
           {% else %}
-            <span class="badge badge-important"><i class="icon-minus"></i> draft</span>
+            <span class="badge badge-important"><i class="fa-solid fa-minus"></i> draft</span>
           {% endif %}
       </td>
       <td>
           {% if current.is_endorsed %}
-            <span class="badge badge-success"><i class="icon-ok"></i>endorsed on {{ current.endorsement_status_modified|date }}</span>
+            <span class="badge badge-success"><i class="fa-solid fa-check"></i>endorsed on {{ current.endorsement_status_modified|date }}</span>
           {% elif current.endorsement_status == current.ENDORSEMENT_SUBMITTED %}
-            <span class="badge badge-warning"><i class="icon-minus"></i> submitted on {{ current.endorsement_status_modified|date }}</span>
+            <span class="badge badge-warning"><i class="fa-solid fa-minus"></i> submitted on {{ current.endorsement_status_modified|date }}</span>
           {% else %}
-            <span class="badge badge-important"><i class="icon-minus"></i> draft</span>
+            <span class="badge badge-important"><i class="fa-solid fa-minus"></i> draft</span>
           {% endif %}
       </td>
       <td>
           {% if current.is_approved %}
           <span class="badge badge-success">
-              <i class="icon-ok" style="display:inline-block; vertical-align:top;"></i>
+              <i class="fa-solid fa-check" style="display:inline-block; vertical-align:top;"></i>
               <span style="display:inline-block;">
               Approved by {{ current.current_approval_approver }} <br />
               until {{current.current_approval_valid_period }} <br />
@@ -152,19 +152,19 @@
           </span>
           {% elif current.approval_status == current.APPROVAL_SUBMITTED %}
           <span class="badge badge-warning">
-              <i class="icon-minus"></i>
+              <i class="fa-solid fa-minus"></i>
               submitted on {{ current.approval_status_modified|date }}
           </span>
           {% else %}
           <span class="badge badge-important">
-              <i class="icon-minus"></i>
+              <i class="fa-solid fa-minus"></i>
               not approved
           </span>
           {% endif %}
       </td>
-      <td>{% if current.has_ignitions %}<span class="badge badge-success"><i class="icon-ok"></i> {{ current.ignition_commenced.ignition|date }}</span>{% else %}<span class="badge badge-important"><i class="icon-minus"></i>{% endif %}</td>
-      <td>{% if current.is_burnt %}<span class="badge badge-success"><i class="icon-ok"></i> {{ current.ignition_completed_date }}</span>{% else %}<span class="badge badge-important"><i class="icon-minus"></i></span>{% endif %}</td>
-      <td>{% if current.is_closed %}<span class="badge badge-success"><i class="icon-ok"></i></span>{% else %}<span class="badge badge-important"><i class="icon-minus"></i></span>{% endif %}</td>
+      <td>{% if current.has_ignitions %}<span class="badge badge-success"><i class="fa-solid fa-check"></i> {{ current.ignition_commenced.ignition|date }}</span>{% else %}<span class="badge badge-important"><i class="fa-solid fa-minus"></i>{% endif %}</td>
+      <td>{% if current.is_burnt %}<span class="badge badge-success"><i class="fa-solid fa-check"></i> {{ current.ignition_completed_date }}</span>{% else %}<span class="badge badge-important"><i class="fa-solid fa-minus"></i></span>{% endif %}</td>
+      <td>{% if current.is_closed %}<span class="badge badge-success"><i class="fa-solid fa-check"></i></span>{% else %}<span class="badge badge-important"><i class="fa-solid fa-minus"></i></span>{% endif %}</td>
     </tr>
   </tbody>
 </table>
@@ -172,11 +172,11 @@
 <div class="col-3">
   <ul class="nav nav-list">
     <li class="nav-header">Actions</li>
-    <li><a href="{{ sectiona1 }}"><i class="icon-pencil"></i> Summary & Approval</a></li>
-    <li><a href="{{ upload_document }}"><i class="icon-cloud-upload"></i> Upload document</a></li>
-    <li><a value="Download without attachments" id="id-down-1" class="file-download-1" href="#" url="{{ download_pdf }}?template=pfp&embed=false&download=true&id={{current.id}}" target="_self"><i class="icon-download"></i> Download without attachments</a></li>
-    <li><a value="Download with attachments" id="id-down-2" class="file-download-1" href="#" url="{{ download_pdf }}?template=pfp&download=true" target="_self"><i class="icon-download-alt"></i> Download with attachments</a></li>
-    <li><a href="{{ pdf_view }}"><i class="icon-pencil"></i> View Documents</a></li>
+    <li><a href="{{ sectiona1 }}"><i class="fa-solid fa-pencil"></i> Summary & Approval</a></li>
+    <li><a href="{{ upload_document }}"><i class="fa-solid fa-cloud-arrow-up"></i> Upload document</a></li>
+    <li><a value="Download without attachments" id="id-down-1" class="file-download-1" href="#" url="{{ download_pdf }}?template=pfp&embed=false&download=true&id={{current.id}}" target="_self"><i class="fa-solid fa-download"></i> Download without attachments</a></li>
+    <li><a value="Download with attachments" id="id-down-2" class="file-download-1" href="#" url="{{ download_pdf }}?template=pfp&download=true" target="_self"><i class="fa-solid fa-download"></i> Download with attachments</a></li>
+    <li><a href="{{ pdf_view }}"><i class="fa-solid fa-pencil"></i> View Documents</a></li>
 
     <li class="nav-header">Corporate Program Approval</li>
     <li>
@@ -192,7 +192,7 @@
                    {% else %}
                         javascript:void(0)
                    {% endif %}">
-              <i class="icon-group"></i>
+              <i class="fa-solid fa-users"></i>
               {% if current.has_corporate_approval %}
                 Corporate approval given
               {% elif not current.planning_status == current.PLANNING_DRAFT and perms.prescription.can_corporate_approve %}
@@ -202,7 +202,7 @@
               {% endif %}
           </a>
         {% if perms.prescription.can_admin and current.has_corporate_approval %}
-          <a id="delete-corporate-approval" href="{% url 'admin:prescription_prescription_corporate_approve' current.pk %}" class="btn btn-sm alert-danger"><i class="icon-trash"></i></a>
+          <a id="delete-corporate-approval" href="{% url 'admin:prescription_prescription_corporate_approve' current.pk %}" class="btn btn-sm alert-danger"><i class="fa-solid fa-trash"></i></a>
         {% endif %}
       </div>
     </li>
@@ -216,7 +216,7 @@
         href="{% if current.can_select_endorsing_roles %}
                 {% url 'admin:prescription_prescription_endorsing_roles' current.pk %}
             {% else %}javascript:void(0)
-              {% endif %}"><i class="icon-user"></i>
+              {% endif %}"><i class="fa-solid fa-user"></i>
             Determine endorsing roles
         </a>
     </li>
@@ -239,7 +239,7 @@
                     endorsement
                 {% endif %}">
             {% if not current.can_endorse or current.endorsement_status != current.ENDORSEMENT_DRAFT %}
-                <i class="icon-tag"></i>
+                <i class="fa-solid fa-tag"></i>
                 {% if current.endorsement_status == current.ENDORSEMENT_DRAFT %}
                     Submit for endorsement
                 {% elif current.is_endorsed %}
@@ -255,15 +255,15 @@
     <li>
     {% if current.can_epfp_approve and not current.is_closed %}{% include "admin/prescription/prescription/modals/submit_for_epfp_approval_btn.html" %}
     {% else %}<a id="approve" href="javascript:void(0)"
-      {% if current.get_maximum_risk.final_risk_level == current.get_maximum_risk.LEVEL_VERY_HIGH %}class="muted"><i class="icon-minus"></i> This burn can not be approved
-      {% elif current.is_approved %}class="text-success"><i class="icon-ok"></i> Approved
-      {% elif current.is_closed %}<i class="icon-ok"></i> Approved
-      {% else  %}class="muted"><i class="icon-minus"></i> Submit for approval
+      {% if current.get_maximum_risk.final_risk_level == current.get_maximum_risk.LEVEL_VERY_HIGH %}class="muted"><i class="fa-solid fa-minus"></i> This burn can not be approved
+      {% elif current.is_approved %}class="text-success"><i class="fa-solid fa-check"></i> Approved
+      {% elif current.is_closed %}<i class="fa-solid fa-check"></i> Approved
+      {% else  %}class="muted"><i class="fa-solid fa-minus"></i> Submit for approval
       {% endif %}</a>
     {% endif %}
     </li>
     <li class="nav-header">Burn closure</li>
-    <li{% if not current.can_close or current.status == current.STATUS_CLOSED %} class="disabled"{% endif %}><a href="{% if current.can_close and current.status != current.STATUS_CLOSED %}{% url 'admin:prescription_prescription_close' current.pk %}{% else %}javascript:void(0);{% endif %}"><i class="icon-folder-close"></i> {% if current.can_close %}{% if current.status == current.STATUS_CLOSED %}Burn closed{% else %}Close this burn{% endif %}{% else %}Burn closure unavailable{% endif %}</a></li>
+    <li{% if not current.can_close or current.status == current.STATUS_CLOSED %} class="disabled"{% endif %}><a href="{% if current.can_close and current.status != current.STATUS_CLOSED %}{% url 'admin:prescription_prescription_close' current.pk %}{% else %}javascript:void(0);{% endif %}"><i class="fa-solid fa-folder"></i> {% if current.can_close %}{% if current.status == current.STATUS_CLOSED %}Burn closed{% else %}Close this burn{% endif %}{% else %}Burn closure unavailable{% endif %}</a></li>
   </ul>
 </div>
 </div>
@@ -293,10 +293,10 @@ $('a#endorsing-roles').popover({
     'content': ' \
     <ul class="nav nav-list"> \
         {% if not current.pre_state.complexity_analysis %} \
-        <li><a href="{{ sectiona5 }}"><i class="icon-eye-open"></i> Complete Complexity Analysis</a></li> \
+        <li><a href="{{ sectiona5 }}"><i class="fa-solid fa-eye"></i> Complete Complexity Analysis</a></li> \
         {% endif %} \
         {% if not current.pre_state.risk_register %} \
-        <li><a href="{{ sectiona6 }}"><i class="icon-warning-sign"></i> Complete Risk Register</a></li> \
+        <li><a href="{{ sectiona6 }}"><i class="fa-solid fa-triangle-exclamation"></i> Complete Risk Register</a></li> \
         {% endif %} \
     </ul>',
     'html': 'true'
@@ -307,10 +307,10 @@ $('a#endorse').popover({
     'content': ' \
     <ul class="nav nav-list"> \
         {% if not current.pre_state.finished %} \
-        <li><a href="{{ parta }}"><i class="icon-dashboard"></i> Complete Part A</a></li> \
+        <li><a href="{{ parta }}"><i class="fa-solid fa-gauge"></i> Complete Part A</a></li> \
         {% endif %} \
         {% if not current.day_state.finished %} \
-        <li><a href="{{ partb }}"><i class="icon-dashboard"></i> Complete Part B</a></li> \
+        <li><a href="{{ partb }}"><i class="fa-solid fa-gauge"></i> Complete Part B</a></li> \
         {% elif current.is_approved %} \
         <li>This ePFP has already been Approved</li> \
         {% else %} \

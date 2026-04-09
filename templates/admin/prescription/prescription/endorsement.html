@@ -47,7 +47,7 @@
             <td>{{ endorsing_role.get_endorsed_display }}</td>
             <td>{% firstof endorsing_role.creator.get_full_name endorsing_role.creator.username %}</td>
             <td>{{ endorsing_role.created }}</td>
-            <td>{% if 'delete_endorsement' in endorsing_perms %}<a href="{% url 'admin:prescription_prescription_delete_endorsement' current.id endorsing_role.id %}" class="btn btn-sm alert-danger" title="Delete endorsement"><i class="icon-trash"></i></a>{% endif %}</td>
+            <td>{% if 'delete_endorsement' in endorsing_perms %}<a href="{% url 'admin:prescription_prescription_delete_endorsement' current.id endorsing_role.id %}" class="btn btn-sm alert-danger" title="Delete endorsement"><i class="fa-solid fa-trash"></i></a>{% endif %}</td>
         </tr>
         {% endfor %}
         {% for endorsing_role in not_endorsed_endorsing_roles %}

@@ -62,16 +62,16 @@
 
 {% block pretitle %}
 <ul id="car" class="nav nav-tabs">
-    <li><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="icon-legal"></i> Risk management context statement</a></li>
-    <li><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="icon-user"></i> Critical stakeholders</a></li>
-    <li class="active"><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="icon-legal"></i> Actions</a></li>
-    <li><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="icon-warning-sign"></i> Risk register</a></li>
+    <li><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Risk management context statement</a></li>
+    <li><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="fa-solid fa-user"></i> Critical stakeholders</a></li>
+    <li class="active"><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Actions</a></li>
+    <li><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="fa-solid fa-triangle-exclamation"></i> Risk register</a></li>
 </ul>
 <ul id="actionnav" class="nav nav-pills">
-    <li{% if not 'pre_burn' in request.GET and not 'day_of_burn' in request.GET and not 'post_burn' in request.GET %} class="active"{% endif %}><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="icon-list-ol"></i>Plan actions</a></li>
-    <li{% if 'pre_burn' in request.GET %} class="active"{% endif %}><a href="?pre_burn=True"><i class="icon-tasks"></i>Pre-burn actions</a></li>
-    <li{% if 'day_of_burn' in request.GET %} class="active"{% endif %}><a href="?day_of_burn=True"><i class="icon-legal"></i>Day of burn actions</a></li>
-    <li{% if 'post_burn' in request.GET %} class="active"{% endif %}><a href="?post_burn=True"><i class="icon-warning-sign"></i>Post-burn actions</a></li>
+    <li{% if not 'pre_burn' in request.GET and not 'day_of_burn' in request.GET and not 'post_burn' in request.GET %} class="active"{% endif %}><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-list-ol"></i>Plan actions</a></li>
+    <li{% if 'pre_burn' in request.GET %} class="active"{% endif %}><a href="?pre_burn=True"><i class="fa-solid fa-list-check"></i>Pre-burn actions</a></li>
+    <li{% if 'day_of_burn' in request.GET %} class="active"{% endif %}><a href="?day_of_burn=True"><i class="fa-solid fa-scale-balanced"></i>Day of burn actions</a></li>
+    <li{% if 'post_burn' in request.GET %} class="active"{% endif %}><a href="?post_burn=True"><i class="fa-solid fa-triangle-exclamation"></i>Post-burn actions</a></li>
 </ul>
 {% endblock %}
 
@@ -97,13 +97,13 @@
 {% endif %}
 
 {% if 'pre_burn' in request.GET or 'day_of_burn' in request.GET or 'post_burn' in request.GET %}
-<h1>Actions Report <a href="{{ upload_document }}?tag={{ actions_form_name|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="icon-plus"></i> Upload {{ actions_form_name }}</a></h1>
-<h5><a class="btn btn-sm btn-info" href="{{ download_pdf }}?template=form-{{ actions_form_name|slugify }}&download=True"><i class="icon-download-alt"></i> Download the {{ actions_form_name }} template</a></h5>
+<h1>Actions Report <a href="{{ upload_document }}?tag={{ actions_form_name|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="fa-solid fa-plus"></i> Upload {{ actions_form_name }}</a></h1>
+<h5><a class="btn btn-sm btn-info" href="{{ download_pdf }}?template=form-{{ actions_form_name|slugify }}&download=True"><i class="fa-solid fa-download"></i> Download the {{ actions_form_name }} template</a></h5>
 
 {% document_list %}
 {% endif %}
 <h1>
   {% if 'pre_burn' in request.GET %}Pre-burn Actions{% elif 'day_of_burn' in request.GET %}Day of Burn Actions{% elif 'post_burn' in request.GET %}Post Burn Actions{% else %}Plan Actions{% endif %}
-  {% if current.endorsement_status == current.ENDORSEMENT_DRAFT and not 'pre_burn' in request.GET and not 'day_of_burn' in request.GET and not 'post_burn' in request.GET or perms.prescription.can_admin %}<a href="{% url 'admin:risk_risk_add' current.id %}?prescription={{ current.id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="icon-plus"></i> Add source of risk</a>{% endif %}
+  {% if current.endorsement_status == current.ENDORSEMENT_DRAFT and not 'pre_burn' in request.GET and not 'day_of_burn' in request.GET and not 'post_burn' in request.GET or perms.prescription.can_admin %}<a href="{% url 'admin:risk_risk_add' current.id %}?prescription={{ current.id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="fa-solid fa-plus"></i> Add source of risk</a>{% endif %}
 </h1>
 {% endblock %}

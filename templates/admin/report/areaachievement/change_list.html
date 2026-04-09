@@ -15,7 +15,7 @@
       $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
-        addText: '<i class="icon-plus"></i> Add another ignition'
+        addText: '<i class="fa-solid fa-plus"></i> Add another ignition'
       });
     });
   })(django.jQuery);
@@ -106,8 +106,8 @@
 
 {% block content_title %}
 <h1>Day of Burn Achievement Update</h1>
-<div id="id_div_burnt_area_alert" class="alert alert-info hidden"><i class="icon-exclamation-sign"></i> <strong>Notice:</strong> Total treatment area exceeds the planned burn area ({{ current.area }} ha). If this is valid for this burn, please ignore this message.</div>
-<div id="id_div_edged_alert" class="alert alert-info hidden"><i class="icon-exclamation-sign"></i> <strong>Notice:</strong> The successful length of edging exceeds the planned burn perimeter ({{ current.perimeter }} km). If this is valid for this burn, please ignore this message.</div>
+<div id="id_div_burnt_area_alert" class="alert alert-info hidden"><i class="fa-solid fa-circle-exclamation"></i> <strong>Notice:</strong> Total treatment area exceeds the planned burn area ({{ current.area }} ha). If this is valid for this burn, please ignore this message.</div>
+<div id="id_div_edged_alert" class="alert alert-info hidden"><i class="fa-solid fa-circle-exclamation"></i> <strong>Notice:</strong> The successful length of edging exceeds the planned burn perimeter ({{ current.perimeter }} km). If this is valid for this burn, please ignore this message.</div>
 {% endblock %}
 
 {% block content %}

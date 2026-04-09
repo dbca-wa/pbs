@@ -17,7 +17,7 @@
       $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
-        addText: '<i class="icon-plus"></i> Add another notification'
+        addText: '<i class="fa-solid fa-plus"></i> Add another notification'
       });
     });
   })(django.jQuery);
@@ -25,7 +25,7 @@
 {% endblock %}
 
 {% block object-tools-items %}
-<a value="Section D1 &#x2010; Notifications" class="btn-sm btn" href="{{ download_pdf }}?template=sectiond1"><i class="icon-print"></i> Download</a>
+<a value="Section D1 &#x2010; Notifications" class="btn-sm btn" href="{{ download_pdf }}?template=sectiond1"><i class="fa-solid fa-print"></i> Download</a>
 {% endblock %}
 
 {% block breadcrumbs %}

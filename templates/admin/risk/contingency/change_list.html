@@ -26,7 +26,7 @@ $(document).ready(function() {
   <div class="object-tools float-end">
     {% block object-tools-items %}
     <a class="btn btn-sm btn-info{% if hide_adminonly %} {{ hide_adminonly }}{% endif %}" href="{% if current %}{% url 'admin:risk_contingency_add' current.id %}{% endif %}{% if is_popup %}?_popup=1{% endif %}">
-      <i class="icon-plus icon-white"></i>
+      <i class="fa-solid fa-plus text-white"></i>
       {% blocktrans with cl.opts.verbose_name as name %}Create {{ name }}{% endblocktrans %}
     </a>
     {% endblock %}

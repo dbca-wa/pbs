@@ -16,7 +16,7 @@
       $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
-        addText: '<i class="icon-plus"></i> Add another track/trail'
+        addText: '<i class="fa-solid fa-plus"></i> Add another track/trail'
       });
     });
   })(django.jQuery);
@@ -57,7 +57,7 @@
 (function($) {
     $('input:checkbox').each(function(i, item) {
         var parent = $(item).parent();
-        var link = '<a class="upload" id="' + $(item).attr('id') + '_upload" href="{% url 'admin:document_document_add' current.id %}?tag={{ "Track Trail Diversion Map"|tag_id }}&next={{ request.get_full_path }}"><i class="icon-upload-alt"></i> Upload</a>';
+        var link = '<a class="upload" id="' + $(item).attr('id') + '_upload" href="{% url 'admin:document_document_add' current.id %}?tag={{ "Track Trail Diversion Map"|tag_id }}&next={{ request.get_full_path }}"><i class="fa-solid fa-upload"></i> Upload</a>';
         parent.html(parent.html() + link);
     });
     $('input:checkbox').change(function() {
@@ -76,7 +76,7 @@
 {% block object-tools %}{% endblock %}
 
 {% block pre-submit-line %}
-<h1>Diversion Maps<a href="{{ upload_document }}?tag={{ "Track Trail Diversion Map"|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="icon-plus"></i> Upload Diversion Map</a></h1>
+<h1>Diversion Maps<a href="{{ upload_document }}?tag={{ "Track Trail Diversion Map"|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="fa-solid fa-plus"></i> Upload Diversion Map</a></h1>
 {% filter_by_tag_name current.document_set "Track Trail Diversion Map" as document_set %}
 {% include "admin/document_list.html" with document_type="Diversion Map" %}
 {% endblock %}

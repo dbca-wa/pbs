@@ -487,7 +487,7 @@ function addElementID(error, idx, errors) {
 // Add error styles
 function highlight(error, idx, errors) {
     if (Object.keys(error).length > 0) {
-        var icon = $("<i>").addClass('icon-warning-sign');
+        var icon = $("<i>").addClass('fa-solid fa-triangle-exclamation');
         var para = $('<p>')  // The order of these operations is important!
             .text(error.msg)
             .prepend(icon)
@@ -521,14 +521,14 @@ var ajaxPost = function(evt) {
                 'Overall rationale must be set. Click the Edit link to navigate ' +
                 'to the Priority Justification page to update it. Note that this will ' +
                 'discard any unsaved changes on this screen.').prepend(
-                    $('<i>').addClass('icon-warning-sign')).addClass('text-error'));
+                    $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-error'));
         }
         if ($('#id_td_priority').text() == "Unset ‐ Edit"){
             $('#id_td_priority').addClass('error').append($('<p>').text(
                 'Overall priority must be set. Click the Edit link to navigate ' +
                 'to the Priority Justification page to set it. Note that this will ' +
                 'discard any unsaved changes on this screen.').prepend(
-                    $('<i>').addClass('icon-warning-sign')).addClass('text-error'));
+                    $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-error'));
         }
         if (data.errors) {
             console.log(data);
@@ -538,7 +538,7 @@ var ajaxPost = function(evt) {
                         .text('Please correct the errors below.')
                         .prepend(
                             $('<i>')
-                                 .addClass('icon-warning-sign'))
+                                 .addClass('fa-solid fa-triangle-exclamation'))
                         .addClass('text-error'));
             if (data.errors) {
                 for (var error in data.errors) {
@@ -548,7 +548,7 @@ var ajaxPost = function(evt) {
                         $('<p>')
                             .text(' ' + data.errors[error].join(", "))
                             .prepend($('<i>')
-                                     .addClass('icon-warning-sign'))
+                                     .addClass('fa-solid fa-triangle-exclamation'))
                             .addClass('text-error'));
                 targetField.parent().addClass('error').append(errors);
                 }
@@ -558,7 +558,7 @@ var ajaxPost = function(evt) {
             };
         } else {
             $('div#id_pageerrors').addClass('alert alert-success').text(
-                ' ' + data.message).prepend($('<i>').addClass('icon-ok'));
+                ' ' + data.message).prepend($('<i>').addClass('fa-solid fa-check'));
 
             //if not cross tenure, reset corss_tenure_approved to False
             if (document.getElementById("id_non_calm_tenure").value !== "true") {

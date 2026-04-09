@@ -12,7 +12,7 @@
 <tr>
 {% for header in result_headers %}
 <th scope="col" class="{{ header.column }} {{ header.classes }} {% if header.sort_priority > 0 %}alert-success{% endif %}">
-    <div class="text">{% if header.sortable %}<a href="{% if header.sort_priority > 0 and not header.ascending %}{{ header.url_remove }}{% else %}{{ header.url_primary }}{% endif %}">{{ header.text|capfirst }}&nbsp;<i class="{% if header.sort_priority == 0 %}icon-sort{% elif header.ascending %}icon-sort-up{% else %}icon-sort-down{% endif %}"></i></a><span class="float-end">{% if header.sort_priority > 0 %}&nbsp;{{ header.sort_priority|ordinal }}{% endif %}</span>
+    <div class="text">{% if header.sortable %}<a href="{% if header.sort_priority > 0 and not header.ascending %}{{ header.url_remove }}{% else %}{{ header.url_primary }}{% endif %}">{{ header.text|capfirst }}&nbsp;<i class="{% if header.sort_priority == 0 %}fa-solid fa-sort{% elif header.ascending %}fa-solid fa-sort-up{% else %}fa-solid fa-sort-down{% endif %}"></i></a><span class="float-end">{% if header.sort_priority > 0 %}&nbsp;{{ header.sort_priority|ordinal }}{% endif %}</span>
         {% else %}<span>{{ header.text|capfirst }}</span>{% endif %}</div>
    <div class="clear"></div>
 </th>
@@ -100,8 +100,8 @@
             }
           }
 
-          var collapseLink = '<a class="collapse" href="javascript:void(0);" title="Collapse"><i class="icon-minus"></i> ';
-          var expandLink = '<a class="expand" href="javascript:void(0);" title="Expand"><i class="icon-plus"></i> ';
+          var collapseLink = '<a class="collapse" href="javascript:void(0);" title="Collapse"><i class="fa-solid fa-minus"></i> ';
+          var expandLink = '<a class="expand" href="javascript:void(0);" title="Expand"><i class="fa-solid fa-plus"></i> ';
 
           var relevantCheckbox = $('<input type="checkbox" ' +
                                    'title="Is this section relevant?" />');
@@ -149,8 +149,8 @@
             }
           });
 
-          var collapseAllLink = $('<a class="btn float-start btn-sm collapseAll" href="javascript:void(0);" title="Collapse all"><i class="icon-minus"></i> Collapse all</a>');
-          var expandAllLink = $('<a class="btn float-start btn-sm expandAll" href="javascript:void(0);" title="Expand all"><i class="icon-plus"></i> Expand all</a>');
+          var collapseAllLink = $('<a class="btn float-start btn-sm collapseAll" href="javascript:void(0);" title="Collapse all"><i class="fa-solid fa-minus"></i> Collapse all</a>');
+          var expandAllLink = $('<a class="btn float-start btn-sm expandAll" href="javascript:void(0);" title="Expand all"><i class="fa-solid fa-plus"></i> Expand all</a>');
           $('div.navbar-fixed-bottom div.container'
             ).append(collapseAllLink.clone().click(function() {
               $('a.collapse').click();

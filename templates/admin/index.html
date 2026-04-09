@@ -31,8 +31,8 @@
                 <tr>
                     <td><a href="{% url 'admin:prescription_prescription_detail' prescription.id %}">{{ prescription.burn_id }}</a></td>
                     <td>{{ prescription.name }}</td>
-                    <td><i class="icon-{% if prescription.contentious %}tick{% else %}minus{% endif %}"></i></td>
-                    <td><i class="icon-{% if prescription.aircraft_burn %}tick{% else %}minus{% endif %}"></i></td>
+                    <td><i class="fa-solid {% if prescription.contentious %}fa-check{% else %}fa-minus{% endif %}"></i></td>
+                    <td><i class="fa-solid {% if prescription.aircraft_burn %}fa-check{% else %}fa-minus{% endif %}"></i></td>
                     <td>{{ prescription.burn_priority }}</td>
                     <td>{{ prescription.area }}</td>
                     <td>{{ prescription.maximum_risk }}</td>

@@ -69,19 +69,19 @@
 <ul id="report-tabs" class="nav nav-tabs">
     <li id="planned-tab"  "{% if report == "epfp_planned_burns" %} class="active"{% endif %}>
         <a href="{% url 'admin:epfp_planned_burn' %}?report=epfp_planned_burns">
-            <i class="icon-tag"></i>
+            <i class="fa-solid fa-tag"></i>
             Planned
         </a>
     </li>
     <li id="ongoing-tab" {% if report == "epfp_ongoing_burns" %} class="active"{% endif %}>
         <a href="{% url 'admin:epfp_ongoing_burn' %}?report=epfp_ongoing_burns">
-            <i class="icon-plus"></i>
+            <i class="fa-solid fa-plus"></i>
             Ongoing
         </a>
     </li>
     <li id="summary-tab"  "{% if report == "epfp_summary_burns" %} class="active"{% endif %}>
         <a href="{% url 'admin:epfp_planned_burn' %}?report=epfp_summary_burns">
-            <i class="icon-fire"></i>
+            <i class="fa-solid fa-fire"></i>
             Summary
         </a>
     </li>
@@ -124,10 +124,10 @@
        </td>
       <td>{{ qs.area }}</td>
       <td>{{ qs.est_start }}</td>
-      <td>{% if qs.has_contigency %}<div class="text-center"><i class="icon-ok text-success"></i></div>{% endif %}</td>
-      <td>{% if qs.has_monitoring %}<div class="text-center"><i class="icon-ok text-success"></i></div>{% endif %}</td>
-      <td>{% if qs.contains_lga %}<div class="text-center"><i class="icon-ok text-success"></i></div>{% endif %}</td>
-      <td>{% if qs.contains_dfes %}<div class="text-center"><i class="icon-ok text-success"></i></div>{% endif %}</td>
+      <td>{% if qs.has_contigency %}<div class="text-center"><i class="fa-solid fa-check text-success"></i></div>{% endif %}</td>
+      <td>{% if qs.has_monitoring %}<div class="text-center"><i class="fa-solid fa-check text-success"></i></div>{% endif %}</td>
+      <td>{% if qs.contains_lga %}<div class="text-center"><i class="fa-solid fa-check text-success"></i></div>{% endif %}</td>
+      <td>{% if qs.contains_dfes %}<div class="text-center"><i class="fa-solid fa-check text-success"></i></div>{% endif %}</td>
       <td>{{ qs.conditions }}</td>
     </tr>
     {% endfor %}

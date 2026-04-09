@@ -68,7 +68,7 @@ l
         <div class="object-tools">
           {% block object-tools-items %}
               <a class="btn btn-small btn-success pull-right" href="{% url cl.opts|admin_urlname:'add' %}{% if is_popup %}?_popup=1{% endif %}">
-                <i class="icon-plus icon-white"></i>
+                <i class="fa-solid fa-plus text-white"></i>
                 {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
               </a>
           {% endblock %}

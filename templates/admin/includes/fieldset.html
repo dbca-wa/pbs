@@ -25,7 +25,7 @@
                         {% endif %}
                         <div class="help-inline">
                             {% if field.field.errors %}
-                            <p class="text-error"><i class="icon-warning-sign"></i> {% for error in field.field.errors %}{{ error }}{% endfor %}</p>
+                            <p class="text-error"><i class="fa-solid fa-triangle-exclamation"></i> {% for error in field.field.errors %}{{ error }}{% endfor %}</p>
                             {% endif %}
                         {% if field.field.help_text %}
                             <span class="help-block">{{ field.field.help_text|safe }}</span>

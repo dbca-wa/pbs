@@ -21,10 +21,10 @@
 
 {% block pretitle %}
 <ul class="nav nav-tabs">
-    <li class="active"><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="icon-legal"></i> Risk management context statement</a></li>
-    <li><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="icon-user"></i> Critical stakeholders</a></li>
-    <li><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="icon-legal"></i> Actions</a></li>
-    <li><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="icon-warning-sign"></i> Risk Register</a></li>
+    <li class="active"><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Risk management context statement</a></li>
+    <li><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="fa-solid fa-user"></i> Critical stakeholders</a></li>
+    <li><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Actions</a></li>
+    <li><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="fa-solid fa-triangle-exclamation"></i> Risk Register</a></li>
 </ul>
 {% endblock %}
 
@@ -69,7 +69,7 @@ There are no relevant actions for this context statement.
 {{ block.super }}
 <h1>Context Maps</h1>
 {% if current.endorsement_status == current.ENDORSEMENT_DRAFT %}
-<a href="{{ upload_document }}?tag={{ "Context Map"|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-info btn-sm"><b><i class="icon-plus"></i> Upload Context Map</b></a>
+<a href="{{ upload_document }}?tag={{ "Context Map"|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-info btn-sm"><b><i class="fa-solid fa-plus"></i> Upload Context Map</b></a>
 {% endif %}
 {% filter_by_tag_name current.document_set "Context Map" as document_set %}
 {% include "admin/document_list.html" with document_type="Context Maps" %}

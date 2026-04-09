@@ -19,7 +19,7 @@
       $("#result_list tbody tr").tabularFormset(this,{
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
-        addText: '<i class="icon-plus"></i> Add another critical stakeholder'
+        addText: '<i class="fa-solid fa-plus"></i> Add another critical stakeholder'
       });
     });
   })(django.jQuery);
@@ -40,10 +40,10 @@
 
 {% block pretitle %}
 <ul class="nav nav-tabs">
-    <li><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="icon-legal"></i> Risk management context statement</a></li>
-    <li class="active"><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="icon-user"></i> Critical stakeholders</a></li>
-    <li><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="icon-legal"></i> Actions</a></li>
-    <li><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="icon-warning-sign"></i> Risk Register</a></li>
+    <li><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Risk management context statement</a></li>
+    <li class="active"><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="fa-solid fa-user"></i> Critical stakeholders</a></li>
+    <li><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Actions</a></li>
+    <li><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="fa-solid fa-triangle-exclamation"></i> Risk Register</a></li>
 </ul>
 {% endblock %}
 

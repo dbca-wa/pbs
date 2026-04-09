@@ -17,7 +17,7 @@
       $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
-        addText: '<i class="icon-plus"></i> Add another road segment'
+        addText: '<i class="fa-solid fa-plus"></i> Add another road segment'
       });
     });
   })(django.jQuery);
@@ -53,12 +53,12 @@
 <h4>Standard</h4>
 {% if current.ways.standard_traffic_diagrams %}
 {% for document in current.ways.standard_traffic_diagrams %}
-<a href="{{ document.path.url }}" target="_blank"><i class="icon-file"></i> {{ document.name }}</a> &#x2010; {{ document.path.size|filesizeformat }}</br>
+<a href="{{ document.path.url }}" target="_blank"><i class="fa-solid fa-file"></i> {{ document.name }}</a> &#x2010; {{ document.path.size|filesizeformat }}</br>
 {% endfor %}
 {% else %}
 <p>There are no standard traffic control diagrams selected.
 {% endif %}
-<h4>Custom<a href="{{ upload_document }}?tag={{ "Traffic Diagrams"|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="icon-plus"></i> Upload Custom Traffic Control Diagram</a></h4>
+<h4>Custom<a href="{{ upload_document }}?tag={{ "Traffic Diagrams"|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="fa-solid fa-plus"></i> Upload Custom Traffic Control Diagram</a></h4>
 {% filter_by_tag_name current.document_set "Traffic Diagrams" as document_set %}
 {% include "admin/document_list.html" with document_type="Traffic Control Diagrams" %}
 

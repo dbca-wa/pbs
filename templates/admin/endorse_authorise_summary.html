@@ -37,12 +37,12 @@
         </tr>
         <tr>
           <td>Required but not completed</td>
-          <td><i class="icon-warning-sign text-error"></i></td>
+          <td><i class="fa-solid fa-triangle-exclamation text-error"></i></td>
         </tr>
         {% if report == "summary" %}
         <tr>
           <td>Required and completed</td>
-          <td><i class="icon-ok text-success"></i></td>
+          <td><i class="fa-solid fa-check text-success"></i></td>
         </tr>
         {% endif %}
       </tbody>
@@ -54,19 +54,19 @@
 <ul id="report-tabs" class="nav nav-tabs">
     <li id="summary-tab"  "{% if report == "summary" %} class="active"{% endif %}>
         <a href="{% url 'admin:endorse_authorise_summary' %}?report=summary">
-            <i class="icon-tag"></i>
+            <i class="fa-solid fa-tag"></i>
             Endorsements
         </a>
     </li>
     <li id="approvals-tab" {% if report == "approvals" %} class="active"{% endif %}>
         <a href="{% url 'admin:endorse_authorise_summary' %}?report=approvals">
-            <i class="icon-plus"></i>
+            <i class="fa-solid fa-plus"></i>
             Approvals
         </a>
     </li>
     <li id="ignitions-tab"  "{% if report == "ignitions" %} class="active"{% endif %}>
         <a href="{% url 'admin:endorse_authorise_summary' %}?report=ignitions">
-            <i class="icon-fire"></i>
+            <i class="fa-solid fa-fire"></i>
             Ignitions
         </a>
     </li>
@@ -158,9 +158,9 @@
       <td><a href="{% url 'admin:prescription_prescription_detail' prescription.id %}">{{ prescription.burn_id }}</a></td>
       <td>{{ prescription.name }}</td>
       {% if report == "approvals" %}
-      <td>{% if prescription.maximum_risk == 'Low' %}<div class="text-center"><i class="icon-warning-sign text-error"></i></div>{% endif %}</td>
-      <td>{% if prescription.maximum_risk == 'Medium' %}<div class="text-center"><i class="icon-warning-sign text-error"></i></div>{% endif %}</td>
-      <td>{% if prescription.maximum_risk == 'High' %}<div class="text-center"><i class="icon-warning-sign text-error"></i></div>{% endif %}</td>
+      <td>{% if prescription.maximum_risk == 'Low' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-error"></i></div>{% endif %}</td>
+      <td>{% if prescription.maximum_risk == 'Medium' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-error"></i></div>{% endif %}</td>
+      <td>{% if prescription.maximum_risk == 'High' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-error"></i></div>{% endif %}</td>
       {% else %}
       <td>{% role_required prescription "District Program Leader - Parks and Visitor Services" %}</td>
       <td>{% role_required prescription "Regional Program Leader - Parks and Visitor Services" %}</td>

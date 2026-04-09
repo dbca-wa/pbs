@@ -81,7 +81,7 @@
         {% for records in prescription.current_fmsb_record %}
           {{ records.record }}
           {% if request.user.username == records.user.username %}
-          <a id="delete-fmsb-review" href="{% url 'admin:review_burnstate_delete' records.id %}" class="btn btn-sm alert-danger"><i class="icon-trash"></i></a>
+          <a id="delete-fmsb-review" href="{% url 'admin:review_burnstate_delete' records.id %}" class="btn btn-sm alert-danger"><i class="fa-solid fa-trash"></i></a>
           {% endif %}
           <br>
         {% endfor %}
@@ -92,7 +92,7 @@
         {% for records in prescription.current_drfms_record %}
           {{ records.record }}
           {% if request.user.username == records.user.username %}
-          <a id="delete-drfms-review" href="{% url 'admin:review_burnstate_delete' records.id %}" class="btn btn-sm alert-danger"><i class="icon-trash"></i></a>
+          <a id="delete-drfms-review" href="{% url 'admin:review_burnstate_delete' records.id %}" class="btn btn-sm alert-danger"><i class="fa-solid fa-trash"></i></a>
           {% endif %}
           <br>
         {% endfor %}
@@ -172,11 +172,11 @@
         {% if user_fmsb_group or user_drfms_group %}
           {% if user_fmsb_group %}
           <td>
-              <a id="mark-fmsb-review" href="{% url 'admin:review_burnstate_change' prescription.id %}" class="btn"><i class="icon-button">Mark FMSB reviewed</i></a>
+              <a id="mark-fmsb-review" href="{% url 'admin:review_burnstate_change' prescription.id %}" class="btn">Mark FMSB reviewed</a>
           </td>
           {% else %}
           <td>
-              <a id="mark-drfms-review" href="{% url 'admin:review_burnstate_change' prescription.id %}" class="btn"><i class="icon-button">Mark DRFMS reviewed</i></a>
+              <a id="mark-drfms-review" href="{% url 'admin:review_burnstate_change' prescription.id %}" class="btn">Mark DRFMS reviewed</a>
           </td>
           {% endif %}
         {% else %}

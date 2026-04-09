@@ -179,7 +179,7 @@ $(document).ready(function() {
       <div class="object-tools float-end">
         {% block object-tools-items %}
         <a class="btn btn-sm btn-info" href="{% if current %}{% url cl.opts|admin_urlname:'add' current.id %}{% else %}{% url cl.opts|admin_urlname:'add' %}{% endif %}{% if is_popup %}?_popup=1{% endif %}">
-          <i class="icon-plus icon-white"></i>
+          <i class="fa-solid fa-plus text-white"></i>
           {% blocktrans with cl.opts.verbose_name as name %}Create {{ name }}{% endblocktrans %}
         </a>
         {% endblock %}
@@ -188,11 +188,11 @@ $(document).ready(function() {
   {% endblock %}
   {% if cl.formset.errors %}
   <p class="errornote alert alert-block alert-danger fade in">
-    <i class="icon-warning-sign"></i> {% blocktrans count cl.formset.errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+    <i class="fa-solid fa-triangle-exclamation"></i> {% blocktrans count cl.formset.errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
   </p>
   {% for error in cl.formset.non_form_errors %}
     <p class="errornote alert alert-block alert-danger fade in">
-    <i class="icon-warning-sign"></i> {{ error }}
+    <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
     </p>
   {% endfor %}
   {% endif %}
