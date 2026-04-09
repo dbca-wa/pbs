@@ -32,10 +32,10 @@
 <div id="in-nav">
   <div class="container">
     <div class="row">
-      <div class="span12">
+      <div class="col-12">
       {% block branding %}{% endblock %}
       {% if user.is_active and user.is_staff %}
-      <div id="user-tools" class="pull-right">
+      <div id="user-tools" class="float-end">
             {% trans 'Welcome,' %}
             <strong>{% filter force_escape %}{% firstof user.get_short_name user.get_username %}{% endfilter %}</strong>.
             {% block userlinks %}
@@ -61,7 +61,7 @@
     <div class="container">
     {% if not is_popup %}
     <div class="row">
-      <div class="span12">
+      <div class="col-12">
         {% block breadcrumbs %}
         <ul class="breadcrumb">
           {{ breadcrumb_trail|safe }}
@@ -73,8 +73,8 @@
 
     {% block messages %}
     {% if messages %}
-    <div class="row-fluid">
-      <div class="span12">
+    <div class="row">
+      <div class="col-12">
         {% for message in messages %}
         <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">
           {{ message }}
@@ -87,12 +87,12 @@
     <div class="row">
       {% block contentwrapper %}
       {% block content %}
-      <div class="span3">
+      <div class="col-3">
         <div class="sidebar">
         {% block sidebar %}{% endblock %}
         </div>
       </div>
-      <div class="span9">
+      <div class="col-9">
       </div>
       {% endblock %}
       {% endblock %}
@@ -103,8 +103,8 @@
 {% block footer %}
 <footer class="footer">
   <div class="container-fluid">
-    <div class="span12">
-    <p class="pull-right">&copy; 2013 Department of Environment and Conservation</p>
+    <div class="col-12">
+    <p class="float-end">&copy; 2013 Department of Environment and Conservation</p>
     </div>
   </div>
 </footer>
