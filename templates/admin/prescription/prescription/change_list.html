@@ -23,7 +23,12 @@
 {% block breadcrumbs %}
 {% endblock %}
 {% block content_title %}
-<h1>Regional Overview</h1>
+<div class="d-flex align-items-center justify-content-between mb-2">
+  <h1 class="mb-0">Regional Overview</h1>
+  <button id="toggletools" type="button" class="btn btn-success btn-sm">
+      Search and Column tools
+  </button>
+</div>
 {% endblock %}
 
 {% block contentclass %}col-12{% endblock %}
@@ -48,12 +53,7 @@ list when it is altered by the JS below.
 {# object-tools block should be empty (i.e. no "Create prescribed fire plan" button) #}
 {% block object-tools %}{% endblock %}
 
-<div class="text-end">
-<button id="toggletools" type="button" class="btn btn-success btn-sm" style="margin-top:0px;">
-    Search and Column tools
-</button>
-</div>
-<div class="row toggletools d-none">
+<div class="row toggletools d-none mb-3">
     <div class="col-12">
         <div class="alert alert-success">
             <strong>Filter</strong>
