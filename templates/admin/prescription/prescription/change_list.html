@@ -2,11 +2,41 @@
 {% load i18n static admin_list %}
 {% load multiselect_extras %}
 
+{% block extrahead %}
+{{ block.super }}
+<style>
+/* Compact Choices.js widgets in filter panel */
+.filter-tools .choices {
+  min-width: 120px;
+  font-size: 13px;
+  margin-bottom: 0;
+}
+.filter-tools .choices__inner {
+  min-height: 31px;
+  padding: 3px 28px 3px 8px;
+  font-size: 12px;
+}
+.filter-tools .choices__placeholder {
+  color: #555;
+  opacity: 1;
+}
+.filter-tools .choices__list--multiple .choices__item {
+  margin: 1px;
+  padding: 1px 6px;
+  font-size: 11px;
+  background-color: #3580CA;
+  border-color: #2a6aaf;
+}
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
 {% endblock %}
 {% block content_title %}
 <h1>Regional Overview</h1>
 {% endblock %}
+
+{% block contentclass %}col-12{% endblock %}
 
 {% block filters %}
 {% comment %}
@@ -38,18 +68,15 @@ list when it is altered by the JS below.
         <div class="alert alert-success">
             <strong>Filter</strong>
             <div class="row">
-                <div class="filter-tools btn-group col-12" style="white-space:normal;">
+                <div class="filter-tools col-12">
                     <form id="id_form_filtering" action="/prescription/prescription/" method="post">
                         {% csrf_token %}
-                        <div class="col-8" >
+                        <div class="d-flex flex-wrap gap-2 align-items-end">
                             {% multiselect_form %}
-                        </div>
-                        <div class="col-3">
-                            <div class="search-tools col-3 d-none" ></div>
-                            <div>
+                            <div class="mb-1">
+                                <div class="search-tools d-none"></div>
                                 <input type="submit"
-                                       class="btn btn-success btn-sm btn-block"
-                                       style="float:right"
+                                       class="btn btn-success btn-sm"
                                        value="Update selection">
                             </div>
                         </div>
@@ -80,7 +107,10 @@ $(document).ready(function($) {
     $('.changelist-multiselect').each(function () {
         new Choices(this, {
             removeItemButton: true,
-            placeholder: false,
+            placeholder: true,
+            placeholderValue: $(this).attr('title'),
+            searchEnabled: false,
+            shouldSort: false,
         });
     });
 
