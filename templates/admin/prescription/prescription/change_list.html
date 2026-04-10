@@ -132,13 +132,13 @@ $(document).ready(function($) {
             $select.after($wrapper).hide();
             // Highlight button if any values are pre-selected from URL
             if (preSelected.length > 0) {
-                $btn.removeClass('btn-outline-secondary').addClass('btn-success');
+                $btn.removeClass('btn-outline-secondary').addClass('btn-primary');
             }
             $menu.find('input[type=checkbox]').on('change', function() {
                 var selected = $menu.find('input:checked').map(function() { return $(this).val(); }).get();
                 $select.find('option').prop('selected', false);
                 selected.forEach(function(v) { $select.find('option[value="'+v+'"]').prop('selected', true); });
-                $btn.toggleClass('btn-success', selected.length > 0)
+                $btn.toggleClass('btn-primary', selected.length > 0)
                     .toggleClass('btn-outline-secondary', selected.length === 0);
                 updateFilterUrl(buildSearchQs());
             });
