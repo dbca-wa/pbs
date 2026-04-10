@@ -55,7 +55,17 @@ class LocationWidget(widgets.MultiWidget):
     #     return rendered_widgets[0] + ' - ' + rendered_widgets[1] + 'km(s) ' + rendered_widgets[2] + ' of ' + rendered_widgets[3]
 
 
-    def render(self, name, value, attrs=None, renderer=None): 
-        value = self.decompress(value) 
-        widgets_html = [ w.render(f"{name}_{i}", value[i], attrs, renderer) for i, w in enumerate(self.widgets) ] 
-        return mark_safe( widgets_html[0] + " - " + widgets_html[1] + "km(s) " + widgets_html[2] + " of " + widgets_html[3] )
+    def render(self, name, value, attrs=None, renderer=None):
+        value = self.decompress(value)
+        widgets_html = [w.render(f"{name}_{i}", value[i], attrs, renderer) for i, w in enumerate(self.widgets)]
+        return mark_safe(
+            '<div class="d-flex align-items-center gap-1">'
+            + widgets_html[0]
+            + '<span class="text-nowrap">-</span>'
+            + '<div style="width:80px">' + widgets_html[1] + '</div>'
+            + '<span class="text-nowrap">km(s)</span>'
+            + '<div style="width:auto;flex-shrink:0">' + widgets_html[2] + '</div>'
+            + '<span class="text-nowrap">of</span>'
+            + widgets_html[3]
+            + '</div>'
+        )
