@@ -132,8 +132,31 @@ class PrescriptionFormBase(forms.ModelForm):
             contentious.choices = contentious.choices[1:]
 
         if 'planned_season' in self.fields:
-            #self.fields['planned_season'].widget.attrs.update({'disabled':'disabled', 'readonly':True})
             self.fields['planned_season'].widget.attrs.update({'readonly':True})
+
+        # Apply Bootstrap 5 classes to all widgets
+        for field in self.fields.values():
+            widget = field.widget
+            if isinstance(widget, (forms.Select, forms.SelectMultiple)):
+                existing = widget.attrs.get('class', '')
+                if 'form-select' not in existing:
+                    widget.attrs['class'] = (existing + ' form-select form-select-sm').strip()
+            elif isinstance(widget, forms.CheckboxInput):
+                existing = widget.attrs.get('class', '')
+                if 'form-check-input' not in existing:
+                    widget.attrs['class'] = (existing + ' form-check-input').strip()
+            elif isinstance(widget, forms.CheckboxSelectMultiple):
+                existing = widget.attrs.get('class', '')
+                if 'form-check-input' not in existing:
+                    widget.attrs['class'] = (existing + ' form-check-input').strip()
+            elif isinstance(widget, forms.RadioSelect):
+                pass  # rendered as list of radios, handled in template
+            elif isinstance(widget, forms.HiddenInput):
+                pass  # no styling needed
+            else:
+                existing = widget.attrs.get('class', '')
+                if 'form-control' not in existing:
+                    widget.attrs['class'] = (existing + ' form-control form-control-sm').strip()
 
     def clean_non_calm_tenure(self):
         value = self.cleaned_data.get("non_calm_tenure")

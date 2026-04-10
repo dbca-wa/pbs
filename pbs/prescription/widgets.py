@@ -28,10 +28,10 @@ class LocationWidget(widgets.MultiWidget):
 
     def __init__(self, attrs=None):
         _widgets = (
-            widgets.TextInput(attrs={'class':'locn_locality'}),
-            NumberInput(attrs={'class':'locn_distance', 'maxlength':'4'}),
-            widgets.Select(attrs={'class':'locn_direction'}, choices=LocationWidget.DIRECTION_CHOICES),
-            widgets.TextInput(attrs={'class':'locn_town'}),
+            widgets.TextInput(attrs={'class': 'locn_locality form-control form-control-sm'}),
+            NumberInput(attrs={'class': 'locn_distance form-control form-control-sm', 'maxlength': '4'}),
+            widgets.Select(attrs={'class': 'locn_direction form-select form-select-sm'}, choices=LocationWidget.DIRECTION_CHOICES),
+            widgets.TextInput(attrs={'class': 'locn_town form-control form-control-sm'}),
         )
         super(LocationWidget, self).__init__(_widgets, attrs)
 
