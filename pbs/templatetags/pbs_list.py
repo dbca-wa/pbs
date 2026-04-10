@@ -42,27 +42,14 @@ def paginator_number(cl, i):
     """
     # if i == DOT:
     if isinstance(i, Promise):
-        # return '<li class="disabled"><a href="#" onclick="return false;">..' \
-        #        '.</a></li>'
-        return format_html('<li class="disabled"><a href="#" onclick="return false;">...</a></li>')
+        return format_html('<li class="page-item disabled"><a class="page-link" href="#" onclick="return false;">...</a></li>')
     elif i == cl.page_num:
-        # return format_html(
-        #     '<li class="active"><a href="">%d</a></li> ' % (i + 1))
         return format_html(
-            '<li class="active"><a href="">%d</a></li> ' % (i))
+            '<li class="page-item active"><a class="page-link" href="">%d</a></li> ' % (i))
     else:
-        # return format_html(
-        #     '<li><a href="%s"%s>%d</a></li> ' % (
-        #         cl.get_query_string({PAGE_VAR: i}),
-        #         mark_safe(' class="end"'
-        #                   if i == cl.paginator.num_pages - 1 else ''),
-        #         i + 1)
-        # )
         return format_html(
-            '<li><a href="%s"%s>%d</a></li> ' % (
+            '<li class="page-item"><a class="page-link" href="%s">%d</a></li> ' % (
                 cl.get_query_string({PAGE_VAR: i}),
-                mark_safe(' class="end"'
-                          if i == cl.paginator.num_pages - 1 else ''),
                 i )
         )
 
