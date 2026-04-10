@@ -10,8 +10,8 @@ textarea {
 
 table .header-fixed {
   position: fixed;
-  top: 40px;
-  z-index: 1020; /* 10 less than .navbar-fixed to prevent any overlap */
+  top: 56px;
+  z-index: 1020; /* 10 less than .fixed-top navbar (z-index: 1030) to prevent any overlap */
   border-bottom: 1px solid #d5d5d5;
   -webkit-border-radius: 0;
      -moz-border-radius: 0;

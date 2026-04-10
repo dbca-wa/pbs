@@ -2,7 +2,7 @@
 
 $.fn.fixedHeader = function (options) {
  var config = {
-   topOffset: 40
+   topOffset: 56
    //bgColor: 'white'
  };
  if (options){ $.extend(config, options); }
@@ -17,7 +17,7 @@ $.fn.fixedHeader = function (options) {
 
   function processScroll() {
     if (!o.is(':visible')) return;
-	if ($('thead.header-copy').size()) {
+    if ($('thead.header-copy').length) {
 		$('thead.header-copy').width($('thead.header').width());
 		var i, scrollTop = $win.scrollTop();
 	}
@@ -28,8 +28,8 @@ $.fn.fixedHeader = function (options) {
     } else if (scrollTop <= headTop && isFixed) {
       isFixed = 0;
     }
-    isFixed ? $('thead.header-copy', o).offset({ left: $head.offset().left }).removeClass('hide')
-            : $('thead.header-copy', o).addClass('hide');
+    isFixed ? $('thead.header-copy', o).offset({ left: $head.offset().left }).removeClass('d-none')
+            : $('thead.header-copy', o).addClass('d-none');
   }
   $win.on('scroll', processScroll);
 
