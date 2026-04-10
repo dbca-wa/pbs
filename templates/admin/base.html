@@ -38,6 +38,8 @@
   <script src="{% static 'js/choices.min.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
   <script src="{% static 'pbs/js/is-number.js' %}?ver={{ GIT_COMMIT_HASH }}" type="text/javascript"></script>
   <script>
+      window.django = window.django || {};
+      window.django.jQuery = jQuery;
       window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";
       // fix standard addrelated popup closure
       var SelectBox = SelectBox || {

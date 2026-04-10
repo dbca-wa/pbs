@@ -136,11 +136,9 @@ def role_required(prescription, role):
     if endorsing_role in prescription.endorsing_roles.all():
         if Endorsement.objects.filter(prescription=prescription,
                                       role=endorsing_role).exists():
-            # output = '<span style="display:none">2</span><i class="icon-ok text-success"></i>'
-            output = mark_safe('<span style="display:none">2</span><i class="icon-ok text-success"></i>')
+            output = mark_safe('<span style="display:none">2</span><i class="fa-solid fa-check text-success"></i>')
         else:
-            # output = '<span style="display:none">1</span><i class="icon-warning-sign text-error"></i>'
-            output = mark_safe('<span style="display:none">1</span><i class="icon-warning-sign text-error"></i>')
+            output = mark_safe('<span style="display:none">1</span><i class="fa-solid fa-triangle-exclamation text-danger"></i>')
     else:
         # output = '<span style="display:none">0</span>'
         output = mark_safe('<span style="display:none">0</span>')
