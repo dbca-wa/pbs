@@ -2,12 +2,12 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_post_summary' current.id %}">Part C</a> <span class="divider">/</span></li>
-  <li>Section C4 &#x2010; Post burn checklist</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_post_summary' current.id %}">Part C</a></li>
+  <li class="breadcrumb-item">Section C4 &#x2010; Post burn checklist</li>
+</ol>
 {% endblock %}
 
 {% block object-tools %}{% endblock %}

@@ -45,18 +45,15 @@
 {% endif %}
   <div class="body">
     <h2>Sign in to the Prescribed Burn System</h2>
-    <div class="control-group{% if form.username.errors %} error{% endif %}">
-    <label for="id_username" class="control-label required">{{ form.username.label }}:</label>
-    <div class="controls">
+    <div class="mb-3{% if form.username.errors %} has-validation{% endif %}">
+    <label for="id_username" class="form-label">{{ form.username.label }}:</label>
     {{ form.username }}
-    {% if not form.this_is_the_login_form.errors %}<span class="help-block">{% for error in form.username.errors %}{{ error }}{% endfor %}</span>{% endif %}
+    {% if not form.this_is_the_login_form.errors %}<div class="form-text text-danger">{% for error in form.username.errors %}{{ error }}{% endfor %}</div>{% endif %}
     </div>
-    </div>
-    <div class="control-group{% if form.password.errors %} error{% endif %}">
-    <label for="id_password" class="control-label required">{% trans 'Password:' %}</label>
-    <div class="controls">
+    <div class="mb-3{% if form.password.errors %} has-validation{% endif %}">
+    <label for="id_password" class="form-label">{% trans 'Password:' %}</label>
     {{ form.password }}
-    {% if not form.this_is_the_login_form.errors %}<span class="help-block">{% for error in form.password.errors %}{{ error }}{% endfor %}</span>{% endif %}
+    {% if not form.this_is_the_login_form.errors %}<div class="form-text text-danger">{% for error in form.password.errors %}{{ error }}{% endfor %}</div>{% endif %}
     <input type="hidden" name="this_is_the_login_form" value="1" />
     <input type="hidden" name="next" value="{{ next }}" />
     </div>
@@ -85,7 +82,7 @@ $.backstretch("{% static 'pbs/img/login_background.jpg' %}");
 </div>
 {% endblock %}
 {% block footer %}
-<footer class="white navbar-fixed-bottom">
+<footer class="white fixed-bottom">
     Don't have an account yet?
     <a class="btn btn-black" href="">Register</a> <em>(FPC users only)</em>
 </footer>

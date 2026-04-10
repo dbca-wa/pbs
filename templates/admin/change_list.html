@@ -158,10 +158,10 @@ $(document).ready(function() {
 
 {% if not is_popup %}
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li>{{ cl.opts.verbose_name_plural|capfirst }}</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item">{{ cl.opts.verbose_name_plural|capfirst }}</li>
+</ol>
 {% endblock %}
 {% endif %}
 {% block coltype %}flex{% endblock %}
@@ -217,7 +217,7 @@ $(document).ready(function() {
     {% block pre-submit-line %}{% endblock %}
     {% block submit-line %}
     {% if editable %}
-    <div class="navbar navbar-fixed-bottom">
+    <div class="navbar fixed-bottom">
       <div class="">
         <div class="container">
             <input type="submit"

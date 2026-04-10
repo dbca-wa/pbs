@@ -37,7 +37,7 @@
         </tr>
         <tr>
           <td>Required but not completed</td>
-          <td><i class="fa-solid fa-triangle-exclamation text-error"></i></td>
+          <td><i class="fa-solid fa-triangle-exclamation text-danger"></i></td>
         </tr>
         {% if report == "summary" %}
         <tr>
@@ -73,9 +73,9 @@
     {% if report == "summary" or report == "approvals" %}
         <li class="filter-pad">
             <form class="form-inline">
-                <label for="id_region" class="control-label">Region</label>
+                <label for="id_region" class="form-label">Region</label>
                 {{ form.region }}
-                <label for="id_district" class="control-label">District</label>
+                <label for="id_district" class="form-label">District</label>
                 {{ form.district }}
                 <button type="submit" class="btn btn-primary">Update</button>
                 {% if report == "approvals" %}
@@ -89,9 +89,9 @@
                 <button id="id_csv" class="csv_btn btn-primary">Export As CSV</button></a></p>
     <li class="filter-pad">
         <form class="form-inline">
-            <label for="id_fromDate" class="control-label">From Date</label>
+            <label for="id_fromDate" class="form-label">From Date</label>
             <input type="text" id="id_fromDate" value="{{ fromDate|date:'d-m-Y' }}" name="fromDate"/>
-            <label for="id_toDate" class="control-label">To Date</label>
+            <label for="id_toDate" class="form-label">To Date</label>
             <input type="text" id="id_toDate" value="{{ toDate|date:'d-m-Y' }}" name="toDate"/>
             <button id="submit" class="btn btn-primary">Update</button>
             <input class="hidden" name="report" value="ignitions">
@@ -158,9 +158,9 @@
       <td><a href="{% url 'admin:prescription_prescription_detail' prescription.id %}">{{ prescription.burn_id }}</a></td>
       <td>{{ prescription.name }}</td>
       {% if report == "approvals" %}
-      <td>{% if prescription.maximum_risk == 'Low' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-error"></i></div>{% endif %}</td>
-      <td>{% if prescription.maximum_risk == 'Medium' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-error"></i></div>{% endif %}</td>
-      <td>{% if prescription.maximum_risk == 'High' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-error"></i></div>{% endif %}</td>
+      <td>{% if prescription.maximum_risk == 'Low' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-danger"></i></div>{% endif %}</td>
+      <td>{% if prescription.maximum_risk == 'Medium' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-danger"></i></div>{% endif %}</td>
+      <td>{% if prescription.maximum_risk == 'High' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-danger"></i></div>{% endif %}</td>
       {% else %}
       <td>{% role_required prescription "District Program Leader - Parks and Visitor Services" %}</td>
       <td>{% role_required prescription "Regional Program Leader - Parks and Visitor Services" %}</td>

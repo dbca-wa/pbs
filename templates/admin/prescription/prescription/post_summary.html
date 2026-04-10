@@ -2,11 +2,11 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li>Part C &#x2010; Burn closure and evaluation</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item">Part C &#x2010; Burn closure and evaluation</li>
+</ol>
 {% endblock %}
 
 {% block contentwrapper %}
@@ -129,16 +129,16 @@ $(function() {
     });
     request.done(function(data) {
       if (data.errors) {
-        select.parent().prev('th').children('.text-error').remove();
+        select.parent().prev('th').children('.text-danger').remove();
         var errors = [];
         for (var error in data.errors) {
           errors.push($('<p>').text(' ' + data.errors[error].join(", ")).prepend(
-            $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-error'));
+            $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-danger'));
         }
         select.parent().prev('th').append(errors);
         select.val(select.data('lastSelected'));
       } else {
-        select.parent().prev('th').children('.text-error').remove();
+        select.parent().prev('th').children('.text-danger').remove();
         var selects = $('select');
         var total = selects.filter(function() {
             return $(this).val() === 'True' || $(this).val() === 'False';

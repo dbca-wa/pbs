@@ -3,11 +3,11 @@
 
 {% if not is_popup %}
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_regionalobjective_changelist' %}">{% trans 'Regional Fire Management Plan Objectives' %}</a> <span class="divider">/</span></li>
-  <li>Add Regional Fire Management Plan Objective</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_regionalobjective_changelist' %}">{% trans 'Regional Fire Management Plan Objectives' %}</a></li>
+  <li class="breadcrumb-item">Add Regional Fire Management Plan Objective</li>
+</ol>
 {% endblock %}
 {% endif %}
 
@@ -28,7 +28,7 @@
 
 
 {% block submit_buttons_top %}
-<div class="navbar navbar-fixed-bottom">
+<div class="navbar fixed-bottom">
   <div class="">
     <div class="container">
       <p class="float-end">
@@ -42,7 +42,7 @@
 {% endblock %}
 
 {% block submit_buttons_bottom %}
-<div class="navbar navbar-fixed-bottom">
+<div class="navbar fixed-bottom">
   <div class="">
     <div class="container">
       <p class="float-end">

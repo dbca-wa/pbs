@@ -46,14 +46,14 @@
 <ul id="report-tabs" class="nav nav-tabs">
         <li class="filter-pad">
             <form class="form-inline">
-                <label for="id_date" class="control-label">Date</label>
+                <label for="id_date" class="form-label">Date</label>
                 <input type="text" id="id_date" value="{{date}}" name="date"/>
 
-                <label for="id_region" class="control-label">Region</label>
+                <label for="id_region" class="form-label">Region</label>
                 {{ form.region }}
 
                 {% comment %}
-                <label for="id_district" class="control-label">District</label>
+                <label for="id_district" class="form-label">District</label>
                 {{ form.district }}
                 {% endcomment %}
                 <button type="submit" class="btn btn-primary">Update</button>

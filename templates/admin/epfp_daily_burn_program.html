@@ -104,19 +104,19 @@ select, button{
         <form class="form-inline">
             <div id="content">
             {% if report == "epfp_planned" %}
-                <label for="id_date" class="control-label">Date</label>
+                <label for="id_date" class="form-label">Date</label>
                 <input type="text" id="id_date" value="{{date}}" name="date"/>
 
-                <label for="id_region" class="control-label">Region</label>
+                <label for="id_region" class="form-label">Region</label>
                 {{ form.region }}
 
-                <label for="id_district" class="control-label">District</label>
+                <label for="id_district" class="form-label">District</label>
                 {{ form.district }}
                 <button type="submit" class="btn btn-primary">Update</button>
 
                 <br>
                 <br>
-                <label for="id_approval_status" class="control-label">Status</label>
+                <label for="id_approval_status" class="form-label">Status</label>
                 {{ form.approval_status }}
 
                 <input class="hidden" style="float: right;" name="report" value="epfp_planned">
@@ -124,23 +124,23 @@ select, button{
                 <br>
 
             {% elif report == "epfp_fireload" %}
-                <label for="id_date" class="control-label">Date</label>
+                <label for="id_date" class="form-label">Date</label>
                 <input type="text" id="id_date" value="{{date}}" name="date"/>
 
-                <label for="id_region" class="control-label">Region</label>
+                <label for="id_region" class="form-label">Region</label>
                 {{ form.region }}
 
-                <label for="id_district" class="control-label">District</label>
+                <label for="id_district" class="form-label">District</label>
                 {{ form.district }}
 
                 <button type="submit" class="btn btn-primary">Update</button>
 
                 <br>
                 <br>
-                <label for="id_fire_type" class="control-label">Fire Type</label>
+                <label for="id_fire_type" class="form-label">Fire Type</label>
                 {{ form.fire_type }}
 
-                <label for="id_approval_status" class="control-label">Status</label>
+                <label for="id_approval_status" class="form-label">Status</label>
                 {{ form.approval_status }}
 
                 <input class="hidden" style="float: right;" name="report" value="epfp_fireload">
@@ -148,13 +148,13 @@ select, button{
                 <br>
 
             {% elif report == "epfp_summary" %}
-                <label for="id_date" class="control-label">Date</label>
+                <label for="id_date" class="form-label">Date</label>
                 <input type="text" id="id_date" value="{{date}}" name="date"/>
 
-                <label for="id_region" class="control-label">Region</label>
+                <label for="id_region" class="form-label">Region</label>
                 {{ form.region }}
 
-                <label for="id_district" class="control-label">District</label>
+                <label for="id_district" class="form-label">District</label>
                 {{ form.district }}
 
                 <input class="hidden" style="float: right;" name="report" value="epfp_summary">
@@ -164,13 +164,13 @@ select, button{
 
             {% comment %}
             {% elif report == "epfp_aircraft" %}
-                <label for="id_date" class="control-label">Date</label>
+                <label for="id_date" class="form-label">Date</label>
                 <input type="text" id="id_date" value="{{date}}" name="date"/>
 
-                <label for="id_region" class="control-label">Region</label>
+                <label for="id_region" class="form-label">Region</label>
                 {{ form.region }}
 
-                <label for="id_approval_status" class="control-label">Status</label>
+                <label for="id_approval_status" class="form-label">Status</label>
                 {{ form.approval_status }}
 
                 <input class="hidden" style="float: right;" name="report" value="epfp_aircraft">
@@ -488,7 +488,7 @@ select, button{
       <td><div data-bs-toggle="tooltip" title="Click on row to open / close additional details">{{ qs.name }}</div></td>
       <td>{{ qs.fire_type }}</td>
 
-      <!--td>{% if qs.active %}<div class="text-center"><span style="display:none">2</span><i class="fa-solid fa-check text-success"></i></div>{% elif qs.active == None %}<span style="display:none">1</span><font color="red">Unset</font>{% else %}<div class="text-center"><span style="display:none">0</span><i class="fa-solid fa-xmark text-error"></i></div>{% endif %}</td-->
+      <!--td>{% if qs.active %}<div class="text-center"><span style="display:none">2</span><i class="fa-solid fa-check text-success"></i></div>{% elif qs.active == None %}<span style="display:none">1</span><font color="red">Unset</font>{% else %}<div class="text-center"><span style="display:none">0</span><i class="fa-solid fa-xmark text-danger"></i></div>{% endif %}</td-->
       <td>{% if qs.status == 1 %}<div class="text-center"><span style="display:none">2</span>Active </div>{% elif qs.status == 3 %}<div class="text-center"><span style="display:none">2</span>Monitored</div>{% elif qs.status == 2 %}<div class="text-center"><span style="display:none">2</span>Not Active</div>{% endif %}</td>
 
       <td>{% if qs.further_ignitions_req %}<div class="text-center"><span style="display:none">2</span><i class="fa-solid fa-check text-success"></i></div>{% else %}<span style="display:none">1</span>{% endif %}</td>

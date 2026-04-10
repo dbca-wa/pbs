@@ -2,13 +2,13 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
+<ol class="breadcrumb">
   {% url 'admin:prescription_priorityjustification_changelist' as priority_justification %}
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a> <span class="divider">/</span></li>
-  <li>Section A1 &#x2010; Summary &amp; approval</li>
-</ul>
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a></li>
+  <li class="breadcrumb-item">Section A1 &#x2010; Summary &amp; approval</li>
+</ol>
 {% endblock %}
 
 {% block extrahead %}{{ block.super }}
@@ -294,7 +294,7 @@
         {% endfor %}
     </tbody>
 </table>
-<div class="navbar navbar-fixed-bottom">
+<div class="navbar fixed-bottom">
   <div class="">
     <div class="container">
         <a id="id_save_button" href="#" class="btn float-end btn-success">{% trans 'Save' %}</a>
@@ -491,7 +491,7 @@ function highlight(error, idx, errors) {
         var para = $('<p>')  // The order of these operations is important!
             .text(error.msg)
             .prepend(icon)
-            .addClass('text-error');
+            .addClass('text-danger');
         $("#" + error.id)
             .parent()
             .addClass('error')
@@ -501,7 +501,7 @@ function highlight(error, idx, errors) {
 var ajaxPost = function(evt) {
     // First remove all existing error messages.
     viewPort.save();
-    $('p').remove('.text-error');
+    $('p').remove('.text-danger');
     $('[id^=id_]').parent().removeClass('error');
     $('div#id_pageerrors').removeClass('error alert alert-success').text('');
     $('#id_biodiversity_text').parent().removeClass('alert-danger').addClass('alert-info');
@@ -521,14 +521,14 @@ var ajaxPost = function(evt) {
                 'Overall rationale must be set. Click the Edit link to navigate ' +
                 'to the Priority Justification page to update it. Note that this will ' +
                 'discard any unsaved changes on this screen.').prepend(
-                    $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-error'));
+                    $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-danger'));
         }
         if ($('#id_td_priority').text() == "Unset ‐ Edit"){
             $('#id_td_priority').addClass('error').append($('<p>').text(
                 'Overall priority must be set. Click the Edit link to navigate ' +
                 'to the Priority Justification page to set it. Note that this will ' +
                 'discard any unsaved changes on this screen.').prepend(
-                    $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-error'));
+                    $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-danger'));
         }
         if (data.errors) {
             console.log(data);
@@ -539,7 +539,7 @@ var ajaxPost = function(evt) {
                         .prepend(
                             $('<i>')
                                  .addClass('fa-solid fa-triangle-exclamation'))
-                        .addClass('text-error'));
+                        .addClass('text-danger'));
             if (data.errors) {
                 for (var error in data.errors) {
                 var errors = [];
@@ -549,7 +549,7 @@ var ajaxPost = function(evt) {
                             .text(' ' + data.errors[error].join(", "))
                             .prepend($('<i>')
                                      .addClass('fa-solid fa-triangle-exclamation'))
-                            .addClass('text-error'));
+                            .addClass('text-danger'));
                 targetField.parent().addClass('error').append(errors);
                 }
             };

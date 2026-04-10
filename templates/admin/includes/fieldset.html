@@ -7,28 +7,28 @@
         <div class="description">{{ fieldset.description|safe }}</div>
     {% endif %}
     {% for line in fieldset %}
-        <div class="controls-row control-group">
+        <div class="row mb-3">
             {% for field in line %}
-                <div class="span{% if not field.is_readonly and field.errors %} alert alert-danger{% endif %}">
+                <div class="col{% if not field.is_readonly and field.errors %} alert alert-danger{% endif %}">
                     {% if field.is_checkbox %}
-                        <div class="controls">
-                        {{ field.field }}<label class="checkbox inline">{{ field.field.label }}</label>{% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}
+                        <div class="form-check">
+                        {{ field.field }}<label class="form-check-label">{{ field.field.label }}</label>{% if not line.fields|length == 1 and not field.is_readonly %}{{ field.errors }}{% endif %}
                     {% else %}
                         {% if not field.field.is_hidden %}
-                        <label class="control-label{% if field.field.field.required %} required{% endif %}{% if not field.is_first %} inline {% endif %}{% if field.is_readonly %} muted{% endif %}">{{ field.field.label|capfirst }}{% if field.field.field.required %}*{% endif %}:</label>
+                        <label class="form-label{% if field.field.field.required %} fw-semibold{% endif %}{% if field.is_readonly %} text-muted{% endif %}">{{ field.field.label|capfirst }}{% if field.field.field.required %}*{% endif %}:</label>
                         {% endif %}
-                        <div class="controls">
+                        <div>
                         {% if field.is_readonly %}
                             <p>{{ field.contents|linebreaksbr }}</p>
                         {% else %}
                             {{ field.field }}
                         {% endif %}
-                        <div class="help-inline">
+                        <div>
                             {% if field.field.errors %}
-                            <p class="text-error"><i class="fa-solid fa-triangle-exclamation"></i> {% for error in field.field.errors %}{{ error }}{% endfor %}</p>
+                            <p class="text-danger"><i class="fa-solid fa-triangle-exclamation"></i> {% for error in field.field.errors %}{{ error }}{% endfor %}</p>
                             {% endif %}
                         {% if field.field.help_text %}
-                            <span class="help-block">{{ field.field.help_text|safe }}</span>
+                            <span class="form-text text-muted">{{ field.field.help_text|safe }}</span>
                         {% endif %}
                         </div>
                     {% endif %}

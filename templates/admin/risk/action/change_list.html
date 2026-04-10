@@ -41,10 +41,10 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item">
     {% if 'pre_burn' in request.GET or 'day_of_burn' in request.GET %}
         <a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a>
     {% elif 'post_burn' in request.GET %}
@@ -52,12 +52,11 @@
         {% else %} {# Plan actions page #}
         <a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a>
     {% endif %}
-    <span class="divider">/</span>
   </li>
-  <li>
+  <li class="breadcrumb-item">
     {% if 'pre_burn' in request.GET %}Pre-burn actions{% elif 'day_of_burn' in request.GET %}Day of burn actions{% elif 'post_burn' in request.GET %}Post-burn actions{% else %}Plan actions{% endif %}
   </li>
-</ul>
+</ol>
 {% endblock %}
 
 {% block pretitle %}
@@ -72,7 +71,7 @@
     <li{% if 'pre_burn' in request.GET %} class="active"{% endif %}><a href="?pre_burn=True"><i class="fa-solid fa-list-check"></i>Pre-burn actions</a></li>
     <li{% if 'day_of_burn' in request.GET %} class="active"{% endif %}><a href="?day_of_burn=True"><i class="fa-solid fa-scale-balanced"></i>Day of burn actions</a></li>
     <li{% if 'post_burn' in request.GET %} class="active"{% endif %}><a href="?post_burn=True"><i class="fa-solid fa-triangle-exclamation"></i>Post-burn actions</a></li>
-</ul>
+</ol>
 {% endblock %}
 
 {% block object-tools %}{% endblock %}

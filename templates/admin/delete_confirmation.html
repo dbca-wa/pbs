@@ -3,13 +3,13 @@
 {% load admin_urls %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-<li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-<li><a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ app_label|capfirst }}</a> <span class="divider">/</span></li>
-<li><a href="{% if current %}{% url opts|admin_urlname:'changelist' current.pk|admin_urlquote %}{% else %}{% url opts|admin_urlname:'changelist' %}{% endif %}">{{ opts.verbose_name_plural|capfirst|escape }}</a> <span class="divider">/</span></li>
-<li><a href="{% if current %}{% url opts|admin_urlname:'change' object.pk|admin_urlquote current.pk|admin_urlquote %}{% else %}{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}{% endif %}">{{ object|truncatewords:"18" }}</a> <span class="divider">/</span></li>
-<li>{% trans 'Delete' %}</li>
-</ul>
+<ol class="breadcrumb">
+<li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ app_label|capfirst }}</a></li>
+<li class="breadcrumb-item"><a href="{% if current %}{% url opts|admin_urlname:'changelist' current.pk|admin_urlquote %}{% else %}{% url opts|admin_urlname:'changelist' %}{% endif %}">{{ opts.verbose_name_plural|capfirst|escape }}</a></li>
+<li class="breadcrumb-item"><a href="{% if current %}{% url opts|admin_urlname:'change' object.pk|admin_urlquote current.pk|admin_urlquote %}{% else %}{% url opts|admin_urlname:'change' object.pk|admin_urlquote %}{% endif %}">{{ object|truncatewords:"18" }}</a></li>
+<li class="breadcrumb-item">{% trans 'Delete' %}</li>
+</ol>
 {% endblock %}
 
 {% block content %}

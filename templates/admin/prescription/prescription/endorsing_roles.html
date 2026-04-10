@@ -30,11 +30,11 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li>{{ title }}</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item">{{ title }}</li>
+</ol>
 {% endblock %}
 
 {% block content %}
@@ -65,7 +65,7 @@ The maximum level of risk of the ePFP is {{ current.maximum_risk }} and requires
 {% if form.form.endorsing_roles.errors %}<div class="alert alert-danger"><p>{% for error in form.form.endorsing_roles.errors %}{{ error }}{% endfor %}</p></div>{% endif %}
 <form action="" method="post">{% csrf_token %}
   <div>
-    <div class="controls-row control-group">
+    <div class="mb-3">
       {{ form.form.endorsing_roles }}
     </div>
   </div>

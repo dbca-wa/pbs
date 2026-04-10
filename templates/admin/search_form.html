@@ -2,8 +2,8 @@
 {% if cl.search_fields %}
 <div id="toolbar"><form id="changelist-search" action="" method="get">
 <div><!-- DIV needed for valid HTML -->
-    <div class="input-prepend input-append">
-        <span class="add-on"><i class="fa-solid fa-magnifying-glass"></i></span>
+    <div class="input-group">
+        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
         <input type="text" size="40" name="{{ search_var }}" value="{{ cl.query }}" id="searchbar" />
         <button class="btn">{% trans 'Search' %}</button>
     </div>

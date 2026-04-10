@@ -24,10 +24,10 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li>{{ current.burn_id }}</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item">{{ current.burn_id }}</li>
+</ol>
 {% endblock %}
 
 {% block contentwrapper %}

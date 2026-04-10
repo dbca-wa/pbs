@@ -19,12 +19,12 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a> <span class="divider">/</span></li>
-  <li>Section B5 &#x2010; Areas to be excluded from ignition</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
+  <li class="breadcrumb-item">Section B5 &#x2010; Areas to be excluded from ignition</li>
+</ol>
 {% endblock %}
 
 {% block object-tools %}{% endblock %}

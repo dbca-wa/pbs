@@ -2,12 +2,12 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a> <span class="divider">/</span></li>
-  <li>Section A2 &#x2010; Regional Fire Management Plan Objectives</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a></li>
+  <li class="breadcrumb-item">Section A2 &#x2010; Regional Fire Management Plan Objectives</li>
+</ol>
 {% endblock %}
 
 {% block content_title %}
@@ -58,7 +58,7 @@
 {% load i18n admin_urls %}
 {% if objectives or current.regional_objectives.all %}
 <div class="form-actions">
-    <div class="navbar navbar-fixed-bottom">
+    <div class="navbar fixed-bottom">
       <div class="">
         <div class="container">
           <input type="submit" name="_save" class="btn float-end btn-success" value="{% trans 'Save' %}" {% if not can_edit %}disabled{% endif %}/>

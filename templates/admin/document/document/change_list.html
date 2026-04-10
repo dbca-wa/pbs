@@ -10,39 +10,39 @@
 </script>
 {% endblock %}
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
 {% if tags.count == 1 %}
     {% if tags.0.name == "Context Map" %}
-        <li><a href="{{ parta }}">{% trans 'Part A' %}</a> <span class="divider">/</span></li>
-        <li>Section A2 - 
+        <li class="breadcrumb-item"><a href="{{ parta }}">{% trans 'Part A' %}</a></li>
+        <li class="breadcrumb-item">Section A2 - 
     {% elif tags.0.name == "Sign Inspection and Surveillance Form" %}
-        <li><a href="{{ partb }}">{% trans 'Part B' %}</a> <span class="divider">/</span></li>
-        <li>Section B3 ‐ 
+        <li class="breadcrumb-item"><a href="{{ partb }}">{% trans 'Part B' %}</a></li>
+        <li class="breadcrumb-item">Section B3 ‐ 
     {% elif tags.0.name == "Traffic Diagrams" %}
-        <li><a href="{{ partb }}">{% trans 'Part B' %}</a> <span class="divider">/</span></li>
-        <li>Section B4 ‐ 
+        <li class="breadcrumb-item"><a href="{{ partb }}">{% trans 'Part B' %}</a></li>
+        <li class="breadcrumb-item">Section B4 ‐ 
     {% elif tags.0.name == "Prescribed Burning Organisational Structure and Communications Plan" %}
-        <li><a href="{{ partb }}">{% trans 'Part B' %}</a> <span class="divider">/</span></li>
-        <li>Section B7 ‐ 
+        <li class="breadcrumb-item"><a href="{{ partb }}">{% trans 'Part B' %}</a></li>
+        <li class="breadcrumb-item">Section B7 ‐ 
     {% elif tags.0.name == "Operations Officer Day of Burn Checklist" %}
-        <li><a href="{{ partb }}">{% trans 'Part B' %}</a> <span class="divider">/</span></li>
-        <li>Section B9 ‐ 
+        <li class="breadcrumb-item"><a href="{{ partb }}">{% trans 'Part B' %}</a></li>
+        <li class="breadcrumb-item">Section B9 ‐ 
     {% elif tags.0.name == "Fire and Weather Observations" %}
-        <li><a href="{{ partb }}">{% trans 'Part B' %}</a> <span class="divider">/</span></li>
-        <li>Section B10 ‐ 
+        <li class="breadcrumb-item"><a href="{{ partb }}">{% trans 'Part B' %}</a></li>
+        <li class="breadcrumb-item">Section B10 ‐ 
     {% elif tags.0.name == "Operations Map" %}
-        <li><a href="{{ partb }}">{% trans 'Part B' %}</a> <span class="divider">/</span></li>
-        <li>Section B12 ‐ 
+        <li class="breadcrumb-item"><a href="{{ partb }}">{% trans 'Part B' %}</a></li>
+        <li class="breadcrumb-item">Section B12 ‐ 
     {% elif tags.0.name == "Aerial Burning Map" %}
-        <li><a href="{{ partb }}">{% trans 'Part B' %}</a> <span class="divider">/</span></li>
-        <li>Section B13 ‐ 
+        <li class="breadcrumb-item"><a href="{{ partb }}">{% trans 'Part B' %}</a></li>
+        <li class="breadcrumb-item">Section B13 ‐ 
     {% else %}
-        <li>
+        <li class="breadcrumb-item">
     {% endif %}{{ tags.0.name }}</li>
 {% endif %}
-</ul>
+</ol>
 {% endblock %}
 {% block content_title %}
 {{ block.super }}

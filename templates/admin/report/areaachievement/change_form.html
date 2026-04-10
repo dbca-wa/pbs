@@ -2,11 +2,11 @@
 {% load i18n %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:report_areaachievement_changelist' current.id %}">Section B11 &#x2010; Day of burn achievement update</a> <span class="divider">/</span></li>
+<ol class="breadcrumb">
+  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
+  <li><a href="{% url 'admin:report_areaachievement_changelist' current.id %}">Section B11 &#x2010; Day of burn achievement update</a></li>
   <li>{% if add %}{% trans 'Add' %} {{ opts.verbose_name }}{% else %}{{ original|truncatewords:"18" }}{% endif %}</li>
 </ul>
 

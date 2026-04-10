@@ -2,16 +2,16 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:site_admin' %}">{% trans 'Manage Users' %}</a> <span class="divider">/</span></li>
-  <li>Groups</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:site_admin' %}">{% trans 'Manage Users' %}</a></li>
+  <li class="breadcrumb-item">Groups</li>
+</ol>
 {% endblock %}
 
 {% block pretitle %}
 <ul class="nav nav-tabs">
   <li><a href="{% url 'admin:auth_user_changelist' %}"><i class="fa-solid fa-user"></i>Users</a></li>
   <li class="active"><a href="{% url 'admin:auth_group_changelist' %}"><i class="fa-solid fa-users"></i>Groups</a></li>
-</ul>
+</ol>
 {% endblock %}

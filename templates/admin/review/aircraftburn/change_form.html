@@ -89,7 +89,7 @@ $(function() {
                 //$("#id_area").attr("max", response['prescription_area'])
                 $( "#id_max_area_exceeded").remove();
                 if (parseFloat($("#id_area").val()) > parseFloat(response['prescription_area'])) {
-                    $( "<div class='help-inline'><span id='id_max_area_exceeded'><font color='red'> NOTE: Input exceeds max. Planned Area (" + response['prescription_area'] + " ha) </font></span></div>" ).insertAfter( "#id_area_help" );
+                    $( "<div class='form-text'><span id='id_max_area_exceeded'><font color='red'> NOTE: Input exceeds max. Planned Area (" + response['prescription_area'] + " ha) </font></span></div>" ).insertAfter( "#id_area_help" );
                 }
 
             }
@@ -137,12 +137,12 @@ $(function() {
         })
     });
 
-    $( "<div class='help-inline'><span id='id_status_help'> The definition of 'active' can be found in the glossary of the Prescribed Fire Manual</span></div>" ).insertAfter( "#id_status" );
-    $( "<div class='help-inline'><span id='id_status_help'> Time format must be HH:MM (24 hour clock)</span></div>" ).insertAfter( "#id_est_start" );
+    $( "<div class='form-text'><span id='id_status_help'> The definition of 'active' can be found in the glossary of the Prescribed Fire Manual</span></div>" ).insertAfter( "#id_status" );
+    $( "<div class='form-text'><span id='id_status_help'> Time format must be HH:MM (24 hour clock)</span></div>" ).insertAfter( "#id_est_start" );
 
-    $( "<div class='help-inline'><span id='id_planned_area_help'> Must input at least one of Area or Distance</span></div>" ).insertAfter( "#id_planned_area" );
+    $( "<div class='form-text'><span id='id_planned_area_help'> Must input at least one of Area or Distance</span></div>" ).insertAfter( "#id_planned_area" );
     if (current_url.indexOf('active_burn') > -1) {
-        $( "<div class='help-inline'><span id='id_area_help'> Must input at least one of Area or Distance.<br> This area is the same as the 'Area treated today (ha)' in the day of burn achievement update page</span></div>" ).insertAfter( "#id_area" );
+        $( "<div class='form-text'><span id='id_area_help'> Must input at least one of Area or Distance.<br> This area is the same as the 'Area treated today (ha)' in the day of burn achievement update page</span></div>" ).insertAfter( "#id_area" );
     }
 
 

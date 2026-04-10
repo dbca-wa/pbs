@@ -2,12 +2,12 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
+<ol class="breadcrumb">
   {% url 'admin:prescription_priorityjustification_changelist' as priority_justification %}
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:daily_burn_program' %}?report=epfp_fireload">{% trans 'Daily Burn Program' %}</a> <span class="divider">/</span></li>
-  <li>Add Fire</li>
-</ul>
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:daily_burn_program' %}?report=epfp_fireload">{% trans 'Daily Burn Program' %}</a></li>
+  <li class="breadcrumb-item">Add Fire</li>
+</ol>
 {% endblock %}
 
 {% block extrahead %}{{ block.super }}
@@ -77,7 +77,7 @@
 
 
     {{ form.date }}
-<div class="navbar navbar-fixed-bottom">
+<div class="navbar fixed-bottom">
   <div class="">
     <div class="container">
         <a id="id_save_button" href="#" class="btn float-end btn-success">{% trans 'Save' %}</a>
