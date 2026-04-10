@@ -1,17 +1,14 @@
 {% for select in selects %}
-<div style="display:inline-block;vertical-align:top;">
-    <div style="font-size:11px;font-weight:bold;margin-bottom:2px;">{{ select.title }}</div>
-    <select id="{{ select.field }}"
-            class="changelist-multiselect"
-            multiple="multiple"
-            title="{{ select.title }}">
-        {% for choice in select.choices %}
-        <option name="{{ select.title }}-{{ choice.name }}"
-                {% if choice.selected %} selected {% endif %}
-                value="{{ choice.value }}">
-            {{ choice.name }}
-        </option>
-        {% endfor  %}
-    </select>
-</div>
+<select id="{{ select.field }}"
+        class="changelist-multiselect"
+        multiple="multiple"
+        title="{{ select.title }}">
+    {% for choice in select.choices %}
+    <option name="{{ select.title }}-{{ choice.name }}"
+            {% if choice.selected %} selected {% endif %}
+            value="{{ choice.value }}">
+        {{ choice.name }}
+    </option>
+    {% endfor  %}
+</select>
 {% endfor %}

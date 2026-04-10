@@ -5,27 +5,17 @@
 {% block extrahead %}
 {{ block.super }}
 <style>
-/* Compact Choices.js widgets in filter panel */
-.filter-tools .choices {
-  min-width: 120px;
-  font-size: 13px;
-  margin-bottom: 0;
+/* Filter dropdown buttons */
+.filter-dropdown-wrapper .dropdown-menu {
+  min-width: 180px;
+  max-height: 280px;
+  overflow-y: auto;
 }
-.filter-tools .choices__inner {
-  min-height: 31px;
-  padding: 3px 28px 3px 8px;
+.filter-dropdown-wrapper .dropdown-item {
   font-size: 12px;
-}
-.filter-tools .choices__placeholder {
-  color: #555;
-  opacity: 1;
-}
-.filter-tools .choices__list--multiple .choices__item {
-  margin: 1px;
-  padding: 1px 6px;
-  font-size: 11px;
-  background-color: #3580CA;
-  border-color: #2a6aaf;
+  padding: 3px 10px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 </style>
 {% endblock %}
@@ -88,7 +78,7 @@ list when it is altered by the JS below.
     <div class="col-12">
         <div class="alert alert-info">
             <strong>Show/Hide Columns</strong>
-            <div class="column-tools btn-group" style="white-space:normal;">
+            <div class="column-tools d-flex flex-wrap gap-1" style="white-space:normal;">
                 <button id="template-button" class="btn btn-sm btn-info d-none">template-button</button>
             </div>
         </div>
@@ -103,16 +93,41 @@ list when it is altered by the JS below.
 <script src="{% static 'pbs/js/visibility-tools.js' %}"></script>
 <script>
 $(document).ready(function($) {
-    // Initialize Choices.js for multiselect filter dropdowns
-    $('.changelist-multiselect').each(function () {
-        new Choices(this, {
-            removeItemButton: true,
-            placeholder: true,
-            placeholderValue: $(this).attr('title'),
-            searchEnabled: false,
-            shouldSort: false,
+    // Build Bootstrap 5 dropdown buttons for multiselect filter dropdowns
+    var choicesInitialized = false;
+    function initChoices() {
+        if (choicesInitialized) return;
+        choicesInitialized = true;
+        $('.changelist-multiselect').each(function() {
+            var $select = $(this);
+            var title = $select.attr('title');
+            var $wrapper = $('<div class="d-inline-block me-1 mb-1 filter-dropdown-wrapper"></div>');
+            var $btn = $('<button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"></button>').text(title);
+            var $menu = $('<ul class="dropdown-menu p-1"></ul>');
+            $select.find('option').each(function() {
+                var val = $(this).val();
+                if (!val) return;
+                var label = $(this).text().trim();
+                var $cb = $('<input type="checkbox" class="form-check-input me-1">').val(val).prop('checked', $(this).is(':selected'));
+                var $lbl = $('<label class="dropdown-item rounded"></label>').append($cb).append(label);
+                $('<li></li>').append($lbl).appendTo($menu);
+            });
+            $wrapper.append($btn).append($menu);
+            $select.after($wrapper).hide();
+            // Highlight button if pre-selected
+            if ($select.find('option:selected[value!=""]').length > 0) {
+                $btn.removeClass('btn-outline-secondary').addClass('btn-success');
+            }
+            $menu.find('input[type=checkbox]').on('change', function() {
+                var selected = $menu.find('input:checked').map(function() { return $(this).val(); }).get();
+                $select.find('option').prop('selected', false);
+                selected.forEach(function(v) { $select.find('option[value="'+v+'"]').prop('selected', true); });
+                $btn.toggleClass('btn-success', selected.length > 0)
+                    .toggleClass('btn-outline-secondary', selected.length === 0);
+                updateFilterUrl(buildSearchQs());
+            });
         });
-    });
+    }
 
     window.hidden_columns = JSON.parse(localStorage.getItem("regional_summary_hidden_columns")) ||
                             ["contentious", "approval_expiry", "aircraft_burn", "allocation",
@@ -157,7 +172,7 @@ $(document).ready(function($) {
         if ($.inArray(cclass, hidden_columns) > -1) {
             var index = $("th.column-" + cclass).index() + 1;
             $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').addClass("d-none");
-            newbutton.removeClass("btn-info");
+            newbutton.removeClass("btn-info").addClass("btn-outline-secondary");
         }
         newbutton.removeClass("d-none");
         $("div.column-tools").append(newbutton);
@@ -168,11 +183,11 @@ $(document).ready(function($) {
         var index = $("th.column-" + button.attr("data-cclass")).index() + 1;
         if (button.hasClass("btn-info")) {
             $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').addClass("d-none");
-            button.removeClass("btn-info");
+            button.removeClass("btn-info").addClass("btn-outline-secondary");
             hidden_columns.push(button.attr("id").slice(7));
         } else {
             $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').removeClass("d-none");
-            button.addClass("btn-info");
+            button.removeClass("btn-outline-secondary").addClass("btn-info");
             hidden_columns = $.grep(hidden_columns, function(value) {return button.attr("id").search(value) != 7});
         }
         localStorage.setItem("regional_summary_hidden_columns", JSON.stringify(hidden_columns));
@@ -221,10 +236,15 @@ $(document).ready(function($) {
     toolsButton.click(function() {
         if (tools.hasClass("d-none")) {
             Vis.ensureToolsVisible(tools, toolsButton, myStore, visKey);
+            initChoices();
         } else {
             Vis.ensureToolsHidden(tools, toolsButton, myStore, visKey);
         }
     });
+    // If panel is already visible on load, init Choices.js immediately
+    if (!tools.hasClass("d-none")) {
+        initChoices();
+    }
     if ($('table#result_list thead').hasClass('d-none')) {
         toolsButton.click();
     }
