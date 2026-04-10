@@ -76,14 +76,11 @@ list when it is altered by the JS below.
 <script src="{% static 'pbs/js/visibility-tools.js' %}"></script>
 <script>
 $(document).ready(function($) {
+    // Initialize Choices.js for multiselect filter dropdowns
     $('.changelist-multiselect').each(function () {
-        var self = this;
-        $(this).multiselect({
-            buttonText: function() {
-                return $(self).attr('title');
-            },
-            buttonClass: "btn btn-sm",
-            checkboxName: $(self).attr("id")
+        new Choices(this, {
+            removeItemButton: true,
+            placeholder: false,
         });
     });
 
@@ -214,104 +211,33 @@ $(document).ready(function($) {
     $("a#id_filter_url").insertAfter($("input.btn:submit"));
 
     var base_url = "{% url 'admin:prescription_prescription_changelist' %}"
-    // Parse the current URL query parameters into an object.
-    var qs = URI(document.URL).query(true);
-    // Iterate through each query parameter and convert comma-separated value into an array.
-    $.each(qs, function(key, val) {
-        // Alter the key to remove "__in" from the end (if present).
-        if (key.substr(-4) === "__in") {
-            qs[key.replace("__in", "")] = val.split(",");
-            delete qs[key];
-        }
-    });
 
-    // SPECIAL CASE
-    // Check if both "region__id__exact" and "region__id__in" query parameters are present.
-    // If so, combine them into a single "region__id" parameter.
-    $.each(qs, function(key, val) {
-        if (key === "region__id__exact") {
-            if ("region__id" in qs) {
-                qs["region__id"].push(val);
-                delete qs[key];
-            } else {
-                qs["region__id"] = [val];
-                delete qs[key];
-            }
-        }
-    });
-
-    // Next, iterate through each checkbox and determine if it should be checked or not.
-    $("input:checkbox").each(function() {
-        if (this.name in qs) {
-            if (qs[this.name].indexOf(this.value.toString()) > -1) {
-                this.checked = true;
-            }
-        }
-    });
-
-    // Onchange event for filter form check boxes:
-    // Whenever an option is selected/deselected, update the qs object.
-    // Then rewrite the "Filter URL" href with query parameters.
-    $("input:checkbox").change(function() {
-        // Parse what parameter this checkbox is filtering.
-        var key = this.name;
-        var val = this.value;
-
-        switch(key) {
-            // SPECIAL CASE - boolean fields.
-            case "contentious":
-            case "aircraft_burn":
-                if (this.checked) {
-                    // Traverse up the DOM to the parent li and find its only sibling.
-                    var otherLi = $(this).parents("li").siblings()[0];
-                    // Walk down the DOM to the single input element and uncheck it.
-                    var otherInput = $(otherLi).find("input")[0];
-                    otherInput.checked = false;
-                    qs[key] = val;  // Just replace the parameter value.
-                    //otherOption.checked = false;
-                } else {
-                    delete qs[key];
-                }
-                break;
-            // All other field types.
-            default:
-                if (key in qs && qs[key] instanceof Array) {  // Key is already present.
-                    if (this.checked) {
-                        qs[key].push(val);
-                        qs[key] = $.unique(qs[key]);
-                    } else { // Unchecked; remove the value from the key.
-                        var index = qs[key].indexOf(val);
-                        if (index > -1) {
-                            qs[key].splice(index, 1);
-                        }
-                    }
-                } else { // Key is not present.
-                    if (this.checked) {
-                        qs[key] = [val];
-                    }
-                }
-        }
-        delete qs['p']
-        // Iterate through each key/value in the filter parameters
+    // Helper: build a search query object from all multiselect values
+    var buildSearchQs = function() {
+        var urlQs = URI(document.URL).query(true);
         var searchQs = {};
-        for (var key in qs) {
+        // Preserve sort order if present in URL
+        if ('o' in urlQs) searchQs['o'] = urlQs['o'];
+        $('select.changelist-multiselect').each(function() {
+            var key = this.id;
+            var values = $(this).val() || [];
+            if (values.length === 0) return;
             switch(key) {
+                // SPECIAL CASE - boolean fields: use only the first selected value.
                 case "contentious":
                 case "aircraft_burn":
-                case "o":
-                    searchQs[key] = qs[key];
+                    searchQs[key] = values[0];
                     break;
                 default:
-                    // Add "__in" to the end of non-boolean parameters.
-                    if (!qs[key]?.length) {
-                        delete searchQs[key + "__in"];
-                    } else {
-                        searchQs[key + "__in"] = qs[key].join(',');
-                    }
+                    searchQs[key + "__in"] = values.join(',');
             }
-        };
-        // Finally, replace the target URL.
-        updateFilterUrl(searchQs);
+        });
+        return searchQs;
+    };
+
+    // Update filter URL whenever a multiselect value changes
+    $('select.changelist-multiselect').on('change', function() {
+        updateFilterUrl(buildSearchQs());
     });
 
     // Function to replace the target URL with the base_url plus query parameters.

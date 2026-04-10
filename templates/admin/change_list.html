@@ -80,16 +80,10 @@
 <script src="{% static 'admin/js/inlines.js' %}"></script>
 <!-- <script src="{% static 'pbs/js/inlines.js' %}"></script> -->
 <script src="{% static 'pbs/js/table-fixed-header.js' %}"></script>
-{% if action_form %}{% if actions_on_top or actions_on_bottom %}
-<script type="text/javascript">
-  $ = jQuery.noConflict();
-(function($) {
-    $(document).ready(function($) {
-        $("tr input.action-select").actions();
-    });
-})(django.jQuery);
-</script>
-{% endif %}{% endif %}
+{% comment %}
+  NOTE: django.jQuery.fn.actions() plugin was removed in Django 3.x.
+  Modern admin/js/actions.js auto-initializes via DOMContentLoaded.
+{% endcomment %}
 
 <script>
 $ = jQuery;
