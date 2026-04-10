@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Django",
+            "name": "Django (BS5 - port 9071)",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/manage.py",
@@ -15,7 +15,30 @@
                 "0.0.0.0:9071"
             ],
             "django": true,
-            "justMyCode": false  // We want to debug the libraries, too.
+            "justMyCode": false
+        },
+        {
+            "name": "Django (BS2 baseline - port 9072)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/data/data/projects/pbs-bs2/manage.py",
+            "python": "${workspaceFolder}/venv/bin/python",
+            "cwd": "/data/data/projects/pbs-bs2",
+            "args": [
+                "runserver",
+                "0.0.0.0:9072"
+            ],
+            "django": true,
+            "justMyCode": false
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Django BS5 + BS2 (compare)",
+            "configurations": [
+                "Django (BS5 - port 9071)",
+                "Django (BS2 baseline - port 9072)"
+            ]
         }
     ]
 }
