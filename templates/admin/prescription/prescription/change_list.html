@@ -95,12 +95,26 @@ list when it is altered by the JS below.
 $(document).ready(function($) {
     // Build Bootstrap 5 dropdown buttons for multiselect filter dropdowns
     var choicesInitialized = false;
+    var urlQs = URI(document.URL).query(true);
     function initChoices() {
         if (choicesInitialized) return;
         choicesInitialized = true;
         $('.changelist-multiselect').each(function() {
             var $select = $(this);
             var title = $select.attr('title');
+            var fieldId = $select.attr('id');
+
+            // Determine pre-selected values from current URL query string
+            var preSelected = [];
+            if (fieldId === 'contentious' || fieldId === 'aircraft_burn') {
+                if (urlQs[fieldId]) preSelected = [urlQs[fieldId]];
+            } else if (fieldId === 'financial_year') {
+                if (urlQs['financial_year']) preSelected = [urlQs['financial_year']];
+            } else {
+                var inKey = fieldId + '__in';
+                if (urlQs[inKey]) preSelected = urlQs[inKey].split(',');
+            }
+
             var $wrapper = $('<div class="d-inline-block me-1 mb-1 filter-dropdown-wrapper"></div>');
             var $btn = $('<button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"></button>').text(title);
             var $menu = $('<ul class="dropdown-menu p-1"></ul>');
@@ -108,14 +122,16 @@ $(document).ready(function($) {
                 var val = $(this).val();
                 if (!val) return;
                 var label = $(this).text().trim();
-                var $cb = $('<input type="checkbox" class="form-check-input me-1">').val(val).prop('checked', $(this).is(':selected'));
+                var isChecked = preSelected.indexOf(val) > -1;
+                if (isChecked) $(this).prop('selected', true);
+                var $cb = $('<input type="checkbox" class="form-check-input me-1">').val(val).prop('checked', isChecked);
                 var $lbl = $('<label class="dropdown-item rounded"></label>').append($cb).append(label);
                 $('<li></li>').append($lbl).appendTo($menu);
             });
             $wrapper.append($btn).append($menu);
             $select.after($wrapper).hide();
-            // Highlight button if pre-selected
-            if ($select.find('option:selected[value!=""]').length > 0) {
+            // Highlight button if any values are pre-selected from URL
+            if (preSelected.length > 0) {
                 $btn.removeClass('btn-outline-secondary').addClass('btn-success');
             }
             $menu.find('input[type=checkbox]').on('change', function() {
