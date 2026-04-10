@@ -11,9 +11,10 @@
 <thead class="header">
 <tr>
 {% for header in result_headers %}
-<th scope="col" class="{{ header.column }} {{ header.classes }} {% if header.sort_priority > 0 %}alert-success{% endif %}">
-    <div class="text">{% if header.sortable %}<a href="{% if header.sort_priority > 0 and not header.ascending %}{{ header.url_remove }}{% else %}{{ header.url_primary }}{% endif %}">{{ header.text|capfirst }}&nbsp;<i class="{% if header.sort_priority == 0 %}fa-solid fa-sort{% elif header.ascending %}fa-solid fa-sort-up{% else %}fa-solid fa-sort-down{% endif %}"></i></a><span class="float-end">{% if header.sort_priority > 0 %}&nbsp;{{ header.sort_priority|ordinal }}{% endif %}</span>
+<th scope="col" class="{{ header.column }} {{ header.classes }} {% if header.sort_priority > 0 %}col-sorted{% endif %}">
+    <div class="text">{% if header.sortable %}<a href="{% if header.sort_priority > 0 and not header.ascending %}{{ header.url_remove }}{% else %}{{ header.url_primary }}{% endif %}">{{ header.text|capfirst }}&nbsp;<i class="{% if header.sort_priority == 0 %}fa-solid fa-sort{% elif header.ascending %}fa-solid fa-sort-up{% else %}fa-solid fa-sort-down{% endif %}"></i></a>
         {% else %}<span>{{ header.text|capfirst }}</span>{% endif %}</div>
+    {% if header.sort_priority > 0 %}<span class="sort-priority-badge">{{ header.sort_priority|ordinal }}</span>{% endif %}
    <div class="clear"></div>
 </th>
 {% endfor %}

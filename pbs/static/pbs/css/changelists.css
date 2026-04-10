@@ -31,6 +31,29 @@ thead {
   background-color: #fff;
 }
 
+/* Sorted column header highlight */
+thead th.col-sorted {
+  background-color: #dbeafe !important; /* Bootstrap blue-100 */
+  position: relative;
+}
+
+/* Sort priority badge (1st, 2nd, ...) - absolutely positioned in top-right corner */
+.sort-priority-badge {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  display: inline-block;
+  background-color: #3580CA;
+  color: #fff;
+  font-size: .6em;
+  font-weight: 600;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 9999px;
+  min-width: 16px;
+  text-align: center;
+}
+
 input.vTextField:not([id*='fire_no']) {
     width: auto !important;
 }
