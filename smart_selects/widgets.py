@@ -200,8 +200,7 @@ class ChainedSelect(Select):
                     final_choices.append(ch)
         self.choices = ()
         attrs['name'] = name
-        # final_attrs = self.build_attrs(attrs, name=name)
-        final_attrs = self.build_attrs(attrs)
+        final_attrs = self.build_attrs(self.attrs, attrs)
         if 'class' in final_attrs:
             final_attrs['class'] += ' chained'
         else:

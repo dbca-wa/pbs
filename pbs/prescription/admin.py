@@ -575,11 +575,15 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         profile = request.user.profile
         if db_field.name == 'region' and profile.region is not None:
             kwargs['initial'] = profile.region.pk
-            return db_field.formfield(**kwargs)
+            field = db_field.formfield(**kwargs)
+            field.widget.attrs['class'] = (field.widget.attrs.get('class', '') + ' form-select form-select-sm').strip()
+            return field
 
         if db_field.name == 'district' and profile.district is not None:
             kwargs['initial'] = profile.district.pk
-            return db_field.formfield(**kwargs)
+            field = db_field.formfield(**kwargs)
+            field.widget.attrs['class'] = (field.widget.attrs.get('class', '') + ' form-select form-select-sm').strip()
+            return field
 
         if db_field.name == 'prescribing_officer':
             from pbs.prescription.forms import UserChoiceField, UserSelect2Widget, UserSelect2ChoiceField
