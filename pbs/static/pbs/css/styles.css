@@ -99,7 +99,7 @@ li.nav-header {
 
 a#id_cancel_button,
 a#id_delete_button {
-    height: 18px;
+    height: auto;
 }
 
 .actions {
