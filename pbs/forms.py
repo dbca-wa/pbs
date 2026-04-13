@@ -162,19 +162,25 @@ class SessionPersistenceMixin(object):
 
 
 class Bootstrap5FormMixin:
-    """Mixin to inject Bootstrap 5 widget classes into form fields."""
+    """Inject Bootstrap 5 widget classes into all form fields automatically."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             widget = field.widget
-            if isinstance(widget, (forms.Select, forms.SelectMultiple)):
-                widget.attrs['class'] = 'form-select form-select-sm'
+            existing = widget.attrs.get('class', '')
+            if isinstance(widget, (forms.RadioSelect, forms.CheckboxSelectMultiple)):
+                pass  # rendered as item lists; classes applied per-item in template/widget
+            elif isinstance(widget, (forms.Select, forms.SelectMultiple)):
+                if 'form-select' not in existing:
+                    widget.attrs['class'] = (existing + ' form-select form-select-sm').strip()
             elif isinstance(widget, forms.CheckboxInput):
-                widget.attrs['class'] = 'form-check-input'
+                if 'form-check-input' not in existing:
+                    widget.attrs['class'] = (existing + ' form-check-input').strip()
             elif isinstance(widget, forms.HiddenInput):
                 pass
             else:
-                widget.attrs['class'] = 'form-control form-control-sm'
+                if 'form-control' not in existing:
+                    widget.attrs['class'] = (existing + ' form-control form-control-sm').strip()
 
 
 class PbsErrorList(forms.utils.ErrorList):
