@@ -1,6 +1,12 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static admin_list %}
 
+{% block extrastyle %}
+<style>
+#state td select { min-width: 9rem; }
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
 <ol class="breadcrumb">
   <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
@@ -18,7 +24,7 @@
     <li class="nav-item"><a class="nav-link active" href="{% url 'admin:prescription_prescription_day_summary' current.pk %}">Part B</a></li>
     <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_post_summary' current.pk %}">Part C</a></li>
 </ul>
-<h1>Part B Summary &#x2010; Burn Implementation Plan <a value="Preview Part B" class="btn float-end" href="{{ download_pdf }}?template=partb"><i class="fa-solid fa-print"></i> Preview Part B</a></h1>
+<h1>Part B Summary &#x2010; Burn Implementation Plan <a value="Preview Part B" class="btn btn-sm btn-primary float-end" href="{{ download_pdf }}?template=partb"><i class="fa-solid fa-print"></i> Preview Part B</a></h1>
 <h2>Completion Checklist</h2>
 <div id="message"></div>
 <form action="" method="post">{% csrf_token %}
@@ -34,82 +40,82 @@
     <tr class="{% if current.day_state.overview %}success{% else %}error{% endif %}">
       <th><a href="{{ operational_overview }}">Section B1 &#x2010; Operational overview</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.overview }}{% else %}{{ current.day_state.overview|yesno:"Complete,Incomplete" }}{% endif %}</td>
-      <td><a value="Section B1 &#x2010; Operational overview" class="btn" href="{{ download_pdf }}?template=sectionb1"><i class="fa-solid fa-print"></i></a></td>
+      <td><a value="Section B1 &#x2010; Operational overview" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb1"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.pre_actions %}success{% else %}{% if current.day_state.pre_actions == None %}info{% else %}error{% endif %}{% endif %}">
     <th><a href="{{ actions|add:"?pre_burn=True" }}">Section B1 &#x2010; Pre&#x2010;burn actions</a></th>
     <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.pre_actions }}{% else %}{{ current.day_state.pre_actions|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B1 &#x2010; Pre&#x2010;burn actions" class="btn" href="{{ download_pdf }}?template=sectionb1"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B1 &#x2010; Pre&#x2010;burn actions" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb1"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.actions %}success{% else %}{% if current.day_state.actions == None %}info{% else %}error{% endif %}{% endif %}">
     <th><a href="{{ actions|add:"?day_of_burn=True" }}">Section B2 &#x2010; Day of burn actions</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.actions }}{% else %}{{ current.day_state.actions|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B2 &#x2010; Day of burn actions" class="btn" href="{{ download_pdf }}?template=sectionb2"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B2 &#x2010; Day of burn actions" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb2"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.tracks %}success{% else %}{% if current.day_state.tracks == None %}info{% else %}error{% endif %}{% endif %}">
       <th><a href="{{ sectionb3_trails }}">Section B3 &#x2010; Tracks and Trails</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.tracks }}{% else %}{{ current.day_state.tracks|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B3 &#x2010; Tracks and Trails" class="btn" href="{{ download_pdf }}?template=sectionb3"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B3 &#x2010; Tracks and Trails" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb3"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.roads %}success{% else %}{% if current.day_state.roads == None %}info{% else %}error{% endif %}{% endif %}">
       <th><a href="{{ sectionb3_roads }}">Section B4 &#x2010; Roads</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.roads }}{% else %}{{ current.day_state.roads|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B4 &#x2010; Roads" class="btn" href="{{ download_pdf }}?template=sectionb3"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B4 &#x2010; Roads" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb3"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.traffic %}success{% else %}{% if current.day_state.traffic == None %}info{% else %}error{% endif %}{% endif %}">
       <th><a href="{{ sectionb3_roads }}">Section B4 &#x2010; Traffic Control Diagrams</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.traffic }}{% else %}{{ current.day_state.traffic|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B4 &#x2010; Traffic Control Diagrams" class="btn" href="{{ download_pdf }}?template=sectionb3"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B4 &#x2010; Traffic Control Diagrams" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb3"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.burning_prescription %}success{% else %}error{% endif %}">
       <th><a href="{% url 'admin:implementation_burningprescription_changelist' current.id %}">Section B5 &#x2010; Burning prescription</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.burning_prescription }}{% else %}{{ current.day_state.burning_prescription|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B5 &#x2010; Burning prescription" class="btn" href="{{ download_pdf }}?template=sectionb5"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B5 &#x2010; Burning prescription" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb5"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.fuel_assessment %}success{% else %}{% if current.day_state.fuel_assessment == None %}info{% else %}error{% endif %}{% endif %}">
       <th><a href="{% url 'admin:implementation_burningprescription_changelist' current.id %}">Section B5 &#x2010; Fuel assessment summary</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.fuel_assessment }}{% else %}{{ current.day_state.fuel_assessment|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B5 &#x2010; Fuel assessment summary" class="btn" href="{{ download_pdf }}?template=sectionb5"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B5 &#x2010; Fuel assessment summary" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb5"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.edging_plan %}success{% else %}{% if current.day_state.edging_plan == None %}info{% else %}error{% endif %}{% endif %}">
       <th><a href="{% url 'admin:implementation_edgingplan_changelist' current.id %}">Section B5 &#x2010; Edging plan</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.edging_plan }}{% else %}{{ current.day_state.edging_plan|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B5 &#x2010; Edging plan" class="btn" href="{{ download_pdf }}?template=sectionb5"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B5 &#x2010; Edging plan" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb5"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.lighting_sequence %}success{% else %}error{% endif %}">
       <th><a href="{% url 'admin:implementation_lightingsequence_changelist' current.id %}">Section B5 &#x2010; Lighting sequence</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.lighting_sequence }}{% else %}{{ current.day_state.lighting_sequence|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B5 &#x2010; Lighting sequence" class="btn" href="{{ download_pdf }}?template=sectionb5"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B5 &#x2010; Lighting sequence" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb5"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.exclusion_areas %}success{% else %}{% if current.day_state.exclusion_areas == None %}info{% else %}error{% endif %}{% endif %}">
       <th><a href="{% url 'admin:implementation_exclusionarea_changelist' current.id %}">Section B5 &#x2010; Areas to be excluded from ignition</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.exclusion_areas }}{% else %}{{ current.day_state.exclusion_areas|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B5 &#x2010; Areas to be excluded from ignition" class="btn" href="{{ download_pdf }}?template=sectionb5"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B5 &#x2010; Areas to be excluded from ignition" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb5"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.contingency_plan %}success{% else %}error{% endif %}">
       <th><a href="{% url 'admin:risk_contingency_changelist' current.id %}">Section B6 &#x2010; Contingency plan</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.contingency_plan }}{% else %}{{ current.day_state.contingency_plan|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B6 &#x2010; Contingency plan" class="btn" href="{{ download_pdf }}?template=sectionb6"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B6 &#x2010; Contingency plan" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb6"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.organisational_structure %}success{% else %}error{% endif %}">
         <th><a href="{{ org_structure }}">Section B7 &#x2010; Organisational structure and communications plan</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.organisational_structure }}{% else %}{{ current.day_state.organisational_structure|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B7 &#x2010; Organisational structure and communications plan" class="btn" href="{{ download_pdf }}?template=sectionb7"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B7 &#x2010; Organisational structure and communications plan" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb7"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.briefing %}success{% else %}error{% endif %}">
         <th><a href="{% url 'admin:prescription_briefingchecklist_changelist' current.id %}">Section B8 &#x2010; Briefing checklist</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.briefing }}{% else %}{{ current.day_state.briefing|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B8 &#x2010; Briefing checklist" class="btn" href="{{ download_pdf }}?template=sectionb8"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B8 &#x2010; Briefing checklist" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb8"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.operation_maps %}success{% else %}error{% endif %}">
         <th><a href="{{ operations_map }}">Section B12 &#x2010; Operations map</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.operation_maps }}{% else %}{{ current.day_state.operation_maps|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B12 &#x2010; Operations map" class="btn" href="{{ download_pdf }}?template=sectionb12"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B12 &#x2010; Operations map" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb12"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.day_state.aerial_maps %}success{% else %}{% if current.day_state.aerial_maps == None %}info{% else %}error{% endif %}{% endif %}">
         <th><a href="{{ aerial_burn_map }}">Section B13 &#x2010; Aerial burning map</a></th>
         <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.aerial_maps }}{% else %}{{ current.day_state.aerial_maps|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B13 &#x2010; Aerial burning map" class="btn" href="{{ download_pdf }}?template=sectionb13"><i class="fa-solid fa-print"></i></a></td>
+        <td><a value="Section B13 &#x2010; Aerial burning map" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb13"><i class="fa-solid fa-print"></i></a></td>
     </tr>
   </tbody>
 </table>
