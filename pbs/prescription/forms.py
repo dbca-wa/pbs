@@ -8,7 +8,7 @@ from pbs.prescription.models import (
     Approval, EndorsingRole, FundingAllocation, District)
 
 from pbs.prescription.fields import LocationMultiField
-from pbs.forms import PbsModelForm
+from pbs.forms import Bootstrap5FormMixin, PbsModelForm
 from pbs.widgets import NullBooleanSelect
 from django.utils import timezone
 from django_select2.forms import ModelSelect2Widget
@@ -314,19 +314,13 @@ class PrescriptionEditForm(PrescriptionFormBase):
                   "prescribing_officer", "short_code", 
                   )
 
-class PrescriptionSummaryForm(forms.ModelForm):
+class PrescriptionSummaryForm(Bootstrap5FormMixin, forms.ModelForm):
     location = LocationMultiField(required=False)
 
     def __init__(self, *args, **kwargs):
         prescription = kwargs.get('instance')
 
         super(PrescriptionSummaryForm, self).__init__(*args, **kwargs)
-        # Add classes to some fields for nicer widths.
-        self.fields['name'].widget.attrs.update({'class': 'span5'})
-        self.fields['bushfire_act_zone'].widget.attrs.update(
-            {'class': 'span10'})
-        self.fields['prohibited_period'].widget.attrs.update(
-            {'class': 'span10'})
         self.fields['prescribing_officer'] = UserChoiceField(required=False)
         #self.fields['prescribing_officer'] = UserSelect2ChoiceField(required=False)
 
@@ -360,7 +354,7 @@ class PrescriptionIgnitionCompletedForm(PbsModelForm):
     def __init__(self, *args, **kwargs):
         super(PrescriptionIgnitionCompletedForm, self).__init__(*args, **kwargs)
         self.fields['ignition_completed_date'].widget = widgets.AdminDateWidget()
-        self.fields['ignition_completed_date'].widget.attrs.update({'class': 'vDateField input-small'})
+        self.fields['ignition_completed_date'].widget.attrs.update({'class': 'vDateField form-control form-control-sm'})
 
     class Meta:
         model = Prescription
@@ -397,7 +391,7 @@ class PrescriptionPriorityForm(PbsModelForm):
         fields = ('priority', 'rationale')
 
 
-class EndorsingRoleForm(forms.ModelForm):
+class EndorsingRoleForm(Bootstrap5FormMixin, forms.ModelForm):
     required_endorsing_roles = []
 
     def __init__(self, *args, **kwargs):
@@ -464,7 +458,7 @@ class EndorsingRoleForm(forms.ModelForm):
         fields = ('endorsing_roles',)
 
 
-class AddEndorsementForm(forms.ModelForm):
+class AddEndorsementForm(Bootstrap5FormMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         if kwargs.get('request') is not None:
@@ -477,7 +471,7 @@ class AddEndorsementForm(forms.ModelForm):
         exclude = ('prescription', 'endorsed',)
 
 
-class AddApprovalForm(forms.ModelForm):
+class AddApprovalForm(Bootstrap5FormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         if (kwargs.get('initial') is not None and
                 kwargs['initial'].get('prescription') is not None and
@@ -498,7 +492,7 @@ class AddApprovalForm(forms.ModelForm):
         fields='__all__'
 
 
-class BriefingChecklistForm(forms.ModelForm):
+class BriefingChecklistForm(Bootstrap5FormMixin, forms.ModelForm):
 
     class Meta:
         model = BriefingChecklist
