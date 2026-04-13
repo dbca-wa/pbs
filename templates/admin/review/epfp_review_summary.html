@@ -7,13 +7,9 @@
 {% block extrahead %}
 {{ block.super }}
 <style>
-.filter-pad {
-  margin-top: 5px;
-  margin-bottom: -17px !important;
-  margin-left: 10px;
-}
-.adjust-legend{
-  margin-bottom:-40px;
+.filter-form select,
+.filter-form .form-select {
+    width: auto !important;
 }
 
 .ui-datepicker {
@@ -44,21 +40,22 @@
 </div>
 
 <ul id="report-tabs" class="nav nav-tabs">
-        <li class="filter-pad">
-            <form class="form-inline">
-                <label for="id_region" class="form-label">Region</label>
-                {{ form.region }}
-                {% comment %}
-                <label for="id_district" class="form-label">District</label>
-                {{ form.district }}
-                {% endcomment %}
-                <button type="submit" class="btn btn-primary">Update</button>
-                {% if report == "epfp_review" %}
-                    <input class="hidden" name="report" value="epfp_review">
-                {% endif %}
-            </form>
-        </li>
 </ul>
+
+<div class="d-flex align-items-center gap-2 mt-2 mb-3 filter-form">
+    <form class="d-flex align-items-center gap-2 filter-form">
+        <label for="id_region" class="mb-0">Region</label>
+        {{ form.region }}
+        {% comment %}
+        <label for="id_district" class="mb-0">District</label>
+        {{ form.district }}
+        {% endcomment %}
+        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+        {% if report == "epfp_review" %}
+            <input type="hidden" name="report" value="epfp_review">
+        {% endif %}
+    </form>
+</div>
 
 {% if report == "summary" or report == "epfp_review" %}
 <table id="sorted-table" class="table table-striped table-hover table-compressed">
