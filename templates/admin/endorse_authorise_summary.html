@@ -73,23 +73,23 @@
         {{ form.district }}
         <button type="submit" class="btn btn-primary btn-sm">Update</button>
         {% if report == "approvals" %}
-            <input class="hidden" name="report" value="approvals">
+            <input type="hidden" name="report" value="approvals">
         {% endif %}
     </form>
 </div>
 {% else %}
 <div class="d-flex align-items-center gap-2 mt-2 mb-3 filter-form">
-    <a id="id_href" href="">
-        <button id="id_csv" class="btn btn-primary btn-sm">Export As CSV</button>
-    </a>
     <form class="d-flex align-items-center gap-2 filter-form">
         <label for="id_fromDate" class="mb-0 text-nowrap">From Date</label>
         <input type="text" id="id_fromDate" value="{{ fromDate|date:'d-m-Y' }}" name="fromDate" class="form-control form-control-sm"/>
         <label for="id_toDate" class="mb-0 text-nowrap">To Date</label>
         <input type="text" id="id_toDate" value="{{ toDate|date:'d-m-Y' }}" name="toDate" class="form-control form-control-sm"/>
         <button id="submit" class="btn btn-primary btn-sm">Update</button>
-        <input class="hidden" name="report" value="ignitions">
+        <input type="hidden" name="report" value="ignitions">
     </form>
+    <a id="id_href" href="" class="ms-auto">
+        <button id="id_csv" class="btn btn-primary btn-sm">Export As CSV</button>
+    </a>
 </div>
 {% endif %}
 
