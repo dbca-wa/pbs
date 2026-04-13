@@ -12,11 +12,11 @@
 {% block contentwrapper %}
 <div class="row">
 <div class="col-12">
-<ul class="nav nav-tabs">
-    <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">Overview</a></li>
-    <li class="active"><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a></li>
-    <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
-    <li><a href="{% url 'admin:prescription_prescription_post_summary' current.id %}">Part C</a></li>
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_detail' current.id %}">Overview</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_post_summary' current.id %}">Part C</a></li>
 </ul>
 <h1>Part A Summary &#x2010; Summary and Approval <a value="Preview Part A" class="btn float-end" href="{{ download_pdf }}?template=parta"><i class="fa-solid fa-print"></i> Preview Part A</a></h1>
 <h2>Completion Checklist</h2>
