@@ -16,7 +16,7 @@
             $("span#currentLevelOfRiskLabel").html("Overall");
         };
         // add label to the .empty-form row
-        $('tr#form-empty td select[id$=likelihood]').parent().next().append('<span class="label label-very-high">Very High</span>');
+        $('tr#form-empty td select[id$=likelihood]').parent().next().append('<span class="badge label-very-high">Very High</span>');
         // make sure new row's risk calculates
         $('table#result_list').on('click', 'tr.add-row a', function() {
             console.log('test');
@@ -29,7 +29,7 @@
             var max_risk_span = $('span#id_max_risk');
             max_risk_span.removeClass("label-very-low label-low label-medium label-high label-very-high");
             // get all rows except for .empty-form row
-            var rowspans = $('table#result_list > tbody > tr:not(.empty-form) > td > span.label');
+            var rowspans = $('table#result_list > tbody > tr:not(.empty-form) > td > span.badge');
             rowspans.each(function(index,span){
                 var spanobj = $(span);
                 var label = spanobj.text();
@@ -85,17 +85,17 @@
             var likelihood = row.find("select[id$=likelihood]").val();
             var consequence = row.find("select[id$=consequence]").val();
             var label = calc_risk(likelihood, consequence);
-            row.find('span.label').text(label).removeClass("label-very-low label-low label-medium label-high label-very-high");
+            row.find('span.badge').text(label).removeClass("label-very-low label-low label-medium label-high label-very-high");
             if (label == risk_labels[0][1]) {
-                row.find('span.label').addClass("label-very-low");
+                row.find('span.badge').addClass("label-very-low");
             } else if (label == risk_labels[1][1]) {
-                row.find('span.label').addClass("label-low");
+                row.find('span.badge').addClass("label-low");
             } else if (label == risk_labels[2][1]) {
-                row.find('span.label').addClass("label-medium");
+                row.find('span.badge').addClass("label-medium");
             } else if (label == risk_labels[3][1]) {
-                row.find('span.label').addClass("label-high");
+                row.find('span.badge').addClass("label-high");
             } else {
-                row.find('span.label').addClass("label-very-high");
+                row.find('span.badge').addClass("label-very-high");
             };
             calc_max_risk_val();
         });

@@ -1106,7 +1106,7 @@ class Prescription(Audit):
     def maximum_draft_risk_html(self):
         maximum_draft_risk, label, role = self._max_risk(
             self.maximum_draft_risk)
-        risk_level = ('<span id="id_max_risk" class="label {0}">{1}</span>'
+        risk_level = ('<span id="id_max_risk" class="badge {0}">{1}</span>'
                       .format(label, maximum_draft_risk))
         return mark_safe(risk_level)
 
@@ -1131,7 +1131,7 @@ class Prescription(Audit):
     @property
     def maximum_risk_html(self):
         maximum_risk, label, role = self._max_risk(self.maximum_risk)
-        risk_level = ('<span id="id_max_risk" class="label {0}">{1}</span>'
+        risk_level = ('<span id="id_max_risk" class="badge {0}">{1}</span>'
                       .format(label, maximum_risk))
         return mark_safe(risk_level)
 
@@ -1168,7 +1168,7 @@ class Prescription(Audit):
     @property
     def maximum_risk_role(self):
         maximum_risk, label, role = self._max_risk(self.maximum_risk)
-        risk_role = '<span id="id_risk_role" class="label {0}">{1}</span>'.format(label, role)
+        risk_role = '<span id="id_risk_role" class="badge {0}">{1}</span>'.format(label, role)
         return mark_safe(risk_role)
 
     @property

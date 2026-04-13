@@ -111,7 +111,7 @@ ul.nav-list li.disabled > a:hover {
       <th>Burn complexity</th>
       <td>
           {% with current.get_maximum_complexity as complexity %}
-          <span class="label {% if complexity.rating == complexity.RATING_LOW %}label-low{% elif complexity.rating == complexity.RATING_MEDIUM %}label-medium{% elif complexity.rating == complexity.RATING_HIGH %}label-high{% endif %}">{{ current.maximum_complexity }}</span>
+          <span class="badge {% if complexity.rating == complexity.RATING_LOW %}label-low{% elif complexity.rating == complexity.RATING_MEDIUM %}label-medium{% elif complexity.rating == complexity.RATING_HIGH %}label-high{% endif %}">{{ current.maximum_complexity }}</span>
           {% endwith %}
       </td>
       <th>Burn priority</th>
@@ -162,25 +162,25 @@ ul.nav-list li.disabled > a:hover {
     <tr>
       <td>
           {% if current.has_corporate_approval %}
-            <span class="badge badge-success"><i class="fa-solid fa-check"></i> approved on {{ current.planning_status_modified|date }}</span>
+            <span class="alert alert-success d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-check"></i> approved on {{ current.planning_status_modified|date }}</span>
           {% elif current.planning_status == current.PLANNING_SUBMITTED %}
-            <span class="badge badge-warning"><i class="fa-solid fa-minus"></i> submitted on {{ current.planning_status_modified|date }}</span>
+            <span class="alert alert-warning d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-minus"></i> submitted on {{ current.planning_status_modified|date }}</span>
           {% else %}
-            <span class="badge badge-important"><i class="fa-solid fa-minus"></i> draft</span>
+            <span class="alert alert-danger d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-minus"></i> draft</span>
           {% endif %}
       </td>
       <td>
           {% if current.is_endorsed %}
-            <span class="badge badge-success"><i class="fa-solid fa-check"></i>endorsed on {{ current.endorsement_status_modified|date }}</span>
+            <span class="alert alert-success d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-check"></i>endorsed on {{ current.endorsement_status_modified|date }}</span>
           {% elif current.endorsement_status == current.ENDORSEMENT_SUBMITTED %}
-            <span class="badge badge-warning"><i class="fa-solid fa-minus"></i> submitted on {{ current.endorsement_status_modified|date }}</span>
+            <span class="alert alert-warning d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-minus"></i> submitted on {{ current.endorsement_status_modified|date }}</span>
           {% else %}
-            <span class="badge badge-important"><i class="fa-solid fa-minus"></i> draft</span>
+            <span class="alert alert-danger d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-minus"></i> draft</span>
           {% endif %}
       </td>
       <td>
           {% if current.is_approved %}
-          <span class="badge badge-success">
+          <span class="alert alert-success d-inline-block py-1 px-2 mb-0">
               <i class="fa-solid fa-check" style="display:inline-block; vertical-align:top;"></i>
               <span style="display:inline-block;">
               Approved by {{ current.current_approval_approver }} <br />
@@ -189,20 +189,20 @@ ul.nav-list li.disabled > a:hover {
               </span>
           </span>
           {% elif current.approval_status == current.APPROVAL_SUBMITTED %}
-          <span class="badge badge-warning">
+          <span class="alert alert-warning d-inline-block py-1 px-2 mb-0">
               <i class="fa-solid fa-minus"></i>
               submitted on {{ current.approval_status_modified|date }}
           </span>
           {% else %}
-          <span class="badge badge-important">
+          <span class="alert alert-danger d-inline-block py-1 px-2 mb-0">
               <i class="fa-solid fa-minus"></i>
               not approved
           </span>
           {% endif %}
       </td>
-      <td>{% if current.has_ignitions %}<span class="badge badge-success"><i class="fa-solid fa-check"></i> {{ current.ignition_commenced.ignition|date }}</span>{% else %}<span class="badge badge-important"><i class="fa-solid fa-minus"></i>{% endif %}</td>
-      <td>{% if current.is_burnt %}<span class="badge badge-success"><i class="fa-solid fa-check"></i> {{ current.ignition_completed_date }}</span>{% else %}<span class="badge badge-important"><i class="fa-solid fa-minus"></i></span>{% endif %}</td>
-      <td>{% if current.is_closed %}<span class="badge badge-success"><i class="fa-solid fa-check"></i></span>{% else %}<span class="badge badge-important"><i class="fa-solid fa-minus"></i></span>{% endif %}</td>
+      <td>{% if current.has_ignitions %}<span class="alert alert-success d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-check"></i> {{ current.ignition_commenced.ignition|date }}</span>{% else %}<span class="alert alert-danger d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-minus"></i></span>{% endif %}</td>
+      <td>{% if current.is_burnt %}<span class="alert alert-success d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-check"></i> {{ current.ignition_completed_date }}</span>{% else %}<span class="alert alert-danger d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-minus"></i></span>{% endif %}</td>
+      <td>{% if current.is_closed %}<span class="alert alert-success d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-check"></i></span>{% else %}<span class="alert alert-danger d-inline-block py-1 px-2 mb-0"><i class="fa-solid fa-minus"></i></span>{% endif %}</td>
     </tr>
   </tbody>
 </table>

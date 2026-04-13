@@ -24,16 +24,20 @@ label {
     cursor: default;    
 }
 
+/* Badge color overrides for risk/complexity labels */
 .label-very-low {
     background-color: #6CCF63;
+    color: #000;
 }
 
 .label-low {
     background-color: #D3E600;
+    color: #000;
 }
 
 .label-medium {
     background-color: #EDA600;
+    color: #000;
 }
 
 .label-high {

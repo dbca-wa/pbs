@@ -38,7 +38,7 @@ def risk_display(register, draft=False):
         label = 'label-very-high'
 
     return mark_safe(
-        '<span id="%s" class="label %s">%s</span>' % (id_, label, name))
+        '<span id="%s" class="badge %s">%s</span>' % (id_, label, name))
 
 
 @register.simple_tag(takes_context=True)
