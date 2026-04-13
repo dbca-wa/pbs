@@ -130,21 +130,18 @@ ul.nav-list li.disabled > a:hover {
   <tbody>
     <tr>
       <td>
-          <div class="progress{% if current.pre_state < 33 %} progress-danger{% elif current.pre_state.progress < 66 %} progress-warning{% else %} progress-success{% endif %}">
-          {% if current.pre_state.progress < 50 %}{{ current.pre_state.progress }}%{% endif %}
-          <div class="bar" style="width: {{ current.pre_state.progress }}%;">{% if current.pre_state.progress >= 50 %}{{ current.pre_state.progress }}%{% endif %}</div>
+          <div class="progress">
+            <div class="progress-bar {% if current.pre_state.progress < 33 %}bg-danger{% elif current.pre_state.progress < 66 %}bg-warning{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ current.pre_state.progress }}%;">{{ current.pre_state.progress }}%</div>
+          </div>
+      </td>
+      <td>
+        <div class="progress">
+          <div class="progress-bar {% if current.day_state.progress < 33 %}bg-danger{% elif current.day_state.progress < 66 %}bg-warning{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ current.day_state.progress }}%;">{{ current.day_state.progress }}%</div>
         </div>
       </td>
       <td>
-        <div class="progress {% if current.day_state < 33 %}progress-danger{% elif current.day_state.progress < 66 %}progress-warning{% else %}progress-success{% endif %}">
-          {% if current.day_state.progress < 50 %}{{ current.day_state.progress }}%{% endif %}
-          <div class="bar" style="width: {{ current.day_state.progress }}%;">{% if current.day_state.progress >= 50 %}{{ current.day_state.progress }}%{% endif %}</div>
-        </div>
-      </td>
-      <td>
-        <div class="progress {% if current.post_state < 33 %}progress-danger{% elif current.post_state.progress < 66 %}progress-warning{% else %}progress-success{% endif %}">
-          {% if current.post_state.progress < 50 %}{{ current.post_state.progress }}%{% endif %}
-          <div class="bar" style="width: {{ current.post_state.progress }}%;">{% if current.post_state.progress >= 50 %}{{ current.post_state.progress }}%{% endif %}</div>
+        <div class="progress">
+          <div class="progress-bar {% if current.post_state.progress < 33 %}bg-danger{% elif current.post_state.progress < 66 %}bg-warning{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ current.post_state.progress }}%;">{{ current.post_state.progress }}%</div>
         </div>
       </td>
     </tr>
