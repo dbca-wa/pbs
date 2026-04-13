@@ -1,9 +1,9 @@
 from django import forms
 from pbs.implementation.models import BurningPrescription, EdgingPlan, LightingSequence
-from pbs.forms import HelperModelForm, WideTextarea
+from pbs.forms import Bootstrap5FormMixin, HelperModelForm
 
 
-class BurningPrescriptionForm(forms.ModelForm):
+class BurningPrescriptionForm(Bootstrap5FormMixin, forms.ModelForm):
 
     class Meta:
         model = BurningPrescription
@@ -11,11 +11,6 @@ class BurningPrescriptionForm(forms.ModelForm):
 
 
 class EdgingPlanForm(HelperModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super(EdgingPlanForm, self).__init__(*args, **kwargs)
-        self.fields['location'].widget = WideTextarea()
-        self.fields['strategies'].widget = WideTextarea()
 
     class Meta:
         model = EdgingPlan
@@ -26,11 +21,6 @@ class LightingSequenceForm(HelperModelForm):
 
     def __init__(self, *args, **kwargs):
         super(LightingSequenceForm, self).__init__(*args, **kwargs)
-        self.fields['cellname'].widget.attrs.update({'class': 'span5'})
-        self.fields['strategies'].widget = WideTextarea()
-        self.fields['fuel_description'].widget = WideTextarea()
-        self.fields['resources'].widget = WideTextarea()
-        self.fields['wind_dir'].widget = WideTextarea()
         self.fields['ffdi_min'].required = False
         self.fields['ffdi_max'].required = False
         self.fields['grassland_curing_min'].required = False
