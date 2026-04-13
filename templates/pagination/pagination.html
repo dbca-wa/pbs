@@ -1,27 +1,29 @@
 {% if is_paginated %}
 {% load i18n %}
 
-<div class="pagination">
+<nav aria-label="Page navigation">
+<ul class="pagination pagination-sm flex-wrap justify-content-center mt-2">
     {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{{ getvars }}{{ hashtag }}" class="prev">&lsaquo;&lsaquo; {% trans "Previous" %}</a>
+        <li class="page-item"><a href="?page={{ page_obj.previous_page_number }}{{ getvars }}{{ hashtag }}" class="page-link">&laquo;&laquo; {% trans "Previous" %}</a></li>
     {% else %}
-        <span class="disabled prev">&lsaquo;&lsaquo; {% trans "Previous" %}</span>
+        <li class="page-item disabled"><span class="page-link">&laquo;&laquo; {% trans "Previous" %}</span></li>
     {% endif %}
     {% for page in pages %}
         {% if page %}
             {% if page == page_obj.number %}
-            <span class="current page">&nbsp;&nbsp {{ page }} &nbsp;&nbsp</span>
+            <li class="page-item active"><span class="page-link">{{ page }}</span></li>
             {% else %}
-                <a href="?page={{ page }}{{ getvars }}{{ hashtag }}" class="page">&nbsp;&nbsp {{ page }} &nbsp;&nbsp</a>
+            <li class="page-item"><a href="?page={{ page }}{{ getvars }}{{ hashtag }}" class="page-link">{{ page }}</a></li>
             {% endif %}
         {% else %}
-            ...
+            <li class="page-item disabled"><span class="page-link">...</span></li>
         {% endif %}
     {% endfor %}
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{{ getvars }}{{ hashtag }}" class="next">{% trans "Next" %} &rsaquo;&rsaquo;</a>
+        <li class="page-item"><a href="?page={{ page_obj.next_page_number }}{{ getvars }}{{ hashtag }}" class="page-link">{% trans "Next" %} &raquo;&raquo;</a></li>
     {% else %}
-        <span class="disabled next">{% trans "Next" %} &rsaquo;&rsaquo;</span>
+        <li class="page-item disabled"><span class="page-link">{% trans "Next" %} &raquo;&raquo;</span></li>
     {% endif %}
-</div>
+</ul>
+</nav>
 {% endif %}
