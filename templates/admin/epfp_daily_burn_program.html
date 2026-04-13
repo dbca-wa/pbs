@@ -152,7 +152,7 @@ select, button{
 
     <li class="nav-item ms-auto">
         <div class="dropdown">
-          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             Create PDF / Report
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
@@ -177,7 +177,7 @@ select, button{
 {% if report == "epfp_planned" %}
 <div class="d-flex align-items-center gap-2 mb-2">
     {% comment %}
-    <a class="btn btn-sm btn-info" href="{{ add_prescribed_burn }}"><i class="fa-solid fa-plus text-white"></i> Add Planned Burn</a>
+    <a class="btn btn-sm btn-primary" href="{{ add_prescribed_burn }}"><i class="fa-solid fa-plus text-white"></i> Add Planned Burn</a>
     {% endcomment %}
 
     <label for="actions" class="mb-0">Action</label>
@@ -195,15 +195,15 @@ select, button{
         <option value="9">Update Daily Burn Links</option>
     {% endif %}
     </select>
-    <button id="update-button" class="btn btn-sm btn-info" type="button" disabled>Go</button>
-    <a class="btn btn-sm btn-info ms-auto" href="{% url 'admin:review_prescribedburn_add' %}?form=add_burn"><i class="fa-solid fa-plus text-white"></i> Add Planned Burn</a>
-    <a class="btn btn-sm btn-help" href="{% url 'admin:help_view' %}?report=epfp_planned"><i class="fa-solid fa-circle-info"></i> Help</a>
+    <button id="update-button" class="btn btn-sm btn-primary" type="button" disabled>Go</button>
+    <a class="btn btn-sm btn-primary ms-auto" href="{% url 'admin:review_prescribedburn_add' %}?form=add_burn"><i class="fa-solid fa-plus text-white"></i> Add Planned Burn</a>
+    <a class="btn btn-sm btn-secondary" href="{% url 'admin:help_view' %}?report=epfp_planned"><i class="fa-solid fa-circle-info"></i> Help</a>
 </div>
 
 
 {% comment %}
-<a class="btn btn-sm btn-info" href="{{ add_planned_burn }}?next={{ request.get_full_path }}">
-<a class="btn btn-sm btn-info" href="{{ add_planned_burn }}">
+<a class="btn btn-sm btn-primary" href="{{ add_planned_burn }}?next={{ request.get_full_path }}">
+<a class="btn btn-sm btn-primary" href="{{ add_planned_burn }}">
     <i class="fa-solid fa-plus text-white"></i> Add Planned Burn
 </a>
 {% endcomment %}
@@ -359,7 +359,7 @@ select, button{
 {% if report == "epfp_fireload" %}
 <div class="d-flex align-items-center gap-2 mb-2">
     {% comment %}
-    <a class="btn btn-sm btn-info" href="{% url 'admin:addfire_view' %}"><i class="fa-solid fa-plus text-white"></i> Add Bushfire</a>
+    <a class="btn btn-sm btn-primary" href="{% url 'admin:addfire_view' %}"><i class="fa-solid fa-plus text-white"></i> Add Bushfire</a>
     {% endcomment %}
 
     <label for="actions" class="mb-0">Action</label>
@@ -373,10 +373,10 @@ select, button{
     <option value="6">Delete State Acknowledgement</option>
     <option value="7">Delete Record</option>
     </select>
-    <button id="update-button" class="btn btn-sm btn-info" type="button" disabled>Go</button>
-    <a class="btn btn-sm btn-info ms-auto" href="{% url 'admin:review_prescribedburn_add' %}?form=add_active_burn"><i class="fa-solid fa-plus text-white"></i> Add Burn</a>
+    <button id="update-button" class="btn btn-sm btn-primary" type="button" disabled>Go</button>
+    <a class="btn btn-sm btn-primary ms-auto" href="{% url 'admin:review_prescribedburn_add' %}?form=add_active_burn"><i class="fa-solid fa-plus text-white"></i> Add Burn</a>
     <a class="btn btn-sm btn-danger" href="{% url 'admin:review_prescribedburn_add' %}?form=add_fire"><i class="fa-solid fa-plus text-white"></i> Add Bushfire</a>
-    <a class="btn btn-sm btn-help" href="{% url 'admin:help_view' %}?report=epfp_fireload"><i class="fa-solid fa-circle-info"></i> Help</a>
+    <a class="btn btn-sm btn-secondary" href="{% url 'admin:help_view' %}?report=epfp_fireload"><i class="fa-solid fa-circle-info"></i> Help</a>
 </div>
 
 
@@ -557,8 +557,8 @@ select, button{
 {% comment %}
 {% if report == "epfp_aircraft" %}
 <div>
-    <a class="btn btn-sm btn-help" style="float: right" href="{% url 'admin:help_aircraft_view' %}?report=epfp_aircraft"><i class="fa-solid fa-circle-info"></i> Help</a>
-    <a class="btn btn-sm btn-info" style="float: right" href="{% url 'admin:review_aircraftburn_add' %}?form=add_aircraft_burn"><i class="fa-solid fa-plus text-white"></i> Add Aircraft</a>
+    <a class="btn btn-sm btn-secondary" style="float: right" href="{% url 'admin:help_aircraft_view' %}?report=epfp_aircraft"><i class="fa-solid fa-circle-info"></i> Help</a>
+    <a class="btn btn-sm btn-primary" style="float: right" href="{% url 'admin:review_aircraftburn_add' %}?form=add_aircraft_burn"><i class="fa-solid fa-plus text-white"></i> Add Aircraft</a>
 
     <label for="actions" class="mb-0">Action</label>
     <select id="actions" class="form-select form-select-sm w-auto">
@@ -571,7 +571,7 @@ select, button{
     <option value="6">Delete State Aviation Approval</option>
     <option value="7">Delete Record</option>
     </select>
-    <button id="update-button" class="btn btn-sm btn-info" type="button" disabled>Go</button>
+    <button id="update-button" class="btn btn-sm btn-primary" type="button" disabled>Go</button>
 </div>
 
 <table id="aircraft-table" class="main-table table table-hover table-compressed">
