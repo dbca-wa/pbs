@@ -8,13 +8,9 @@
 {% block extrahead %}
 {{ block.super }}
 <style>
-.filter-pad {
-  margin-top: 5px;
-  margin-bottom: -17px !important;
-  margin-left: 10px;
-}
-.adjust-legend{
-  margin-bottom:-40px;
+.filter-form select,
+.filter-form .form-select {
+    width: auto !important;
 }
 
 .ui-datepicker {
@@ -101,162 +97,91 @@ select, button{
 </div>
 <div class="clearfix"></div>
 
-<ul id="filters" class="nav">
-    <li class="filter-pad">
-        <form class="d-flex flex-wrap align-items-center gap-2">
-            <div class="filter-controls">
-            {% if report == "epfp_planned" %}
-                <label for="id_date" class="form-label">Date</label>
-                <input type="text" id="id_date" value="{{date}}" name="date"/>
-
-                <label for="id_region" class="form-label">Region</label>
-                {{ form.region }}
-
-                <label for="id_district" class="form-label">District</label>
-                {{ form.district }}
-                <button type="submit" class="btn btn-primary">Update</button>
-
-                <br>
-                <br>
-                <label for="id_approval_status" class="form-label">Status</label>
-                {{ form.approval_status }}
-
-                <input class="hidden" style="float: right;" name="report" value="epfp_planned">
-                <br>
-                <br>
-
-            {% elif report == "epfp_fireload" %}
-                <label for="id_date" class="form-label">Date</label>
-                <input type="text" id="id_date" value="{{date}}" name="date"/>
-
-                <label for="id_region" class="form-label">Region</label>
-                {{ form.region }}
-
-                <label for="id_district" class="form-label">District</label>
-                {{ form.district }}
-
-                <button type="submit" class="btn btn-primary">Update</button>
-
-                <br>
-                <br>
-                <label for="id_fire_type" class="form-label">Fire Type</label>
-                {{ form.fire_type }}
-
-                <label for="id_approval_status" class="form-label">Status</label>
-                {{ form.approval_status }}
-
-                <input class="hidden" style="float: right;" name="report" value="epfp_fireload">
-                <br>
-                <br>
-
-            {% elif report == "epfp_summary" %}
-                <label for="id_date" class="form-label">Date</label>
-                <input type="text" id="id_date" value="{{date}}" name="date"/>
-
-                <label for="id_region" class="form-label">Region</label>
-                {{ form.region }}
-
-                <label for="id_district" class="form-label">District</label>
-                {{ form.district }}
-
-                <input class="hidden" style="float: right;" name="report" value="epfp_summary">
-                <button type="submit" class="btn btn-primary">Update</button>
-                <br>
-                <br>
-
-            {% comment %}
-            {% elif report == "epfp_aircraft" %}
-                <label for="id_date" class="form-label">Date</label>
-                <input type="text" id="id_date" value="{{date}}" name="date"/>
-
-                <label for="id_region" class="form-label">Region</label>
-                {{ form.region }}
-
-                <label for="id_approval_status" class="form-label">Status</label>
-                {{ form.approval_status }}
-
-                <input class="hidden" style="float: right;" name="report" value="epfp_aircraft">
-                <button type="submit" class="btn btn-primary">Update</button>
-                <br>
-                <br>
-            {% endcomment %}
-
-            {% endif %}
-            </div>
-        </form>
-    </li>
-
-</ul>
+<form class="mb-2 filter-form" method="get">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <label for="id_date" class="mb-0 text-nowrap">Date</label>
+        <input type="text" id="id_date" value="{{date}}" name="date" class="form-control form-control-sm w-auto"/>
+        <label for="id_region" class="mb-0 text-nowrap">Region</label>
+        {{ form.region }}
+        <label for="id_district" class="mb-0 text-nowrap">District</label>
+        {{ form.district }}
+        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+        {% if report == "epfp_planned" %}
+            <input type="hidden" name="report" value="epfp_planned">
+        {% elif report == "epfp_fireload" %}
+            <input type="hidden" name="report" value="epfp_fireload">
+        {% elif report == "epfp_summary" %}
+            <input type="hidden" name="report" value="epfp_summary">
+        {% endif %}
+    </div>
+    {% if report == "epfp_planned" %}
+    <div class="d-flex align-items-center gap-2 flex-wrap mt-2">
+        <label for="id_approval_status" class="mb-0 text-nowrap">Status</label>
+        {{ form.approval_status }}
+    </div>
+    {% elif report == "epfp_fireload" %}
+    <div class="d-flex align-items-center gap-2 flex-wrap mt-2">
+        <label for="id_fire_type" class="mb-0 text-nowrap">Fire Type</label>
+        {{ form.fire_type }}
+        <label for="id_approval_status" class="mb-0 text-nowrap">Status</label>
+        {{ form.approval_status }}
+    </div>
+    {% endif %}
+</form>
 
 
-<ul id="report-tabs" class="nav nav-tabs">
-    <li id="planned-tab"  "{% if report == "epfp_planned" %} class="active"{% endif %}>
-        <a href="{% url 'admin:daily_burn_program' %}?report=epfp_planned&date={{date}}">
+<ul id="report-tabs" class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link {% if report == "epfp_planned" %}active{% endif %}" href="{% url 'admin:daily_burn_program' %}?report=epfp_planned&date={{date}}">
             <i class="fa-solid fa-tag"></i>
             Planned Burns (268a)
         </a>
     </li>
-    <li id="fireload-tab" {% if report == "epfp_fireload" %} class="active"{% endif %}>
-        <a href="{% url 'admin:daily_burn_program' %}?report=epfp_fireload&date={{date}}">
+    <li class="nav-item">
+        <a class="nav-link {% if report == "epfp_fireload" %}active{% endif %}" href="{% url 'admin:daily_burn_program' %}?report=epfp_fireload&date={{date}}">
             <i class="fa-solid fa-plus"></i>
             Fire Load (268b)
         </a>
     </li>
-    <li id="summary-tab"  "{% if report == "epfp_summary" %} class="active"{% endif %}>
-        <a href="{% url 'admin:daily_burn_program' %}?report=epfp_summary&date={{date}}">
+    <li class="nav-item">
+        <a class="nav-link {% if report == "epfp_summary" %}active{% endif %}" href="{% url 'admin:daily_burn_program' %}?report=epfp_summary&date={{date}}">
             <i class="fa-solid fa-fire"></i>
             Approved Burns (268c)
         </a>
     </li>
 
-    {% comment %}
-    <li id="aircraft-tab"  "{% if report == "epfp_aircraft" %} class="active"{% endif %}>
-        <a href="{% url 'admin:aircraft_burn_program' %}?date={{date}}">
-            <i class="fa-solid fa-plane"></i>
-            Aircraft Burns (301)
-        </a>
+    <li class="nav-item ms-auto">
+        <div class="dropdown">
+          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Create PDF / Report
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="javascript: pdf_url('daily_burn_program');">All Forms</a></li>
+            <li><a class="dropdown-item" href="javascript: pdf_url('form268a');">Form 268a</a></li>
+            <li><a class="dropdown-item" href="javascript: pdf_url('form268b');">Form 268b</a></li>
+            <li><a class="dropdown-item" href="javascript: pdf_url('form268c');">Form 268c</a></li>
+            <li><a class="dropdown-item" href="javascript: pdf_url('form268a_rdo');">Form 268a (RDO)</a></li>
+            <li><a class="dropdown-item" href="javascript: pdf_url('form268b_rdo');">Form 268b (RDO)</a></li>
+            <li><a class="dropdown-item" href="{% url 'admin:daily_burn_program_exportcsv' %}?date={{date}}&Export_CSV=export_csv">Export CSV</a></li>
+            <li><a class="dropdown-item" href="{% url 'admin:csv_view' %}">FMSB Report</a></li>
+            {% if can_admin or request.user|has_group:"FMSB GIS" %}
+                <li><a class="dropdown-item" href="{{kmi_download_url}}">KML - Download Today's Burns</a></li>
+                <li><a class="dropdown-item" href="{{csv_download_url}}">CSV - Download Today's Burns</a></li>
+                <li><a class="dropdown-item" href="{{shp_download_url}}">SHP - Download Today's Burns</a></li>
+            {% endif %}
+          </ul>
+        </div>
     </li>
-    {% endcomment %}
-
-<div class="dropdown btn btn-medium" style="float: right">
-  <a id="dropdown_btn" data-bs-target="#" href="#" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-    Create PDF / Report
-    <span class="caret"></span>
-  </a>
-
-  <ul class="dropdown-menu" aria-labelledby="dropdown-btn">
-      {% comment %}
-    <li><a value="all_form268" href="{% url 'admin:create_dailyburns_pdf' %}?date={{date}}&template=daily_burn_program">All Forms</a></li>
-      {% endcomment %}
-    <li><a value="all_form268" href="javascript: pdf_url('daily_burn_program');">All Forms</a></li>
-    <li><a value="form268a" href="javascript: pdf_url('form268a');">Form 268a</a></li>
-    <li><a value="form268b" href="javascript: pdf_url('form268b');">Form 268b</a></li>
-    <li><a value="form268c" href="javascript: pdf_url('form268c');">Form 268c</a></li>
-    {% comment %}<li><a value="form301" href="{% url 'admin:create_aircraftburns_pdf' %}?date={{date}}&template=form301">Form 301</a></li>{% endcomment %}
-    <li><a value="form268a_rdo" href="javascript: pdf_url('form268a_rdo');">Form 268a (RDO)</a></li>
-    <li><a value="form268b_rdo" href="javascript: pdf_url('form268b_rdo');">Form 268b (RDO)</a></li>
-    <li><a value="export_csv" href="{% url 'admin:daily_burn_program_exportcsv' %}?date={{date}}&Export_CSV=export_csv">Export CSV</a></li>
-    <li><a value="export_csv" href="{% url 'admin:csv_view' %}">FMSB Report</a></li>
-    {% if can_admin or request.user|has_group:"FMSB GIS" %}
-        <li><a value="kmi_download_url" href="{{kmi_download_url}}">KML - Download Today's Burns</a></li>
-        <li><a value="csv_download_url" href="{{csv_download_url}}">CSV - Download Today's Burns</a></li>
-        <li><a value="shp_download_url" href="{{shp_download_url}}">SHP - Download Today's Burns</a></li>
-    {% endif %}
-  </ul>
-</div>
-
 </ul>
 
 {% if report == "epfp_planned" %}
-<div>
+<div class="d-flex align-items-center gap-2 mb-2">
     {% comment %}
-    <a class="btn btn-sm btn-info" style="float: right" href="{{ add_prescribed_burn }}"><i class="fa-solid fa-plus text-white"></i> Add Planned Burn</a>
+    <a class="btn btn-sm btn-info" href="{{ add_prescribed_burn }}"><i class="fa-solid fa-plus text-white"></i> Add Planned Burn</a>
     {% endcomment %}
-    <a class="btn btn-sm btn-help" style="float: right" href="{% url 'admin:help_view' %}?report=epfp_planned"><i class="fa-solid fa-circle-info"></i> Help</a>
-    <a class="btn btn-sm btn-info" style="float: right" href="{% url 'admin:review_prescribedburn_add' %}?form=add_burn"><i class="fa-solid fa-plus text-white"></i> Add Planned Burn</a>
 
-    <span>Action</span>
-    <select id="actions">
+    <label for="actions" class="mb-0">Action</label>
+    <select id="actions" class="form-select form-select-sm w-auto">
     <option value="0" selected="selected">----</option>
     <option value="1">District Submit</option>
     <option value="2">Regional Endorsement</option>
@@ -271,6 +196,8 @@ select, button{
     {% endif %}
     </select>
     <button id="update-button" class="btn btn-sm btn-info" type="button" disabled>Go</button>
+    <a class="btn btn-sm btn-info ms-auto" href="{% url 'admin:review_prescribedburn_add' %}?form=add_burn"><i class="fa-solid fa-plus text-white"></i> Add Planned Burn</a>
+    <a class="btn btn-sm btn-help" href="{% url 'admin:help_view' %}?report=epfp_planned"><i class="fa-solid fa-circle-info"></i> Help</a>
 </div>
 
 
@@ -430,16 +357,13 @@ select, button{
 {% endif %}
 
 {% if report == "epfp_fireload" %}
-<div>
+<div class="d-flex align-items-center gap-2 mb-2">
     {% comment %}
-    <a class="btn btn-sm btn-info" style="float: right" href="{% url 'admin:addfire_view' %}"><i class="fa-solid fa-plus text-white"></i> Add Bushfire</a>
+    <a class="btn btn-sm btn-info" href="{% url 'admin:addfire_view' %}"><i class="fa-solid fa-plus text-white"></i> Add Bushfire</a>
     {% endcomment %}
-    <a class="btn btn-sm btn-help" style="float: right" href="{% url 'admin:help_view' %}?report=epfp_fireload"><i class="fa-solid fa-circle-info"></i> Help</a>
-    <a class="btn btn-sm btn-danger" style="float: right" href="{% url 'admin:review_prescribedburn_add' %}?form=add_fire"><i class="fa-solid fa-plus text-white"></i> Add Bushfire</a>
-    <a class="btn btn-sm btn-info" style="float: right" href="{% url 'admin:review_prescribedburn_add' %}?form=add_active_burn"><i class="fa-solid fa-plus text-white"></i> Add Burn</a>
 
-    <span>Action</span>
-    <select id="actions">
+    <label for="actions" class="mb-0">Action</label>
+    <select id="actions" class="form-select form-select-sm w-auto">
     <option value="0" selected="selected">----</option>
     <option value="1">District Entered</option>
     <option value="2">Regional Acknowledgement</option>
@@ -450,6 +374,9 @@ select, button{
     <option value="7">Delete Record</option>
     </select>
     <button id="update-button" class="btn btn-sm btn-info" type="button" disabled>Go</button>
+    <a class="btn btn-sm btn-info ms-auto" href="{% url 'admin:review_prescribedburn_add' %}?form=add_active_burn"><i class="fa-solid fa-plus text-white"></i> Add Burn</a>
+    <a class="btn btn-sm btn-danger" href="{% url 'admin:review_prescribedburn_add' %}?form=add_fire"><i class="fa-solid fa-plus text-white"></i> Add Bushfire</a>
+    <a class="btn btn-sm btn-help" href="{% url 'admin:help_view' %}?report=epfp_fireload"><i class="fa-solid fa-circle-info"></i> Help</a>
 </div>
 
 
@@ -633,8 +560,8 @@ select, button{
     <a class="btn btn-sm btn-help" style="float: right" href="{% url 'admin:help_aircraft_view' %}?report=epfp_aircraft"><i class="fa-solid fa-circle-info"></i> Help</a>
     <a class="btn btn-sm btn-info" style="float: right" href="{% url 'admin:review_aircraftburn_add' %}?form=add_aircraft_burn"><i class="fa-solid fa-plus text-white"></i> Add Aircraft</a>
 
-    <span>Action</span>
-    <select id="actions">
+    <label for="actions" class="mb-0">Action</label>
+    <select id="actions" class="form-select form-select-sm w-auto">
     <option value="0" selected="selected">----</option>
     <option value="1">Regional Approval</option>
     <option value="2">State Duty Approval</option>
@@ -968,13 +895,12 @@ $('#update-button').click(function(){
 
 }); 
 $('[data-bs-toggle="tooltip"]').tooltip(); 
-$('#id_approval_status').prop("multiple", "multiple");  
-$('#_id_approval_status').multiselect();    
-$('#id_approval_status').multiselect({  
-        includeSelectAllOption: true,   
-}); 
-//$("#id_approval_status").multiselect('selectAll', false);
-//$("#id_approval_status").multiselect('refresh');
+$('#id_approval_status').prop("multiple", "multiple");
+new Choices(document.getElementById('id_approval_status'), {
+    removeItemButton: true,
+    shouldSort: false,
+    placeholderValue: 'All selected',
+});
 
 </script>
 {% endblock %}
