@@ -160,6 +160,23 @@ class SessionPersistenceMixin(object):
         """
         return self.request.session.get(self.session_key)
 
+
+class Bootstrap5FormMixin:
+    """Mixin to inject Bootstrap 5 widget classes into form fields."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            widget = field.widget
+            if isinstance(widget, (forms.Select, forms.SelectMultiple)):
+                widget.attrs['class'] = 'form-select form-select-sm'
+            elif isinstance(widget, forms.CheckboxInput):
+                widget.attrs['class'] = 'form-check-input'
+            elif isinstance(widget, forms.HiddenInput):
+                pass
+            else:
+                widget.attrs['class'] = 'form-control form-control-sm'
+
+
 class PbsErrorList(forms.utils.ErrorList):
     # custom error classes
     def as_ul(self):
@@ -173,7 +190,7 @@ class PbsErrorList(forms.utils.ErrorList):
         )
 
 
-class PbsModelForm(forms.models.ModelForm):
+class PbsModelForm(Bootstrap5FormMixin, forms.models.ModelForm):
     # custom error_class for modelforms created by .get_changelist_formset
     def __init__(self, *args, **kwargs):
         kwargs['error_class'] = PbsErrorList
@@ -228,10 +245,10 @@ class PbsModelForm(forms.models.ModelForm):
 
 class WideTextarea(forms.Textarea):
     """
-    Add span8 class to the stock Textarea widget, to make it full-width.
+    Add w-100 class to the stock Textarea widget, to make it full-width.
     """
     def __init__(self, *args, **kwargs):
-        self.attrs = {'class': 'span8'}
+        self.attrs = {'class': 'w-100'}
 
 
 class BaseFormHelper(FormHelper):
@@ -251,7 +268,7 @@ class BaseFormHelper(FormHelper):
         self.add_input(save_btn)
 
 
-class HelperModelForm(forms.ModelForm):
+class HelperModelForm(Bootstrap5FormMixin, forms.ModelForm):
     """
     Stock ModelForm with a property named ``helper`` (used by crispy_forms to
     render in templates).
@@ -262,7 +279,7 @@ class HelperModelForm(forms.ModelForm):
         return helper
 
 
-class PbsAdminAuthenticationForm(AdminAuthenticationForm):
+class PbsAdminAuthenticationForm(Bootstrap5FormMixin, AdminAuthenticationForm):
     """
     A custom authentication form used in the offsets internal application.
     Subclasses the form in django.contrib.admin.forms because that form will
@@ -290,7 +307,7 @@ class PbsAdminAuthenticationForm(AdminAuthenticationForm):
         return self.cleaned_data
 
 
-class UserForm(forms.ModelForm):
+class UserForm(Bootstrap5FormMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
@@ -328,7 +345,7 @@ class ProfileForm(HelperModelForm):
         return cleaned_data
 
 
-class PbsPasswordResetForm(PasswordResetForm):
+class PbsPasswordResetForm(Bootstrap5FormMixin, PasswordResetForm):
     def __init__(self, *args, **kwargs):
         kwargs['error_class'] = PbsErrorList
         super(PbsPasswordResetForm, self).__init__(*args, **kwargs)
@@ -344,7 +361,7 @@ class PbsPasswordResetForm(PasswordResetForm):
         return super(PbsPasswordResetForm, self).clean_email()
 
 
-class EndorseAuthoriseSummaryForm(forms.Form):
+class EndorseAuthoriseSummaryForm(Bootstrap5FormMixin, forms.Form):
     region = forms.ModelChoiceField(required=False,
         queryset=Region.objects.all())
     district = forms.ModelChoiceField(required=False, queryset=District.objects.all())
@@ -365,7 +382,7 @@ class EndorseAuthoriseSummaryForm(forms.Form):
         return d
 
 
-class BurnStateSummaryForm(forms.Form):
+class BurnStateSummaryForm(Bootstrap5FormMixin, forms.Form):
     region = forms.ModelChoiceField(required=False,
         queryset=Region.objects.all())
     district = forms.ModelChoiceField(required=False, queryset=District.objects.all())
