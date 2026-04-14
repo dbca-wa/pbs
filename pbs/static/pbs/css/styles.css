@@ -1,3 +1,16 @@
+/* Django admin CSS variables required by widgets.css (filter_horizontal selector widget) */
+:root {
+    --primary: #79aec8;
+    --secondary: #417690;
+    --primary-fg: #fff;
+    --header-link-color: #fff;
+    --body-quiet-color: #666;
+    --breadcrumbs-fg: #c4dce8;
+    --border-color: #ccc;
+    --darkened-bg: #f8f8f8;
+    --selected-bg: #e4e4e4;
+}
+
 body #id_objective_modal {
     position: absolute;
     top: 20px;
