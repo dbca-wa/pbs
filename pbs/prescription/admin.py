@@ -46,7 +46,7 @@ from pbs.prescription.forms import (
     PrescriptionCreateForm, EndorsingRoleForm,
     AddEndorsementForm, AddApprovalForm, PrescriptionEditForm,
     PrescriptionPriorityForm, BriefingChecklistForm,
-    FundingAllocationInlineFormSet)
+    FundingAllocationForm, FundingAllocationInlineFormSet)
 from pbs.prescription.models import (
     Season, Prescription, RegionalObjective, Region, FundingAllocation, EndorsingRole)
 from django.forms.models import inlineformset_factory
@@ -1215,6 +1215,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         FundingAllocationFormSet = inlineformset_factory(
             parent_model=Prescription, model=FundingAllocation,
             formset=FundingAllocationInlineFormSet,
+            form=FundingAllocationForm,
             fields='__all__',
             extra=len(funding_choices) - initial_queryset.count())
         # FundingAllocationFormSet = inlineformset_factory(

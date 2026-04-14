@@ -262,7 +262,9 @@ class PrescriptionEditForm(PrescriptionFormBase):
         super(PrescriptionEditForm, self).__init__(*args, **kwargs)
         self.fields["non_calm_tenure_complete"].choices = Prescription.NON_CALM_TENURE_COMPLETE_CHOICES
         if self.instance and self.instance.planning_status != self.instance.PLANNING_DRAFT:
-            self.fields["non_calm_tenure"].widget=NullBooleanSelect(none=None)
+            self.fields["non_calm_tenure"].widget = NullBooleanSelect(
+                attrs={"autocomplete": "off", "class": "form-select form-select-sm"}, none=None
+            )
 
         if 'description' in self.fields:
             self.fields['description'].widget.attrs.update({
@@ -508,7 +510,7 @@ class ProportionField(forms.DecimalField):
         super(ProportionField, self).__init__(
             min_value=0, max_value=100, max_digits=5, decimal_places=2)
 
-class FundingAllocationForm(forms.ModelForm):
+class FundingAllocationForm(Bootstrap5FormMixin, forms.ModelForm):
     """
     Interim form for the Prescription pre_summary form.
     """
