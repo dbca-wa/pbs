@@ -279,11 +279,33 @@ div.navbar-fixed-bottom {
 
 #mainnav .nav-link {
   color: #FFFFFF !important;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-size: 0.875rem;
 }
 
 #mainnav .nav-item.active .nav-link,
 #mainnav .nav-item .nav-link.active {
   background-color: #1a5fa8;
+  color: #FFFFFF !important;
+  border-radius: 4px;
+}
+
+/* Sub-navigation for prescription-specific links */
+#subnav {
+  background-color: #1a5fa8 !important;
+}
+
+#subnav .nav-link {
+  color: #FFFFFF !important;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-size: 0.875rem;
+}
+
+#subnav .nav-item.active .nav-link,
+#subnav .nav-item .nav-link.active {
+  background-color: #0d3d6b;
   color: #FFFFFF !important;
   border-radius: 4px;
 }

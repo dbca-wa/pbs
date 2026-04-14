@@ -220,7 +220,7 @@
 {% if not user.is_anonymous %}
 {% block navigation %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-secondary" id="mainnav">
-  <div class="container">
+  <div class="container-fluid">
     <div class="d-lg-none">
       <form action="{% url 'admin:prescription_prescription_changelist' %}" method="get" class="d-inline">
         <div class="input-group">
@@ -228,24 +228,30 @@
         </div>
       </form>
     </div>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#second-nav">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav">
       <i class="fa-solid fa-bars"></i> Menu
     </button>
-    <div class="collapse navbar-collapse" id="second-nav">
-      <ul class="navbar-nav">
-        <li class="nav-item{% if request.path == all_prescriptions %} active{% endif %}"><a class="nav-link" href="{{ all_prescriptions }}{% if request.user.profile.region %}?region__id__exact={{ request.user.profile.region.id }}{% endif %}"><i class="fa-solid fa-fire"></i> Regional Overview</a></li>
+    <div class="collapse navbar-collapse" id="main-nav">
+      <ul class="navbar-nav flex-nowrap">
+        <li class="nav-item{% if request.path == all_prescriptions %} active{% endif %}"><a class="nav-link text-nowrap" href="{{ all_prescriptions }}{% if request.user.profile.region %}?region__id__exact={{ request.user.profile.region.id }}{% endif %}"><i class="fa-solid fa-fire"></i> Regional Overview</a></li>
         {% url 'admin:prescription_prescription_add' as add_link %}
-        <li class="nav-item{% if request.path == add_link %} active{% endif %}"><a class="nav-link" href="{{ add_link }}"><i class="fa-solid fa-plus"></i> Create Prescribed Burn</a></li>
+        <li class="nav-item{% if request.path == add_link %} active{% endif %}"><a class="nav-link text-nowrap" href="{{ add_link }}"><i class="fa-solid fa-plus"></i> Create Prescribed Burn</a></li>
         {% url 'admin:endorse_authorise_summary' as endorse_authorise_summary %}
-        <li class="nav-item{% if request.path == endorse_authorise_summary %} active{% endif %}"><a class="nav-link" href="{{ endorse_authorise_summary }}"><i class="fa-solid fa-gauge"></i> Endorse/Authorise Summary</a></li>
+        <li class="nav-item{% if request.path == endorse_authorise_summary %} active{% endif %}"><a class="nav-link text-nowrap" href="{{ endorse_authorise_summary }}"><i class="fa-solid fa-gauge"></i> Endorse/Authorise Summary</a></li>
         {% url 'admin:epfp_review_summary' as epfp_review_summary %}
-        <li class="nav-item{% if request.path == epfp_review_summary %} active{% endif %}"><a class="nav-link" href="{{ epfp_review_summary }}"><i class="fa-solid fa-gauge"></i> Day of Burn ePFP review</a></li>
+        <li class="nav-item{% if request.path == epfp_review_summary %} active{% endif %}"><a class="nav-link text-nowrap" href="{{ epfp_review_summary }}"><i class="fa-solid fa-gauge"></i> Day of Burn ePFP review</a></li>
         {% url 'admin:daily_burn_program' as daily_burn_program %}
-        <li class="nav-item{% if request.path == daily_burn_program %} active{% endif %}"><a class="nav-link" href="{{ daily_burn_program }}"><i class="fa-solid fa-gauge"></i> Daily Burn Program</a></li>
-        {% if current %}
+        <li class="nav-item{% if request.path == daily_burn_program %} active{% endif %}"><a class="nav-link text-nowrap" href="{{ daily_burn_program }}"><i class="fa-solid fa-gauge"></i> Daily Burn Program</a></li>
       </ul>
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item{% if request.path == overview %} active{% endif %}"><a class="nav-link" href="{{ overview }}">ePFP overview</a></li>
+    </div>
+  </div>
+</nav>
+{% if current %}
+<nav class="navbar navbar-expand-lg navbar-dark" id="subnav">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse show">
+      <ul class="navbar-nav flex-nowrap">
+        <li class="nav-item{% if request.path == overview %} active{% endif %}"><a class="nav-link text-nowrap" href="{{ overview }}">ePFP overview</a></li>
         <li id="summary-dropdown" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
             <span class="badge {% if current.pre_state.finished %}bg-success{% else %}bg-danger{% endif %}">{{ current.pre_state.complete }}/{{ current.pre_state.total }}</span>
@@ -312,11 +318,11 @@
             <li{% if request.path == public_contacts %} class="active"{% endif %}><a class="dropdown-item" href="{{ public_contacts }}">D2 - Public Contacts</a></li>
           </ul>
         </li>
-        {% endif %}
       </ul>
     </div>
   </div>
 </nav>
+{% endif %}
 {% endblock navigation %}
 {% endif %}
 {% endif %}
