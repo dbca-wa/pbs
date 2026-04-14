@@ -323,6 +323,18 @@ div.navbar-fixed-bottom {
   border-radius: 4px;
 }
 
+/* Highlight dropdown toggle when a child item is active */
+#subnav .dropdown-menu .dropdown-item.active,
+#subnav .dropdown-menu .dropdown-item:active {
+  background-color: #3580CA;
+  color: #FFFFFF !important;
+}
+
+#subnav .nav-item.dropdown:has(.dropdown-item.active) > .nav-link {
+  background-color: #0d3d6b;
+  border-radius: 4px;
+}
+
 .form-search, .topsearch form {
   margin: 0;
   padding: 5px 0 0;

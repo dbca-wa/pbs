@@ -258,15 +258,15 @@
             Part A
           </a>
           <ul class="dropdown-menu">
-            <li{% if request.path == parta %} class="active"{% endif %}><a class="dropdown-item" href="{{ parta }}">Part A Summary</a></li>
-            <li{% if request.path == sectiona1 %} class="active"{% endif %}><a class="dropdown-item" href="{{ sectiona1 }}">A1 - Summary &amp; Approval</a></li>
-            <li{% if request.path == sectiona2 %} class="active"{% endif %}><a class="dropdown-item" href="{{ sectiona2 }}">A2 - Context Statement</a></li>
-            <li{% if request.path == critical_stakeholders %} class="active"{% endif %}><a class="dropdown-item" href="{{ critical_stakeholders }}">A2 - Critical Stakeholders</a></li>
-            <li{% if request.path == objectives_url %} class="active"{% endif %}><a class="dropdown-item" href="{{ objectives_url }}">A3 - Burn Objectives</a></li>
-            <li{% if request.path == success_criteria %} class="active"{% endif %}><a class="dropdown-item" href="{{ success_criteria }}">A3 - Success Criteria</a></li>
-            <li{% if request.path == priority_justification %} class="active"{% endif %}><a class="dropdown-item" href="{{ priority_justification }}">A4 - Priority Justification</a></li>
-            <li{% if request.path == sectiona5 %} class="active"{% endif %}><a class="dropdown-item" href="{{ sectiona5 }}">A5 - Complexity Analysis</a></li>
-            <li{% if request.path == sectiona6 %} class="active"{% endif %}><a class="dropdown-item" href="{{ sectiona6 }}">A6 - Risk Register</a></li>
+            <li><a class="dropdown-item{% if request.path == parta %} active{% endif %}" href="{{ parta }}">Part A Summary</a></li>
+            <li><a class="dropdown-item{% if request.path == sectiona1 %} active{% endif %}" href="{{ sectiona1 }}">A1 - Summary &amp; Approval</a></li>
+            <li><a class="dropdown-item{% if request.path == sectiona2 %} active{% endif %}" href="{{ sectiona2 }}">A2 - Context Statement</a></li>
+            <li><a class="dropdown-item{% if request.path == critical_stakeholders %} active{% endif %}" href="{{ critical_stakeholders }}">A2 - Critical Stakeholders</a></li>
+            <li><a class="dropdown-item{% if request.path == objectives_url %} active{% endif %}" href="{{ objectives_url }}">A3 - Burn Objectives</a></li>
+            <li><a class="dropdown-item{% if request.path == success_criteria %} active{% endif %}" href="{{ success_criteria }}">A3 - Success Criteria</a></li>
+            <li><a class="dropdown-item{% if request.path == priority_justification %} active{% endif %}" href="{{ priority_justification }}">A4 - Priority Justification</a></li>
+            <li><a class="dropdown-item{% if request.path == sectiona5 %} active{% endif %}" href="{{ sectiona5 }}">A5 - Complexity Analysis</a></li>
+            <li><a class="dropdown-item{% if request.path == sectiona6 %} active{% endif %}" href="{{ sectiona6 }}">A6 - Risk Register</a></li>
           </ul>
         </li>
         <li id="implementation-dropdown" class="nav-item dropdown">
@@ -275,25 +275,25 @@
             Part B
           </a>
           <ul class="dropdown-menu">
-            <li{% if request.path == partb %} class="active"{% endif %}><a class="dropdown-item" href="{{ partb }}">Part B Summary</a></li>
-            <li{% if request.get_full_path == operational_overview %} class="active"{% endif %}><a class="dropdown-item" href="{{ operational_overview }}">B1 - Operational Overview</a></li>
-            <li{% if request.get_full_path == actions %} class="active"{% endif %}><a class="dropdown-item" href="{{ actions }}">B1 - Plan Actions</a></li>
-            <li{% if actions|add:"?pre_burn=True" in request.get_full_path %} class="active"{% endif %}><a class="dropdown-item" href="{{ actions }}?pre_burn=True">B1 - Pre-burn actions</a></li>
-            <li{% if actions|add:"?day_of_burn=True" in request.get_full_path %} class="active"{% endif %}><a class="dropdown-item" href="{{ actions }}?day_of_burn=True">B2 - Day of burn actions</a></li>
-            <li{% if request.path == sectionb3_trails %} class="active"{% endif %}><a class="dropdown-item" href="{{ sectionb3_trails }}">B3 - Tracks and Trails</a></li>
-            <li{% if request.path == sectionb3_inspection %} class="active"{% endif %}><a class="dropdown-item" href="{{ sectionb3_inspection }}">B3 - Sign Inspection &amp; Surveillance</a></li>
-            <li{% if request.path == sectionb3_roads %} class="active"{% endif %}><a class="dropdown-item" href="{{ sectionb3_roads }}">B4 - Roads</a></li>
-            <li{% if request.path == sectionb3_roads %} class="active"{% endif %}><a class="dropdown-item" href="{{ sectionb3_roads }}">B4 - Traffic Control Diagrams</a></li>
-            <li{% if request.path == burning_prescription %} class="active"{% endif %}><a class="dropdown-item" href="{{ burning_prescription }}">B5 - Burning Prescription</a></li>
-            <li{% if request.path == edging_plan %} class="active"{% endif %}><a class="dropdown-item" href="{{ edging_plan }}">B5 - Edging Plan</a></li>
-            <li{% if request.path == lighting_sequence %} class="active"{% endif %}><a class="dropdown-item" href="{{ lighting_sequence }}">B5 - Lighting Sequence</a></li>
-            <li{% if request.path == exclusion_area %} class="active"{% endif %}><a class="dropdown-item" href="{{ exclusion_area }}">B5 - Areas to be Excluded from ignition</a></li>
-            <li{% if request.path == contingency %} class="active"{% endif %}><a class="dropdown-item" href="{{ contingency }}">B6 - Contingency Plan</a></li>
-            <li{% if request.path == org_structure %} class="active"{% endif %}><a class="dropdown-item" href="{{ org_structure }}">B7 - Organisational Structure</a></li>
-            <li{% if request.path == briefing_checklist %} class="active"{% endif %}><a class="dropdown-item" href="{{ briefing_checklist }}" target="_blank">B8 - Briefing Checklist (SMEACS)</a></li>
-            <li{% if request.path == sectionb9 %} class="active"{% endif %}><a class="dropdown-item" href="{{ sectionb9 }}">B9 - Operations Officer's Day of Burn Checklist</a></li>
-            <li{% if request.path == sectionb10 %} class="active"{% endif %}><a class="dropdown-item" href="{{ sectionb10 }}">B10 - Fire and Weather Observations</a></li>
-            <li{% if request.path == area_achievement %} class="active"{% endif %}><a class="dropdown-item" href="{{ area_achievement }}">B11 - DoB achievement update</a></li>
+            <li><a class="dropdown-item{% if request.path == partb %} active{% endif %}" href="{{ partb }}">Part B Summary</a></li>
+            <li><a class="dropdown-item{% if request.get_full_path == operational_overview %} active{% endif %}" href="{{ operational_overview }}">B1 - Operational Overview</a></li>
+            <li><a class="dropdown-item{% if request.get_full_path == actions %} active{% endif %}" href="{{ actions }}">B1 - Plan Actions</a></li>
+            <li><a class="dropdown-item{% if actions|add:"?pre_burn=True" in request.get_full_path %} active{% endif %}" href="{{ actions }}?pre_burn=True">B1 - Pre-burn actions</a></li>
+            <li><a class="dropdown-item{% if actions|add:"?day_of_burn=True" in request.get_full_path %} active{% endif %}" href="{{ actions }}?day_of_burn=True">B2 - Day of burn actions</a></li>
+            <li><a class="dropdown-item{% if request.path == sectionb3_trails %} active{% endif %}" href="{{ sectionb3_trails }}">B3 - Tracks and Trails</a></li>
+            <li><a class="dropdown-item{% if request.path == sectionb3_inspection %} active{% endif %}" href="{{ sectionb3_inspection }}">B3 - Sign Inspection &amp; Surveillance</a></li>
+            <li><a class="dropdown-item{% if request.path == sectionb3_roads %} active{% endif %}" href="{{ sectionb3_roads }}">B4 - Roads</a></li>
+            <li><a class="dropdown-item{% if request.path == sectionb3_roads %} active{% endif %}" href="{{ sectionb3_roads }}">B4 - Traffic Control Diagrams</a></li>
+            <li><a class="dropdown-item{% if request.path == burning_prescription %} active{% endif %}" href="{{ burning_prescription }}">B5 - Burning Prescription</a></li>
+            <li><a class="dropdown-item{% if request.path == edging_plan %} active{% endif %}" href="{{ edging_plan }}">B5 - Edging Plan</a></li>
+            <li><a class="dropdown-item{% if request.path == lighting_sequence %} active{% endif %}" href="{{ lighting_sequence }}">B5 - Lighting Sequence</a></li>
+            <li><a class="dropdown-item{% if request.path == exclusion_area %} active{% endif %}" href="{{ exclusion_area }}">B5 - Areas to be Excluded from ignition</a></li>
+            <li><a class="dropdown-item{% if request.path == contingency %} active{% endif %}" href="{{ contingency }}">B6 - Contingency Plan</a></li>
+            <li><a class="dropdown-item{% if request.path == org_structure %} active{% endif %}" href="{{ org_structure }}">B7 - Organisational Structure</a></li>
+            <li><a class="dropdown-item{% if request.path == briefing_checklist %} active{% endif %}" href="{{ briefing_checklist }}" target="_blank">B8 - Briefing Checklist (SMEACS)</a></li>
+            <li><a class="dropdown-item{% if request.path == sectionb9 %} active{% endif %}" href="{{ sectionb9 }}">B9 - Operations Officer's Day of Burn Checklist</a></li>
+            <li><a class="dropdown-item{% if request.path == sectionb10 %} active{% endif %}" href="{{ sectionb10 }}">B10 - Fire and Weather Observations</a></li>
+            <li><a class="dropdown-item{% if request.path == area_achievement %} active{% endif %}" href="{{ area_achievement }}">B11 - DoB achievement update</a></li>
           </ul>
         </li>
         <li id="closure-dropdown" class="nav-item dropdown">
@@ -302,20 +302,20 @@
             Part C
           </a>
           <ul class="dropdown-menu">
-            <li{% if request.path == post_summary %} class="active"{% endif %}><a class="dropdown-item" href="{{ post_summary }}">Part C Summary</a></li>
-            <li{% if actions|add:"?post_burn=True" in request.get_full_path %} class="active"{% endif %}><a class="dropdown-item" href="{{ actions }}?post_burn=True">C1 - Post burn actions</a></li>
-            <li{% if request.path == evaluation %} class="active"{% endif %}><a class="dropdown-item" href="{{ evaluation }}">C2 - Burn evaluation summary</a></li>
-            <li{% if request.path == proposed_action %} class="active"{% endif %}><a class="dropdown-item" href="{{ proposed_action }}">C3 - Lessons learned</a></li>
-            <li{% if request.path == post_burn_checklist %} class="active"{% endif %}><a class="dropdown-item" href="{{ post_burn_checklist }}">C4 - Post burn checklist</a></li>
-            <li{% if request.path == burn_closure %} class="active"{% endif %}><a class="dropdown-item {% if not current.can_close or current.status == current.STATUS_CLOSED %}disabled{% endif %}" href="{% if current.can_close and current.status != current.STATUS_CLOSED %}{% url 'admin:prescription_prescription_close' current.pk %}{% else %}#{% endif %}">{% if current.can_close %}{% if current.status == current.STATUS_CLOSED %}Burn closed{% else %}Close this burn{% endif %}{% else %}Burn closure unavailable{% endif %}</a></li>
+            <li><a class="dropdown-item{% if request.path == post_summary %} active{% endif %}" href="{{ post_summary }}">Part C Summary</a></li>
+            <li><a class="dropdown-item{% if actions|add:"?post_burn=True" in request.get_full_path %} active{% endif %}" href="{{ actions }}?post_burn=True">C1 - Post burn actions</a></li>
+            <li><a class="dropdown-item{% if request.path == evaluation %} active{% endif %}" href="{{ evaluation }}">C2 - Burn evaluation summary</a></li>
+            <li><a class="dropdown-item{% if request.path == proposed_action %} active{% endif %}" href="{{ proposed_action }}">C3 - Lessons learned</a></li>
+            <li><a class="dropdown-item{% if request.path == post_burn_checklist %} active{% endif %}" href="{{ post_burn_checklist }}">C4 - Post burn checklist</a></li>
+            <li><a class="dropdown-item {% if not current.can_close or current.status == current.STATUS_CLOSED %}disabled{% endif %}{% if request.path == burn_closure %} active{% endif %}" href="{% if current.can_close and current.status != current.STATUS_CLOSED %}{% url 'admin:prescription_prescription_close' current.pk %}{% else %}#{% endif %}">{% if current.can_close %}{% if current.status == current.STATUS_CLOSED %}Burn closed{% else %}Close this burn{% endif %}{% else %}Burn closure unavailable{% endif %}</a></li>
           </ul>
         </li>
         <li id="document-dropdown" class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">Part D</a>
           <ul class="dropdown-menu">
-            <li{% if request.path == documents %} class="active"{% endif %}><a class="dropdown-item" href="{{ documents }}?document_archived__exact=0">Documents</a></li>
-            <li{% if request.path == notifications %} class="active"{% endif %}><a class="dropdown-item" href="{{ notifications }}">D1 - Notifications</a></li>
-            <li{% if request.path == public_contacts %} class="active"{% endif %}><a class="dropdown-item" href="{{ public_contacts }}">D2 - Public Contacts</a></li>
+            <li><a class="dropdown-item{% if request.path == documents %} active{% endif %}" href="{{ documents }}?document_archived__exact=0">Documents</a></li>
+            <li><a class="dropdown-item{% if request.path == notifications %} active{% endif %}" href="{{ notifications }}">D1 - Notifications</a></li>
+            <li><a class="dropdown-item{% if request.path == public_contacts %} active{% endif %}" href="{{ public_contacts }}">D2 - Public Contacts</a></li>
           </ul>
         </li>
       </ul>
