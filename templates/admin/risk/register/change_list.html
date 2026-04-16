@@ -153,7 +153,7 @@
 {% block content_title %}
 {% url 'admin:risk_register_changelist' current.id as risk_register %}
 <h1>Prescribed Burn Risk Register</h1>
-<h4><i class="fa-solid fa-triangle-exclamation"></i> <strong>
+<h5><i class="fa-solid fa-triangle-exclamation"></i> <strong>
     <span id="currentLevelOfRiskLabel">
         {% if request.get_full_path == risk_register %}
             Draft ePFP Risk Level is </strong>
@@ -162,7 +162,7 @@
             Final ePFP Risk Level is </strong>
             {{ current.maximum_risk_html }}
         {% endif %}
-</h4>
+</h5>
 
 
 
