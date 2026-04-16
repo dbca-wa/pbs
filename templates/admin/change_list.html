@@ -80,6 +80,7 @@
 <script src="{% static 'admin/js/inlines.js' %}"></script>
 <!-- <script src="{% static 'pbs/js/inlines.js' %}"></script> -->
 <script src="{% static 'pbs/js/table-fixed-header.js' %}"></script>
+<script src="{% static 'pbs/js/sticky-scrollbar.js' %}"></script>
 {% comment %}
   NOTE: django.jQuery.fn.actions() plugin was removed in Django 3.x.
   Modern admin/js/actions.js auto-initializes via DOMContentLoaded.
@@ -222,7 +223,6 @@ $(document).ready(function() {
         <script src="{% static 'js/view-port.js' %}"></script>
         <script>$(document).ready(function () {viewPort.update();});
                 $('#id_save_submit_button').click(function() {viewPort.save();}); </script>
-      </div>
     </div>
     {% endif %}
     {% endblock %}

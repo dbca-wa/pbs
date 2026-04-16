@@ -8,6 +8,11 @@ textarea {
     overflow-y: hidden;
 }
 
+#changelist-form .results {
+    overflow-x: auto;
+    width: 100%;
+}
+
 table .header-fixed {
   position: fixed;
   top: 56px;
