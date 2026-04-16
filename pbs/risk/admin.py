@@ -145,11 +145,11 @@ class RegisterAdmin(PrescriptionMixin, SavePrescriptionMixin,
 
     def all_treatments(self, obj):
         if obj.treatment_set.count() > 0:
-            output = '<ul>'
+            output = '<ul class="treatment-list">'
             for treatment in obj.treatment_set.all():
                 if treatment.complete:
                     status_class = ' class="text-success"'
-                    status_icon = '<i class="icon-ok"></i> '
+                    status_icon = '<i class="fa-solid fa-check"></i> '
                 else:
                     status_class = ''
                     status_icon = ''
@@ -176,7 +176,7 @@ class RegisterAdmin(PrescriptionMixin, SavePrescriptionMixin,
                 '<br><a id="add_treatment_%(pk)s" '
                 'onclick="return showAddAnotherPopup(this);" '
                 'class="add-another" href="%(url)s">'
-                '<i class="icon-plus"></i> Add a treatment</a>'
+                '<i class="fa-solid fa-plus"></i> Add a treatment</a>'
             ) % {
                 'pk': obj.pk,
                 'url': url,
