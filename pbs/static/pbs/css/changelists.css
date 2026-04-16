@@ -58,6 +58,10 @@ thead {
   background-color: #fff;
 }
 
+thead th a {
+  text-decoration: none;
+}
+
 /* Sorted column header highlight */
 thead th.col-sorted {
   background-color: #dbeafe !important; /* Bootstrap blue-100 */
