@@ -13,6 +13,28 @@ textarea {
     width: 100%;
 }
 
+/* Filter sidebar */
+ul.nav-filter li.nav-header {
+    font-weight: bold;
+    padding: 8px 0 2px 0;
+    color: #555;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    border-top: 1px solid #dee2e6;
+    margin-top: 4px;
+}
+ul.nav-filter li.nav-header:first-child {
+    border-top: none;
+    margin-top: 0;
+}
+ul.nav-filter li a {
+    padding: 2px 0;
+    font-size: 0.9em;
+}
+ul.nav-filter li.active a {
+    font-weight: bold;
+}
+
 table .header-fixed {
   position: fixed;
   top: 56px;

@@ -235,7 +235,7 @@ $(document).ready(function() {
 {% if cl.has_filters %}
 <div class="col-3">
   <h5>Filter</h5>
-  <ul class="nav nav-list">
+  <ul class="nav flex-column nav-filter">
       {% for spec in cl.filter_specs %}
         {% admin_list_filter cl spec %}
       {% endfor %}
