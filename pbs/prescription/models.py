@@ -14,6 +14,7 @@ from django.core.mail import send_mail
 # from django.core.urlresolvers import reverse
 from django.urls import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import transaction
 from django.db.models import Q, Max, Sum
 from django.db.models.signals import post_save, m2m_changed,pre_save
 from django.dispatch import receiver
@@ -30,6 +31,55 @@ from smart_selects.db_fields import ChainedForeignKey
 from pbs.risk.models import Register, Risk, Action, Complexity, Context, Treatment
 
 logger = logging.getLogger("log." + __name__)
+
+
+class JobQueue(models.Model):
+    """Queue row for asynchronous or deferred background work.
+
+    Queue jobs can carry job-specific payload metadata while still sharing the
+    same worker pattern, retry counters, requester tracking, and status
+    lifecycle.
+    """
+
+    TYPE_ARCHIVE_PRESCRIPTION = 'archive_prescription'
+
+    STATUS_QUEUED = 'queued'
+    STATUS_PROCESSING = 'processing'
+    STATUS_SUCCEEDED = 'succeeded'
+    STATUS_FAILED = 'failed'
+
+    STATUS_CHOICES = (
+        (STATUS_QUEUED, 'Queued'),
+        (STATUS_PROCESSING, 'Processing'),
+        (STATUS_SUCCEEDED, 'Succeeded'),
+        (STATUS_FAILED, 'Failed'),
+    )
+
+    job_type = models.CharField(max_length=64, db_index=True)
+    prescription = models.ForeignKey(
+        'prescription.Prescription', null=True, blank=True,
+        on_delete=models.CASCADE, related_name='job_queue_entries')
+    requested_by = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='job_queue_entries',
+        help_text='User whose action triggered this queued job')
+    dedupe_key = models.CharField(max_length=255, unique=True)
+    payload = models.JSONField(default=dict, blank=True)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_QUEUED)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    requested_at = models.DateTimeField(default=timezone.now)
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    error_message = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['status', 'requested_at', 'id']
+
+    def __str__(self):
+        """Return a short identifier that is useful in admin and logs."""
+        return '{0} - {1} - {2}'.format(self.job_type, self.dedupe_key, self.status)
 
 
 
@@ -480,8 +530,12 @@ class Prescription(Audit):
         verbose_name="Can the burn be completed safely without the inclusion of other tenure?",
         choices=NON_CALM_TENURE_COMPLETE_CHOICES, null=True,blank=True)
     non_calm_tenure_risks = models.TextField(verbose_name="Risks based issues if other tenure not included", blank=True,null=True)
-    #Field to record if the Prescription archive pdf has been generated successfully. Set to False when pdf is failed.
+    # Field to record if the Prescription archive pdf has been generated successfully. Set to False when pdf is failed.
     archive_successful = models.BooleanField(default=True)
+    # Field that is True while a PDF archive job is queued or actively being
+    # processed by the management command. Kept separate from archive_successful
+    # so that "in progress" and "failed" are distinct states.
+    archive_in_progress = models.BooleanField(default=False)
 
     def __str__(self):
         return self.burn_id
@@ -1351,14 +1405,23 @@ class Prescription(Audit):
         except:
             return False
         
-    def check_archive_status(self,request):
-        if self.archive_successful:
-            return True
-        else:
-            if self.override_admin(request.user):
-                return True
-            else:
-                return False
+    def check_archive_status(self, request):
+        """Return True if the prescription is editable with respect to archive state.
+
+        Locks the prescription in two distinct situations:
+        - archive_in_progress is True: a PDF job is queued or being processed.
+          This is a temporary lock that clears once the worker finishes.
+        - archive_successful is False: the last completed archive attempt failed.
+          This lock persists until manually resolved or a new archive succeeds.
+
+        Override Application Administrators (override_admin) can bypass both locks.
+        """
+        if self.archive_in_progress:
+            # Temporarily locked while the archive job is queued or being processed.
+            return self.override_admin(request.user)
+        if not self.archive_successful:
+            # Locked because the most recent completed archive attempt failed.
+            return self.override_admin(request.user)
         return True
     
     class Meta:
@@ -1370,6 +1433,8 @@ class Prescription(Audit):
             ("can_carry_over", "Can carry over burns"),
             ("can_admin", "Can admin burns"),
         )
+
+
 
 
 
@@ -1756,17 +1821,141 @@ status_display_map = {
     "endorsement_status":lambda s:next((c[1] for c in Prescription.ENDORSEMENT_CHOICES if c[0] == s),str(s)).lower().replace(" ","-"),
     "planning_status":lambda s:next((c[1] for c in Prescription.PLANNING_CHOICES if c[0] == s),str(s)).lower().replace(" ","-")
 }
-@receiver(pre_save,sender=Prescription)
-def prepare_archive_prescription(sender,instance,update_fields=None,**kwargs):
-    if instance.pk and (not update_fields or any(k in update_fields for k in  status_keys)):
+
+
+def _archive_change_details(instance):
+    """Extract the status-change details needed to name and describe an archive job.
+
+    Iterates over the tracked status fields and compares the current value on
+    *instance* against instance.previous_status (which was captured by the
+    prepare_archive_prescription pre-save signal before the save occurred).
+
+    Returns a dict with keys:
+        changed_status  - the field name that changed (e.g. 'endorsement_status')
+        previous_status - human-readable hyphenated label of the old value
+        status          - human-readable hyphenated label of the new value
+        modified        - localised datetime of the status change
+        archivename     - the canonical filename (without .pdf extension) for the archive
+
+    Returns None if no tracked status field actually changed.
+    """
+    changed_status = None
+    for key in status_keys:
+        if getattr(instance, key) != instance.previous_status[key]:
+            changed_status = key
+            break
+
+    if not changed_status:
+        return None
+
+    changed_status_modified = status_modified_map[changed_status]
+    status = status_display_map[changed_status](getattr(instance, changed_status))
+    previous_status = status_display_map[changed_status](instance.previous_status[changed_status])
+
+    if changed_status_modified:
+        modified = timezone.localtime(getattr(instance, changed_status_modified))
+    else:
+        modified = timezone.localtime(timezone.now())
+
+    timestamp = modified.strftime("%Y-%m-%dT%H%M%S")
+    archivename = "{0}_{1}_{2}_{3}_{4}".format(
+        instance.burn_id,
+        changed_status,
+        previous_status,
+        status,
+        timestamp
+    )
+
+    return {
+        'changed_status': changed_status,
+        'previous_status': previous_status,
+        'status': status,
+        'modified': modified,
+        'archivename': archivename,
+    }
+
+
+def enqueue_archive_prescription(instance):
+    """Queue a generic archive job for the given prescription instance.
+
+    Called by the archive_prescription post-save signal when the
+    PRESCRIPTION_ARCHIVE_USE_QUEUE setting is enabled. Builds the archive job
+    details from the status change captured by prepare_archive_prescription and
+    schedules the database work via transaction.on_commit so that the job is
+    only created after the enclosing transaction has committed successfully.
+
+    The requesting user is read from thread-local storage (populated by
+    CurrentUserMiddleware) and stored on the job so a completion email can be
+    sent to them. Outside of a request context (e.g. management commands) the
+    value will be None and no per-user email is sent.
+
+    Sets archive_in_progress=True on the prescription immediately after commit
+    so that admin permission checks can block editing while the job is pending.
+    archive_successful is left unchanged here; it is only updated once the
+    worker processes the job.
+    """
+    from pbs.middleware import get_current_user
+
+    details = _archive_change_details(instance)
+    if not details:
+        return
+
+    # Capture the requesting user now, before on_commit fires, while the
+    # thread-local value is still set for this request.
+    requested_by = get_current_user()
+
+    def _enqueue():
+        """Create the queued job row after the outer transaction commits.
+
+        Uses the generic queue model so other background job types can share
+        the same queue infrastructure. The unique dedupe_key prevents the same
+        archive transition from being queued twice.
+        """
+        JobQueue.objects.get_or_create(
+            dedupe_key=details['archivename'],
+            defaults={
+                'job_type': JobQueue.TYPE_ARCHIVE_PRESCRIPTION,
+                'prescription': instance,
+                'requested_by': requested_by,
+                'payload': {
+                    'archive_name': details['archivename'],
+                    'changed_status': details['changed_status'],
+                    'previous_status': details['previous_status'],
+                    'new_status': details['status'],
+                },
+                'status': JobQueue.STATUS_QUEUED,
+            }
+        )
+        # Mark the prescription as locked while the archive job is in progress.
+        # This is separate from archive_successful so that "queued/processing"
+        # and "failed" remain distinct states.
+        Prescription.objects.filter(pk=instance.pk).update(archive_in_progress=True)
+
+    transaction.on_commit(_enqueue)
+
+
+@receiver(pre_save, sender=Prescription)
+def prepare_archive_prescription(sender, instance, update_fields=None, **kwargs):
+    """Pre-save signal: snapshot the current status values before the save.
+
+    Reads the five tracked status fields from the database for the existing row
+    and attaches them to the instance as instance.previous_status so that the
+    post-save signal (archive_prescription) can detect which field changed.
+
+    Runs only when the instance already has a primary key (i.e. not on creation)
+    and only when no update_fields restriction is given, or when at least one of
+    the tracked status keys is included in update_fields.
+    """
+    if instance.pk and (not update_fields or any(k in update_fields for k in status_keys)):
         try:
-            prescription = Prescription.objects.get(pk = instance.pk)
+            prescription = Prescription.objects.get(pk=instance.pk)
             previous_status = {}
             for key in status_keys:
-                previous_status[key] = getattr(prescription,key)
-            setattr(instance,"previous_status",previous_status)
-        except:
-            #ignore
+                previous_status[key] = getattr(prescription, key)
+            setattr(instance, "previous_status", previous_status)
+        except Exception:
+            # Ignore errors (e.g. race conditions) — the post-save signal will
+            # simply find no previous_status attribute and skip archiving.
             pass
 
 # @receiver(post_save,sender=Prescription)
@@ -1820,15 +2009,48 @@ def prepare_archive_prescription(sender,instance,update_fields=None,**kwargs):
 #             else:
 #                 logger.warning('ENV NOTIFICATION_EMAIL is not set. Unable to send notification email.')
 
-@receiver(post_save,sender=Prescription)
-def archive_prescription(sender,instance,created,**kwargs):
+@receiver(post_save, sender=Prescription)
+def archive_prescription(sender, instance, created, **kwargs):
+    """Post-save signal: generate or queue a PDF archive when a status field changes.
+
+    Two modes of operation are supported, selected by the PRESCRIPTION_ARCHIVE_USE_QUEUE
+    Django setting (default: False):
+
+    Queue mode (PRESCRIPTION_ARCHIVE_USE_QUEUE = True):
+        Calls enqueue_archive_prescription() which creates a JobQueue
+        row and sets archive_in_progress=True on the prescription. The actual PDF
+        is generated later by the process_job_queue management
+        command. This mode is recommended for production as it avoids blocking the
+        HTTP request thread during PDF generation.
+
+    Direct mode (PRESCRIPTION_ARCHIVE_USE_QUEUE = False, default):
+        Generates the PDF synchronously within the signal using pdflatex, saves
+        the resulting file, and immediately updates archive_successful.
+
+    Both modes are guarded against recursive invocation via the
+    _updating_pdf_status instance flag, which is set before any .update() call
+    that touches archive_successful or archive_in_progress.
+    """
     logger = logging.getLogger("pdf_debugging")
-    if getattr(instance, '_updating_pdf_status', False): # prevent recursive call
+    if getattr(instance, '_updating_pdf_status', False):
+        # Prevent recursive re-entry when this signal itself calls .update()
+        # on fields that would otherwise re-trigger the signal chain.
         return
+
+    if getattr(settings, 'PRESCRIPTION_ARCHIVE_USE_QUEUE', False):
+        # Queue mode: hand off to the job queue and return immediately.
+        if created:
+            return
+        elif not hasattr(instance, "previous_status"):
+            return
+        enqueue_archive_prescription(instance)
+        return
+
+    # Direct (synchronous) mode — generates the PDF before returning.
     from pbs.utils import pdflatex
     if created:
         return
-    elif not hasattr(instance,"previous_status"):
+    elif not hasattr(instance, "previous_status"):
         return
     
     changed_status = None

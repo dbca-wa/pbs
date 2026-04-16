@@ -119,6 +119,7 @@ MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'pbs.middleware.CurrentUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -431,3 +432,4 @@ GIT_COMMIT_DATE = os.popen(f"cd {BASE_DIR}; git log -1 --format=%cd").read()
 # (_save method of FileSystemStorage class)
 # As it causes a permission exception when using azure network drives
 FILE_UPLOAD_PERMISSIONS = None
+PRESCRIPTION_ARCHIVE_USE_QUEUE = env('PRESCRIPTION_ARCHIVE_USE_QUEUE', True)
