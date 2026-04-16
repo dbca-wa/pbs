@@ -211,15 +211,14 @@ $(document).ready(function() {
     {% block pre-submit-line %}{% endblock %}
     {% block submit-line %}
     {% if editable %}
-    <div class="navbar fixed-bottom">
-      <div class="">
-        <div class="container">
+    <div class="navbar fixed-bottom bg-light border-top py-2">
+      <div class="container-fluid d-flex justify-content-end pe-4">
             <input type="submit"
                    id="id_save_submit_button"
                    name="_save"
-                   class="btn float-end btn-success"
+                   class="btn btn-success"
                    value="{% trans 'Save' %}"/>
-        </div>
+      </div>
         <script src="{% static 'js/view-port.js' %}"></script>
         <script>$(document).ready(function () {viewPort.update();});
                 $('#id_save_submit_button').click(function() {viewPort.save();}); </script>
