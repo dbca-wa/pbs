@@ -13,6 +13,10 @@ textarea {
     width: 100%;
 }
 
+#result_list {
+    font-size: 0.85rem;
+}
+
 /* Filter sidebar */
 ul.nav-filter li.nav-header {
     font-weight: bold;
