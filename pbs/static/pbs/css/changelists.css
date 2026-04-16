@@ -29,7 +29,7 @@ ul.nav-filter li.nav-header:first-child {
 }
 ul.nav-filter li a {
     padding: 2px 0;
-    font-size: 0.9em;
+    text-decoration: none;
 }
 ul.nav-filter li.active a {
     font-weight: bold;
@@ -109,4 +109,14 @@ select[id$='ignition_type'] {
 
 .chzn-drop {
     z-index: 1040 !important;  /* 10 more than .navbar-fixed */
+}
+
+/* Fix transparent background on DateTimeShortcuts clock/calendar popups.
+   Django admin uses CSS custom properties (--body-bg etc.) which are not
+   defined in the PBS theme, causing the popup to appear transparent. */
+.clockbox, .calendarbox {
+    background: #fff !important;
+    color: #333 !important;
+    border: 1px solid #ccc !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
 }

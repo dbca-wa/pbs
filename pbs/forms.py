@@ -178,6 +178,18 @@ class Bootstrap5FormMixin:
                     widget.attrs['class'] = (existing + ' form-check-input').strip()
             elif isinstance(widget, forms.HiddenInput):
                 pass
+            elif isinstance(widget, forms.MultiWidget):
+                # Apply classes to each sub-widget individually so that existing
+                # sub-widget classes (e.g. vDateField, vTimeField for AdminSplitDateTime)
+                # are preserved. Setting class on the composite widget would cause
+                # MultiWidget.get_context to propagate it as extra_attrs to sub-widgets,
+                # where it would override the sub-widget's own class via build_attrs.
+                for sub_widget in widget.widgets:
+                    if isinstance(sub_widget, (forms.CheckboxInput, forms.HiddenInput)):
+                        continue
+                    sub_existing = sub_widget.attrs.get('class', '')
+                    if 'form-control' not in sub_existing:
+                        sub_widget.attrs['class'] = (sub_existing + ' form-control form-control-sm').strip()
             else:
                 if 'form-control' not in existing:
                     widget.attrs['class'] = (existing + ' form-control form-control-sm').strip()
