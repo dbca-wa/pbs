@@ -62,10 +62,20 @@ thead th a {
   text-decoration: none;
 }
 
+#result_list tbody td a,
+#result_list tbody th a {
+  text-decoration: none;
+}
+
+thead th {
+  overflow: visible;
+}
+
 /* Sorted column header highlight */
 thead th.col-sorted {
   background-color: #dbeafe !important; /* Bootstrap blue-100 */
   position: relative;
+  overflow: visible;
 }
 
 /* Sort priority badge (1st, 2nd, ...) - absolutely positioned in top-right corner */
@@ -76,12 +86,12 @@ thead th.col-sorted {
   display: inline-block;
   background-color: #3580CA;
   color: #fff;
-  font-size: .6em;
+  font-size: .75em;
   font-weight: 600;
   line-height: 1;
-  padding: 2px 4px;
+  padding: 3px 6px;
   border-radius: 9999px;
-  min-width: 16px;
+  min-width: 20px;
   text-align: center;
 }
 
