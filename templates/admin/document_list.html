@@ -13,7 +13,7 @@
     {% for document in document_set %}
     {% get_obj_perms request.user for document as "document_perms" %}
     <tr>
-      <td><a href="{% url 'document_download' pk=document.pk %}" target="_blank" download><i class="fa-solid fa-file"></i> {{ document.filename }}</a></td>
+      <td><a href="{% url 'document_download' pk=document.pk %}" target="_blank" download class="text-decoration-none"><i class="fa-solid fa-file"></i> {{ document.filename }}</a></td>
       <td>
 	{% if document.exists %}
 		{{ document.document.size|filesizeformat }}
