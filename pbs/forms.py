@@ -184,8 +184,18 @@ class Bootstrap5FormMixin:
                 # are preserved. Setting class on the composite widget would cause
                 # MultiWidget.get_context to propagate it as extra_attrs to sub-widgets,
                 # where it would override the sub-widget's own class via build_attrs.
+                try:
+                    from django.contrib.admin.widgets import BaseAdminDateWidget, BaseAdminTimeWidget
+                    _admin_dt_widgets = (BaseAdminDateWidget, BaseAdminTimeWidget)
+                except ImportError:
+                    _admin_dt_widgets = ()
                 for sub_widget in widget.widgets:
                     if isinstance(sub_widget, (forms.CheckboxInput, forms.HiddenInput)):
+                        continue
+                    # Skip Django admin date/time sub-widgets: they have their own
+                    # inline styling (vDateField, vTimeField) and adding form-control
+                    # (display:block; width:100%) would break the split datetime layout.
+                    if _admin_dt_widgets and isinstance(sub_widget, _admin_dt_widgets):
                         continue
                     sub_existing = sub_widget.attrs.get('class', '')
                     if 'form-control' not in sub_existing:
