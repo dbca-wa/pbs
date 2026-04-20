@@ -229,8 +229,11 @@ class DocumentAdmin(SavePrescriptionMixin, PrescriptionMixin,
             delete_url = reverse('admin:%s_%s_delete' % info,
                                  args=(quote(obj.pk),
                                        quote(self.prescription.pk)))
-            return ('<a href="%s" class="btn btn-mini alert-error" '
-                    'title="Delete"><i class="icon-trash"></i></a>') % delete_url
+            return format_html(
+                '<a href="{}" title="Delete" class="text-danger" '
+                'style="line-height:1;">'
+                '<i class="fa-solid fa-trash"></i></a>',
+                delete_url)
         else:
             return format_html('&nbsp;')
 

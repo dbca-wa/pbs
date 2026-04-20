@@ -23,7 +23,7 @@
 </td>
       <td>{{ document.modified }}</td>
       <td>{{ document.modifier.get_full_name }}</td>
-      <td>{% if "delete_document" in document_perms %}<a class="btn btn-sm alert-danger" href="{% url 'admin:document_document_delete' document.pk current.pk %}?next={{ request.get_full_path }}"><i class="fa-solid fa-trash"></i></a>{% endif %}</td>
+      <td>{% if "delete_document" in document_perms %}<a class="text-danger" href="{% url 'admin:document_document_delete' document.pk current.pk %}?next={{ request.get_full_path }}" title="Delete" style="line-height:1;"><i class="fa-solid fa-trash"></i></a>{% endif %}</td>
     </tr>
     {% empty %}
     <tr>
