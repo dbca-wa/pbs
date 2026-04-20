@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from pbs.prescription.models import JobQueue
 from pbs.management.commands.process_archive_prescription_job import handle_archive_prescription_job
+from pbs.management.commands.process_carry_over_prescription_job import handle_carry_over_prescription_job
 
 logger = logging.getLogger('pdf_debugging')
 
@@ -72,6 +73,7 @@ class Command(BaseCommand):
         """Dispatch the claimed job to its type-specific handler."""
         handlers = {
             JobQueue.TYPE_ARCHIVE_PRESCRIPTION: self._process_archive_prescription,
+            JobQueue.TYPE_CARRY_OVER_PRESCRIPTION: self._process_carry_over_prescription,
         }
         handler = handlers.get(job.job_type)
         if not handler:
@@ -82,6 +84,10 @@ class Command(BaseCommand):
     def _process_archive_prescription(self, job):
         """Delegate to the archive_prescription handler module."""
         handle_archive_prescription_job(job, stdout=self.stdout)
+
+    def _process_carry_over_prescription(self, job):
+        """Delegate to the carry_over_prescription handler module."""
+        handle_carry_over_prescription_job(job, stdout=self.stdout)
 
     def _fail_job(self, job, error_message):
         """Mark a generic job as failed when it cannot be dispatched or validated."""

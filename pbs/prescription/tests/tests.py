@@ -1,17 +1,22 @@
 from __future__ import unicode_literals
 
 from decimal import Decimal
+from unittest.mock import Mock, patch
 
 from django.contrib.auth.models import User, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core import mail
 from django.urls import reverse
 from django.test.client import RequestFactory
+from django.test.utils import override_settings
 from django.utils import timezone
 
 from pbs.tests import BasePbsTestCase
 from pbs.sites import site
 from pbs.prescription.admin import PrescriptionAdmin
-from pbs.prescription.models import Prescription, Purpose
+from pbs.prescription.actions import carry_over_burns
+from pbs.prescription.models import JobQueue, Prescription, Purpose
+from pbs.management.commands.process_carry_over_prescription_job import handle_carry_over_prescription_job
 
 
 def set_cbas_attributes(self, prescription, exclude_fields=None,
@@ -436,3 +441,147 @@ class PrescriptionAdminTests(BasePbsTestCase):
             request = self._mocked_authenticated_request(url, user)
             actions = admin.get_actions(request)
             self.assertTrue(action in actions)
+
+
+class CarryOverBurnsTests(BasePbsTestCase):
+    fixtures = ['test-users']
+
+    @override_settings(PRESCRIPTION_ARCHIVE_USE_QUEUE=False)
+    @patch('pbs.prescription.actions._apply_carry_over_changes')
+    @patch('pbs.prescription.actions._archive_prescription_for_carry_over')
+    def test_carry_over_burns_runs_synchronously_when_queue_disabled(
+        self,
+        archive_mock,
+        apply_changes_mock,
+    ):
+        user = User.objects.get(username='admin')
+        prescription = self.make('Prescription', financial_year='2025/2026')
+
+        request = self.factory.post('/admin/prescription/prescription/', {'post': 'yes'})
+        request.user = user
+
+        modeladmin = Mock()
+        modeladmin.model = Prescription
+        modeladmin.admin_site = site
+        modeladmin.message_user = Mock()
+
+        response = carry_over_burns(modeladmin, request, Prescription.objects.filter(pk=prescription.pk))
+
+        self.assertEqual(response.status_code, 302)
+        archive_mock.assert_called_once()
+        apply_changes_mock.assert_called_once_with(
+            prescription,
+            modeladmin.admin_site,
+            request=request,
+            user=request.user,
+        )
+        self.assertFalse(JobQueue.objects.filter(prescription=prescription).exists())
+
+    @override_settings(PRESCRIPTION_ARCHIVE_USE_QUEUE=True)
+    @patch('pbs.prescription.actions.transaction.on_commit', side_effect=lambda func: func())
+    def test_carry_over_burns_queues_job_when_queue_enabled(self, on_commit_mock):
+        user = User.objects.get(username='admin')
+        prescription = self.make('Prescription', financial_year='2025/2026')
+
+        request = self.factory.post('/admin/prescription/prescription/', {'post': 'yes'})
+        request.user = user
+
+        modeladmin = Mock()
+        modeladmin.model = Prescription
+        modeladmin.admin_site = site
+        modeladmin.message_user = Mock()
+
+        response = carry_over_burns(modeladmin, request, Prescription.objects.filter(pk=prescription.pk))
+
+        self.assertEqual(response.status_code, 302)
+        prescription.refresh_from_db()
+        job = JobQueue.objects.get(prescription=prescription)
+
+        self.assertEqual(job.job_type, JobQueue.TYPE_CARRY_OVER_PRESCRIPTION)
+        self.assertEqual(job.requested_by, user)
+        self.assertTrue(job.payload['archive_name'].startswith('{0}_pre_carry_over_'.format(prescription.burn_id)))
+        self.assertFalse(prescription.carried_over)
+        self.assertTrue(prescription.archive_in_progress)
+        on_commit_mock.assert_called()
+
+    @patch('pbs.prescription.actions._archive_prescription_for_carry_over')
+    @patch('pbs.prescription.actions._create_approvals_pdf')
+    @patch('pbs.prescription.actions.update_permissions')
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+    def test_handle_carry_over_prescription_job_carries_over_prescription(
+        self,
+        update_permissions_mock,
+        create_approvals_pdf_mock,
+        archive_mock,
+    ):
+        user = User.objects.get(username='admin')
+        prescribing_officer = User.objects.get(username='user')
+        prescription = self.make(
+            'Prescription',
+            financial_year='2025/2026',
+            prescribing_officer=prescribing_officer,
+        )
+        prescription.archive_in_progress = True
+        prescription.planning_status = prescription.PLANNING_APPROVED
+        prescription.save()
+
+        job = JobQueue.objects.create(
+            job_type=JobQueue.TYPE_CARRY_OVER_PRESCRIPTION,
+            prescription=prescription,
+            requested_by=user,
+            dedupe_key='carry-over-{0}'.format(prescription.pk),
+            payload={'archive_name': 'test-archive-name'},
+            status=JobQueue.STATUS_PROCESSING,
+        )
+
+        handle_carry_over_prescription_job(job)
+
+        prescription.refresh_from_db()
+        job.refresh_from_db()
+
+        archive_mock.assert_called_once_with(prescription, 'test-archive-name')
+        create_approvals_pdf_mock.assert_called_once()
+        update_permissions_mock.assert_called_once()
+        self.assertEqual(job.status, JobQueue.STATUS_SUCCEEDED)
+        self.assertTrue(prescription.carried_over)
+        self.assertEqual(prescription.planning_status, prescription.PLANNING_DRAFT)
+        self.assertIsNone(prescription.prescribing_officer)
+        self.assertEqual(prescription.financial_year, '')
+        self.assertFalse(prescription.archive_in_progress)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [user.email])
+        self.assertIn('Carry-over completed', mail.outbox[0].subject)
+        self.assertIn(prescription.burn_id, mail.outbox[0].body)
+
+    @patch('pbs.management.commands.process_carry_over_prescription_job._archive_prescription_for_carry_over')
+    @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+    def test_handle_carry_over_prescription_job_emails_requester_on_failure(self, archive_mock):
+        user = User.objects.get(username='admin')
+        prescription = self.make('Prescription', financial_year='2025/2026')
+        prescription.archive_in_progress = True
+        prescription.save()
+
+        job = JobQueue.objects.create(
+            job_type=JobQueue.TYPE_CARRY_OVER_PRESCRIPTION,
+            prescription=prescription,
+            requested_by=user,
+            dedupe_key='carry-over-{0}'.format(prescription.pk),
+            payload={'archive_name': 'test-archive-name'},
+            status=JobQueue.STATUS_PROCESSING,
+        )
+
+        archive_mock.side_effect = Exception('archive boom')
+
+        handle_carry_over_prescription_job(job)
+
+        prescription.refresh_from_db()
+        job.refresh_from_db()
+
+        self.assertEqual(job.status, JobQueue.STATUS_FAILED)
+        self.assertEqual(job.error_message, 'archive boom')
+        self.assertFalse(prescription.archive_in_progress)
+        self.assertFalse(prescription.archive_successful)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [user.email])
+        self.assertIn('Carry-over FAILED', mail.outbox[0].subject)
+        self.assertIn('archive boom', mail.outbox[0].body)
