@@ -71,11 +71,11 @@
       $('<tr>').appendTo('#result-list tbody');
       // Unhide the alert div if total_edged exceeds planned prescription perimeter.
       if (total_edged > planned_edged) {
-          $('div#id_div_edged_alert').removeClass('hidden');
+          $('div#id_div_edged_alert').removeClass('d-none');
       }
       // Unhide the alert div if total_area exceeds planned prescription area.
       if (total_treated > planned_burnt_area) {
-          $('div#id_div_burnt_area_alert').removeClass('hidden');
+          $('div#id_div_burnt_area_alert').removeClass('d-none');
       }
     });
 
@@ -106,8 +106,8 @@
 
 {% block content_title %}
 <h1>Day of Burn Achievement Update</h1>
-<div id="id_div_burnt_area_alert" class="alert alert-info hidden"><i class="fa-solid fa-circle-exclamation"></i> <strong>Notice:</strong> Total treatment area exceeds the planned burn area ({{ current.area }} ha). If this is valid for this burn, please ignore this message.</div>
-<div id="id_div_edged_alert" class="alert alert-info hidden"><i class="fa-solid fa-circle-exclamation"></i> <strong>Notice:</strong> The successful length of edging exceeds the planned burn perimeter ({{ current.perimeter }} km). If this is valid for this burn, please ignore this message.</div>
+<div id="id_div_burnt_area_alert" class="alert alert-info d-none"><i class="fa-solid fa-circle-exclamation"></i> <strong>Notice:</strong> Total treatment area exceeds the planned burn area ({{ current.area }} ha). If this is valid for this burn, please ignore this message.</div>
+<div id="id_div_edged_alert" class="alert alert-info d-none"><i class="fa-solid fa-circle-exclamation"></i> <strong>Notice:</strong> The successful length of edging exceeds the planned burn perimeter ({{ current.perimeter }} km). If this is valid for this burn, please ignore this message.</div>
 {% endblock %}
 
 {% block content %}
