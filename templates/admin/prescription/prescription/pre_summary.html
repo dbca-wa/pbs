@@ -104,7 +104,7 @@
             {% if current.is_draft or perms.prescription.can_admin %}
                 <span>You must enter/select a value in all fields.<br>Alternatively, if entering only a locality (first input field), location will be stored as "Within the locality of ____"</span><br>
                 {{ form.form.location }}
-                <span id="id_location" class="hidden"></span>
+                <span id="id_location" class="d-none"></span>
             {% else %}
                 {{ current.location_text }}
             {% endif %}
