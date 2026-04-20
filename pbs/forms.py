@@ -290,6 +290,8 @@ class BaseFormHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super(BaseFormHelper, self).__init__(*args, **kwargs)
         self.form_class = 'form-horizontal'
+        self.label_class = 'col-sm-3 text-sm-end'
+        self.field_class = 'col-sm-9'
         self.help_text_inline = True
         self.form_method = 'POST'
         save_btn = Submit('submit', 'Save')
@@ -358,6 +360,12 @@ class ProfileForm(HelperModelForm):
     class Meta:
         model = Profile
         exclude = ('user',)
+
+    @property
+    def helper(self):
+        helper = BaseFormHelper()
+        helper.field_class = 'col-sm-4'
+        return helper
 
     def clean(self):
         """District must be child of Region.

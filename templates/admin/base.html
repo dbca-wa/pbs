@@ -143,6 +143,22 @@
       {% endif %}
       <div class="collapse navbar-collapse" id="first-nav">
       <ul class="navbar-nav ms-auto">
+      {% block nav-global %}{% endblock %}
+      {% if user.is_active %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'admin:profile' %}">Home Location:
+        {% if request.user.profile.region and request.user.profile.district %}
+        <b>{{ request.user.profile.region }}, {{ request.user.profile.district }}</b>
+        {% elif request.user.profile.region and not request.user.profile.district %}
+        <b>{{ request.user.profile.region }}</b>
+        {% elif not request.user.profile.region and request.user.profile.district %}
+        <b>{{ request.user.profile.district }}</b>
+        {% else %}
+        Click to set.
+        {% endif %}
+        </a></li>
+      {% endif %}
+      </ul>
+      <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
             {% trans 'Welcome,' %}
@@ -165,22 +181,6 @@
           {% endblock %}
           </ul>
         </li>
-      </ul>
-      <ul class="navbar-nav ms-auto">
-      {% block nav-global %}{% endblock %}
-      {% if user.is_active %}
-        <li class="nav-item"><a class="nav-link" href="{% url 'admin:profile' %}">Home Location:
-        {% if request.user.profile.region and request.user.profile.district %}
-        <b>{{ request.user.profile.region }}, {{ request.user.profile.district }}</b>
-        {% elif request.user.profile.region and not request.user.profile.district %}
-        <b>{{ request.user.profile.region }}</b>
-        {% elif not request.user.profile.region and request.user.profile.district %}
-        <b>{{ request.user.profile.district }}</b>
-        {% else %}
-        Click to set.
-        {% endif %}
-        </a></li>
-      {% endif %}
       </ul>
       </div>
     </div>
