@@ -192,14 +192,15 @@ class Bootstrap5FormMixin:
                 for sub_widget in widget.widgets:
                     if isinstance(sub_widget, (forms.CheckboxInput, forms.HiddenInput)):
                         continue
-                    # Skip Django admin date/time sub-widgets: they have their own
-                    # inline styling (vDateField, vTimeField) and adding form-control
-                    # (display:block; width:100%) would break the split datetime layout.
-                    if _admin_dt_widgets and isinstance(sub_widget, _admin_dt_widgets):
-                        continue
                     sub_existing = sub_widget.attrs.get('class', '')
                     if 'form-control' not in sub_existing:
-                        sub_widget.attrs['class'] = (sub_existing + ' form-control form-control-sm').strip()
+                        # Django admin date/time sub-widgets need d-inline-block w-auto
+                        # to preserve their side-by-side layout; plain form-control
+                        # would apply display:block; width:100% and stack them.
+                        if _admin_dt_widgets and isinstance(sub_widget, _admin_dt_widgets):
+                            sub_widget.attrs['class'] = (sub_existing + ' form-control form-control-sm d-inline-block w-auto').strip()
+                        else:
+                            sub_widget.attrs['class'] = (sub_existing + ' form-control form-control-sm').strip()
             else:
                 if 'form-control' not in existing:
                     widget.attrs['class'] = (existing + ' form-control form-control-sm').strip()
