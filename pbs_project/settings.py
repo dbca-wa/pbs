@@ -345,6 +345,12 @@ LOGGING = {
            'class': 'logging.FileHandler',
            'filename': os.path.join(BASE_DIR, 'logs', 'pbs.log'),
        },
+        'job_queue_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'job_queue.log'),
+            'formatter': 'console',
+        },
     },
     'loggers': {
         'django': {
@@ -362,6 +368,11 @@ LOGGING = {
             'handlers': ['file', 'pdf_debugging'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'job_queue_processing': {
+            'handlers': ['job_queue_file'],
+            'level': 'INFO',
+            'propagate': False,
         }
     }
 }

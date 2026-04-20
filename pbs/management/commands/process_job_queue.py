@@ -8,7 +8,7 @@ from pbs.prescription.models import JobQueue
 from pbs.management.commands.process_archive_prescription_job import handle_archive_prescription_job
 from pbs.management.commands.process_carry_over_prescription_job import handle_carry_over_prescription_job
 
-logger = logging.getLogger('pdf_debugging')
+logger = logging.getLogger('job_queue_processing')
 
 
 class Command(BaseCommand):
@@ -41,13 +41,21 @@ class Command(BaseCommand):
         job_type = options.get('job_type') or None
         processed = 0
 
+        logger.info(
+            'Starting job queue processing: max_jobs=%s, job_type=%s',
+            max_jobs,
+            job_type or 'all'
+        )
+
         for _ in range(max_jobs):
             job = self._claim_next_job(job_type=job_type)
             if not job:
+                logger.info('No queued jobs available for processing.')
                 break
             self._process_job(job)
             processed += 1
 
+        logger.info('Finished job queue processing: processed=%s', processed)
         self.stdout.write('Processed {0} job(s).'.format(processed))
 
     def _claim_next_job(self, job_type=None):
@@ -67,6 +75,13 @@ class Command(BaseCommand):
             job.attempts = (job.attempts or 0) + 1
             job.error_message = None
             job.save(update_fields=['status', 'started_at', 'attempts', 'error_message', 'updated_at'])
+            logger.info(
+                'Claimed job id=%s type=%s dedupe_key=%s attempt=%s',
+                job.id,
+                job.job_type,
+                job.dedupe_key,
+                job.attempts,
+            )
             return job
 
     def _process_job(self, job):
@@ -79,7 +94,25 @@ class Command(BaseCommand):
         if not handler:
             self._fail_job(job, 'Unsupported job type: {0}'.format(job.job_type))
             return
-        handler(job)
+        logger.info(
+            'Processing job id=%s type=%s prescription_id=%s',
+            job.id,
+            job.job_type,
+            job.prescription_id,
+        )
+        try:
+            handler(job)
+        except Exception:
+            logger.exception('Unhandled exception while processing job id=%s type=%s', job.id, job.job_type)
+            raise
+
+        job.refresh_from_db(fields=['status', 'error_message', 'finished_at'])
+        if job.status == JobQueue.STATUS_SUCCEEDED:
+            logger.info('Job id=%s completed successfully.', job.id)
+        elif job.status == JobQueue.STATUS_FAILED:
+            logger.warning('Job id=%s failed: %s', job.id, job.error_message)
+        else:
+            logger.info('Job id=%s finished with status=%s', job.id, job.status)
 
     def _process_archive_prescription(self, job):
         """Delegate to the archive_prescription handler module."""
