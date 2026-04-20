@@ -7,6 +7,7 @@ from django.contrib.admin.utils import unquote, quote
 from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from pbs.admin import BaseAdmin, get_permission_codename
@@ -181,7 +182,7 @@ class RegisterAdmin(PrescriptionMixin, SavePrescriptionMixin,
                 'pk': obj.pk,
                 'url': url,
             }
-        return output
+        return mark_safe(output)
     all_treatments.short_description = "Treatments"
     all_treatments.allow_tags = True
 
@@ -411,7 +412,7 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
             output += '''<a  onclick="return showAddAnotherPopup(this);"
                 class="add-another d-none adminonly" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add an action</a>'''.format(url, obj.pk)
-        return output
+        return mark_safe(output)
     display_actions.short_description = "Actions"
     display_actions.allow_tags = True
 
@@ -464,7 +465,7 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
             output += '''<a onclick="return showAddAnotherPopup(this);"
                 class="add-another d-none adminonly" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add a notification</a>'''.format(url, obj.pk)
-        return output
+        return mark_safe(output)
     display_notifications.short_description = 'Notifications'
     display_notifications.allow_tags = True
 
@@ -653,14 +654,14 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
             url = reverse('admin:risk_action_add',
                           args=(self.prescription.pk,),
                           current_app=self.admin_site.name)
-            return ('<a class="btn btn-mini btn-success" href="%s?risk=%s">'
-                    'Add</a>') % (url, obj.risk.pk)
+            return mark_safe(('<a class="btn btn-mini btn-success" href="%s?risk=%s">'
+                    'Add</a>') % (url, obj.risk.pk))
         else:
             url = reverse('admin:risk_action_delete',
                           args=(obj.pk, self.prescription.pk),
                           current_app=self.admin_site.name)
-            return ('<a class="btn btn-mini btn-danger" href="%s">'
-                    'Remove</a>') % url
+            return mark_safe(('<a class="btn btn-mini btn-danger" href="%s">'
+                    'Remove</a>') % url)
     add_action.short_description = "Multiple?"
     add_action.allow_tags = True
 

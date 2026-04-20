@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import admin
 from django.contrib.admin.views.main import ChangeList
+from django.utils.safestring import mark_safe
 
 from pbs.admin import BaseAdmin
 from pbs.prescription.admin import PrescriptionMixin, SavePrescriptionMixin
@@ -197,7 +198,7 @@ class EvaluationAdmin(PrescriptionMixin, SavePrescriptionMixin,
         for objective in obj.criteria.objectives.all():
             objectives += "<li>%s</li>" % objective
         objectives += "</ul>"
-        return objectives
+        return mark_safe(objectives)
     objectives.short_description = "Burn objectives"
     objectives.allow_tags = True
 

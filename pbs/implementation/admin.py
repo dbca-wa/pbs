@@ -147,7 +147,7 @@ class LightingSequenceAdmin(PrescriptionMixin, SavePrescriptionMixin,
         for ignition_type in obj.ignition_types.all():
             output += "<li>%s</li>" % ignition_type
         output += "</ul>"
-        return output
+        return mark_safe(output)
     display_ignition_types.short_description = "Planned Core Ignition Types"
     display_ignition_types.admin_order_field = 'ignition_types'
     display_ignition_types.allow_tags = True
