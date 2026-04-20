@@ -380,7 +380,16 @@
     {% endblock %}
     {% if not is_popup %}{% block breadcrumbs %}{% endblock %}{% endif %}
     {% block archive_warning %}
-    {% if current and not current.archive_successful %}
+    {% if current and current.archive_in_progress %}
+    <div class="row-fluid">
+      <div class="span12">
+          <div class="alert alert-warning">
+            <i class="icon-time"></i>
+                Archive PDF generation is in progress for this Prescription. Editing is temporarily locked until the job finishes.
+          </div>
+      </div>
+    </div>
+    {% elif current and not current.archive_successful %}
     <div class="row-fluid">
       <div class="span12">
           <div class="alert alert-error">

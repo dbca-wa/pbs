@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from decimal import Decimal
 from unittest.mock import Mock, patch
 
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import Group, User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.urls import reverse
@@ -441,6 +441,46 @@ class PrescriptionAdminTests(BasePbsTestCase):
             request = self._mocked_authenticated_request(url, user)
             actions = admin.get_actions(request)
             self.assertTrue(action in actions)
+
+    def test_check_archive_status_blocks_when_archive_in_progress(self):
+        prescription = self.make('Prescription', archive_in_progress=True)
+        user = User.objects.create(username='archive-lock-user')
+        request = self._mocked_authenticated_request('/admin/', user)
+
+        self.assertFalse(prescription.check_archive_status(request))
+
+    def test_check_archive_status_allows_override_admin_when_archive_in_progress(self):
+        prescription = self.make('Prescription', archive_in_progress=True)
+        user = User.objects.create(username='override-user')
+        override_group = Group.objects.create(name='Override Application Administrator')
+        user.groups.add(override_group)
+        request = self._mocked_authenticated_request('/admin/', user)
+
+        self.assertTrue(prescription.check_archive_status(request))
+
+    def test_summary_view_locks_archive_in_progress_prescription(self):
+        user = User.objects.get(username='admin')
+        self.client.force_login(user)
+        prescription = self.make('Prescription', archive_in_progress=True)
+
+        response = self.client.get(
+            reverse('admin:prescription_prescription_summary', args=[str(prescription.id)])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['can_edit'])
+
+    def test_summary_post_is_forbidden_while_archive_in_progress(self):
+        user = User.objects.get(username='admin')
+        self.client.force_login(user)
+        prescription = self.make('Prescription', archive_in_progress=True)
+
+        response = self.client.post(
+            reverse('admin:prescription_prescription_summary', args=[str(prescription.id)]),
+            {}
+        )
+
+        self.assertEqual(response.status_code, 403)
 
 
 class CarryOverBurnsTests(BasePbsTestCase):
