@@ -9,17 +9,15 @@ var Vis =  (function visModule(window, document, $) {
     };
     function _ensureToolsHidden(tools, toolsButton, store, visKey) {
         if (!tools.hasClass("d-none")) {
-            toolsButton.removeClass("btn-danger");
             tools.addClass("d-none");
-            toolsButton.addClass("btn-success");
+            toolsButton.text("Show Filter and Column tools");
             this.setToolsVisibility(store, visKey, false);
         }
     };
     function _ensureToolsVisible(tools, toolsButton, store, visKey) {
         if (tools.hasClass("d-none")) {
-            toolsButton.removeClass("btn-success");
             tools.removeClass("d-none");
-            toolsButton.addClass("btn-danger");
+            toolsButton.text("Hide Filter and Column tools");
             this.setToolsVisibility(store, visKey, true);
         }
     }

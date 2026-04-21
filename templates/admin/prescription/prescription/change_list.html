@@ -26,7 +26,7 @@
 <div class="d-flex align-items-center justify-content-between mb-2">
   <h1 class="mb-0">Regional Overview</h1>
   <button id="toggletools" type="button" class="btn btn-success btn-sm">
-      Search and Column tools
+      Show Filter and Column tools
   </button>
 </div>
 {% endblock %}
@@ -55,16 +55,18 @@ list when it is altered by the JS below.
 
 <div class="row toggletools d-none mb-3">
     <div class="col-12">
-        <div class="alert alert-success">
+        <div class="alert alert-info">
             <strong>Filter</strong>
             <div class="row">
                 <div class="filter-tools col-12">
                     <form id="id_form_filtering" action="/prescription/prescription/" method="post">
                         {% csrf_token %}
-                        <div class="d-flex flex-wrap gap-2 align-items-end">
-                            {% multiselect_form %}
-                            <div class="mb-1">
+                        <div class="d-flex align-items-start">
+                            <div class="d-flex flex-wrap gap-1 align-items-center flex-grow-1">
+                                {% multiselect_form %}
                                 <div class="search-tools d-none"></div>
+                            </div>
+                            <div class="ms-2 flex-shrink-0">
                                 <input type="submit"
                                        class="btn btn-success btn-sm"
                                        value="Update selection">
@@ -83,7 +85,7 @@ list when it is altered by the JS below.
             </div>
         </div>
     </div>
-    <div class="col-12">
+    <div class="col-12 d-none">
         <a id="id_filter_url" class="btn btn-success btn-block" href="">Update selection</a>
         <br />
     </div>
@@ -115,7 +117,7 @@ $(document).ready(function($) {
                 if (urlQs[inKey]) preSelected = urlQs[inKey].split(',');
             }
 
-            var $wrapper = $('<div class="d-inline-block me-1 mb-1 filter-dropdown-wrapper"></div>');
+            var $wrapper = $('<div class="d-inline-block filter-dropdown-wrapper"></div>');
             var $btn = $('<button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"></button>').text(title);
             var $menu = $('<ul class="dropdown-menu p-1"></ul>');
             $select.find('option').each(function() {
@@ -251,10 +253,16 @@ $(document).ready(function($) {
     $("#tablemask").removeClass("d-none");
     toolsButton.click(function() {
         if (tools.hasClass("d-none")) {
-            Vis.ensureToolsVisible(tools, toolsButton, myStore, visKey);
+            tools.removeClass("d-none").hide().slideDown(300);
+            toolsButton.text("Hide Filter and Column tools");
+            Vis.setToolsVisibility(myStore, visKey, true);
             initChoices();
         } else {
-            Vis.ensureToolsHidden(tools, toolsButton, myStore, visKey);
+            tools.slideUp(300, function() {
+                tools.addClass("d-none");
+            });
+            toolsButton.text("Show Filter and Column tools");
+            Vis.setToolsVisibility(myStore, visKey, false);
         }
     });
     // If panel is already visible on load, init Choices.js immediately
@@ -274,7 +282,7 @@ $(document).ready(function($) {
     });
     $("input.btn:submit").hide();
     // Insert the new filter button in its place.
-    $("a#id_filter_url").insertAfter($("input.btn:submit"));
+    $("a#id_filter_url").insertAfter($("input.btn:submit")).removeClass("d-none").addClass("btn-sm");
 
     var base_url = "{% url 'admin:prescription_prescription_changelist' %}"
 
