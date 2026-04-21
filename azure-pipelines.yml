@@ -30,8 +30,8 @@ stages:
         command: buildAndPush
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: | 
-              pbs_django_3_latest
-              pbs_django_3_$(tagDate)
+              pbs_django_5_bs_latest
+              pbs_django_5_bs_$(tagDate)
         containerRegistry: DockerHub
         repository: dbcawa/pbs
     - task: Docker@2
