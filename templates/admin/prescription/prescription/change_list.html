@@ -6,6 +6,11 @@
 {{ block.super }}
 <style>
 /* Filter dropdown buttons */
+.filter-dropdown-wrapper .btn-light,
+.column-tools .btn-light {
+  background-color: #d0d5da;
+  border-color: #b8bfc7;
+}
 .filter-dropdown-wrapper .dropdown-menu {
   min-width: 180px;
   max-height: 280px;
@@ -55,7 +60,7 @@ list when it is altered by the JS below.
 
 <div class="row toggletools d-none mb-3">
     <div class="col-12">
-        <div class="alert alert-info">
+        <div class="alert alert-info py-2">
             <strong>Filter</strong>
             <div class="row">
                 <div class="filter-tools col-12">
@@ -78,7 +83,7 @@ list when it is altered by the JS below.
         </div>
     </div>
     <div class="col-12">
-        <div class="alert alert-info">
+        <div class="alert alert-info py-2">
             <strong>Show/Hide Columns</strong>
             <div class="column-tools d-flex flex-wrap gap-1" style="white-space:normal;">
                 <button id="template-button" class="btn btn-sm btn-info d-none">template-button</button>
@@ -118,7 +123,7 @@ $(document).ready(function($) {
             }
 
             var $wrapper = $('<div class="d-inline-block filter-dropdown-wrapper"></div>');
-            var $btn = $('<button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"></button>').text(title);
+            var $btn = $('<button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"></button>').text(title);
             var $menu = $('<ul class="dropdown-menu p-1"></ul>');
             $select.find('option').each(function() {
                 var val = $(this).val();
@@ -134,14 +139,14 @@ $(document).ready(function($) {
             $select.after($wrapper).hide();
             // Highlight button if any values are pre-selected from URL
             if (preSelected.length > 0) {
-                $btn.removeClass('btn-outline-secondary').addClass('btn-primary');
+                $btn.removeClass('btn-light').addClass('btn-info');
             }
             $menu.find('input[type=checkbox]').on('change', function() {
                 var selected = $menu.find('input:checked').map(function() { return $(this).val(); }).get();
                 $select.find('option').prop('selected', false);
                 selected.forEach(function(v) { $select.find('option[value="'+v+'"]').prop('selected', true); });
-                $btn.toggleClass('btn-primary', selected.length > 0)
-                    .toggleClass('btn-outline-secondary', selected.length === 0);
+                $btn.toggleClass('btn-info', selected.length > 0)
+                    .toggleClass('btn-light', selected.length === 0);
                 updateFilterUrl(buildSearchQs());
             });
         });
@@ -190,7 +195,7 @@ $(document).ready(function($) {
         if ($.inArray(cclass, hidden_columns) > -1) {
             var index = $("th.column-" + cclass).index() + 1;
             $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').addClass("d-none");
-            newbutton.removeClass("btn-info").addClass("btn-outline-secondary");
+            newbutton.removeClass("btn-info").addClass("btn-light");
         }
         newbutton.removeClass("d-none");
         $("div.column-tools").append(newbutton);
@@ -201,11 +206,11 @@ $(document).ready(function($) {
         var index = $("th.column-" + button.attr("data-cclass")).index() + 1;
         if (button.hasClass("btn-info")) {
             $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').addClass("d-none");
-            button.removeClass("btn-info").addClass("btn-outline-secondary");
+            button.removeClass("btn-info").addClass("btn-light");
             hidden_columns.push(button.attr("id").slice(7));
         } else {
             $('table#result_list td:nth-child('+index+'),th:nth-child('+index+')').removeClass("d-none");
-            button.removeClass("btn-outline-secondary").addClass("btn-info");
+            button.removeClass("btn-light").addClass("btn-info");
             hidden_columns = $.grep(hidden_columns, function(value) {return button.attr("id").search(value) != 7});
         }
         localStorage.setItem("regional_summary_hidden_columns", JSON.stringify(hidden_columns));
