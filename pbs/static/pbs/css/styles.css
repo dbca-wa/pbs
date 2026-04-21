@@ -384,6 +384,11 @@ div.freetext {
     white-space:pre;
 }
 
+/* Remove underline from breadcrumb links */
+.breadcrumb a {
+    text-decoration: none;
+}
+
 /* Override Bootstrap 5 btn-info to match the original muted teal color */
 .btn-info {
   --bs-btn-color: #fff;
