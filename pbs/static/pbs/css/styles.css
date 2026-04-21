@@ -389,6 +389,11 @@ div.freetext {
     text-decoration: none;
 }
 
+/* Remove underline from sidebar nav-list links */
+.nav-list a {
+    text-decoration: none;
+}
+
 /* Override Bootstrap 5 btn-info to match the original muted teal color */
 .btn-info {
   --bs-btn-color: #fff;
