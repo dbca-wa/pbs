@@ -41,9 +41,11 @@ from pbs.prescription.admin import (PrescriptionAdmin, ObjectiveAdmin,
                                     RegionalObjectiveAdmin,
                                     SuccessCriteriaAdmin,
                                     PriorityJustificationAdmin,
+                                    JobQueueAdmin,
                                     BriefingChecklistAdmin)
 from pbs.prescription.models import (Prescription, RegionalObjective,
                                      Objective, PriorityJustification,
+                                     JobQueue,
                                      SuccessCriteria, BriefingChecklist)
 from pbs.report.admin import (AreaAchievementAdmin, ProposedActionAdmin,
                               EvaluationAdmin, PostBurnChecklistAdmin)
@@ -542,6 +544,7 @@ site.register(RegionalObjective, RegionalObjectiveAdmin)
 site.register(Objective, ObjectiveAdmin)
 site.register(SuccessCriteria, SuccessCriteriaAdmin)
 site.register(PriorityJustification, PriorityJustificationAdmin)
+site.register(JobQueue, JobQueueAdmin)
 
 site.register(RiskCategory, ModelAdmin)
 site.register(Register, RegisterAdmin)

@@ -5,6 +5,7 @@ import shutil
 import humanize
 import subprocess
 import os
+import re
 import time
 import webbrowser
 
@@ -17,13 +18,130 @@ from django.contrib import messages
 
 logger = logging.getLogger('pdf')
 
+
+LATEX_FILE_COMMAND_RE = re.compile(r'\\(?:includegraphics|includepdf)\b')
+LATEX_MISSING_FILE_PATTERNS = [
+    re.compile(r"Cannot find file [`']([^`']+)[`']", re.IGNORECASE),
+    re.compile(r"File [`']([^`']+)[`'] not found", re.IGNORECASE),
+]
+
+
+def _consume_balanced_segment(text, start_index, opening_char, closing_char):
+    if start_index >= len(text) or text[start_index] != opening_char:
+        return None, start_index
+
+    depth = 0
+    current_index = start_index
+    while current_index < len(text):
+        char = text[current_index]
+        if char == opening_char:
+            depth += 1
+        elif char == closing_char:
+            depth -= 1
+            if depth == 0:
+                return text[start_index + 1:current_index], current_index + 1
+        current_index += 1
+
+    return None, start_index
+
+
+def _normalize_latex_path_argument(argument):
+    path = (argument or '').strip()
+    while path.startswith('{') and path.endswith('}'):
+        nested_path, next_index = _consume_balanced_segment(path, 0, '{', '}')
+        if nested_path is None or next_index != len(path):
+            break
+        path = nested_path.strip()
+    return path
+
+
+def _append_distinct_path(paths, seen, value):
+    path = (value or '').strip()
+    if not path or path in seen:
+        return
+    seen.add(path)
+    paths.append(path)
+
+
+def _collapse_wrapped_log_lines(log_output):
+    return re.sub(r'\n\s*', '', log_output or '')
+
+
+def get_latex_file_references(rendered_tex):
+    """Return the distinct filesystem paths referenced by rendered LaTeX."""
+    references = []
+    seen = set()
+
+    for match in LATEX_FILE_COMMAND_RE.finditer(rendered_tex or ''):
+        current_index = match.end()
+        text = rendered_tex or ''
+
+        while current_index < len(text) and text[current_index].isspace():
+            current_index += 1
+
+        if current_index < len(text) and text[current_index] == '[':
+            _, current_index = _consume_balanced_segment(text, current_index, '[', ']')
+            while current_index < len(text) and text[current_index].isspace():
+                current_index += 1
+
+        if current_index >= len(text) or text[current_index] != '{':
+            continue
+
+        argument, _ = _consume_balanced_segment(text, current_index, '{', '}')
+        _append_distinct_path(references, seen, _normalize_latex_path_argument(argument))
+
+    return references
+
+
+def get_missing_latex_file_references(rendered_tex):
+    """Return the referenced LaTeX file paths that do not exist on disk."""
+    return [path for path in get_latex_file_references(rendered_tex) if not os.path.exists(path)]
+
+
+def get_missing_latex_file_references_from_log(log_output):
+    """Return missing file paths reported by LaTeX log output."""
+    missing_files = []
+    seen = set()
+    collapsed_output = _collapse_wrapped_log_lines(log_output)
+
+    for pattern in LATEX_MISSING_FILE_PATTERNS:
+        for match in pattern.finditer(collapsed_output):
+            _append_distinct_path(missing_files, seen, match.group(1))
+
+    return missing_files
+
+
+def format_missing_file_error(missing_files):
+    missing_list = "\n".join(missing_files)
+    return (
+        "PDF generation failed because the following referenced files do not exist:\n\n"
+        "{0}"
+    ).format(missing_list)
+
+
+def copy_pdflatex_artifacts(source_dir, burn_id, downloadname, logfilename):
+    """Copy pdflatex artifacts into the persistent log directory and return the copied log path."""
+    log_dir = os.path.join(
+        settings.BASE_DIR,
+        'logs',
+        'pdf',
+        burn_id,
+        downloadname.replace('.pdf', ''),
+    )
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    shutil.copytree(source_dir, log_dir, dirs_exist_ok=True)
+    return os.path.join(log_dir, logfilename)
+
 class PdflatexResult(object):
-    def __init__(self,err_msg=None,template_file=None,pdf_file=None,log_file=None,directory=None):
+    def __init__(self,err_msg=None,template_file=None,pdf_file=None,log_file=None,directory=None,required_files=None,missing_files=None):
         self.err_msg = err_msg
         self.template_file = template_file
         self.pdf_file = pdf_file
         self.log_file = log_file
         self.directory = directory
+        self.required_files = required_files or []
+        self.missing_files = missing_files or []
         self._filesize = None
         self._humanize_filesize = None
 
@@ -99,6 +217,7 @@ def pdflatex(prescription,template="pfp",downloadname=None,embed=True,headers=Tr
 
     directory = None
     result = PdflatexResult()
+    compile_output = ''
     try:
         subtitles = {
             "parta": "Part A - Summary and Approval",
@@ -137,6 +256,15 @@ def pdflatex(prescription,template="pfp",downloadname=None,embed=True,headers=Tr
             logger.info("Returning result. No PDF output for {0}\n{1}. Check the log file for more info.".format(prescription.burn_id, downloadname))
             return result
 
+        result.required_files = get_latex_file_references(output)
+        result.missing_files = get_missing_latex_file_references(output)
+        if result.required_files:
+            logger.info("PDF preflight found {0} referenced files for {1} {2}.".format(len(result.required_files), prescription.burn_id, downloadname))
+        if result.missing_files:
+            logger.warning("PDF preflight found missing files for %s %s: %s", prescription.burn_id, downloadname, result.missing_files)
+            result.err_msg = format_missing_file_error(result.missing_files)
+            #return result
+
         directory = tempfile.mkdtemp(prefix="pbs_pdflatex")
         if not os.path.exists(directory):
             os.mkdir(directory)
@@ -166,29 +294,54 @@ def pdflatex(prescription,template="pfp",downloadname=None,embed=True,headers=Tr
         #subprocess.call(cmd)
         try:
             res = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            compile_output = "{0}\n{1}".format(
+                res.stdout.decode('utf-8', errors='replace'),
+                res.stderr.decode('utf-8', errors='replace')
+            )
             #print(res.stdout.decode())
         except subprocess.CalledProcessError as e:
             # print(f"Command '{cmd}' failed with return code {e.returncode}")
             logger.info("Command {0} failed with return code {1}".format(cmd, e.returncode))
+            compile_output = "{0}\n{1}".format(
+                e.stdout.decode('utf-8', errors='replace'),
+                e.stderr.decode('utf-8', errors='replace')
+            )
             #print(f"Error output: {e.stderr.decode()}")
         
         logfile = os.path.join(directory, logfilename)
         if os.path.exists(logfile):
             result.log_file = logfile
             if not result.succeed:
-                log_dir=os.path.join(settings.BASE_DIR, 'logs', 'pdf', prescription.burn_id, downloadname.replace('.pdf', ''))
-                if not os.path.exists(log_dir):
-                    os.makedirs(log_dir)
-                    shutil.copytree(directory, log_dir, dirs_exist_ok=True)
-                    copied_log_file= os.path.join(log_dir, logfilename)
-                    result.log_file = copied_log_file
+                result.log_file = copy_pdflatex_artifacts(
+                    directory,
+                    prescription.burn_id,
+                    downloadname,
+                    logfilename,
+                )
         pdffile = os.path.join(directory, filename)
         if os.path.exists(pdffile):
             result.pdf_file = pdffile
             logger.info("PDF output for {0} {1} successful".format(prescription.burn_id, downloadname)) 
         else:
-            err_msg = u"PDF generation failed for "
-            result.err_msg = "{0}\n\n{1}\n\n{2}".format(err_msg,prescription.burn_id,downloadname)
+            missing_files_from_log = []
+            if result.log_file and os.path.exists(result.log_file):
+                with open(result.log_file, 'r') as log_handle:
+                    missing_files_from_log = get_missing_latex_file_references_from_log(log_handle.read())
+            elif compile_output:
+                missing_files_from_log = get_missing_latex_file_references_from_log(compile_output)
+
+            if missing_files_from_log:
+                result.missing_files = missing_files_from_log
+                result.err_msg = format_missing_file_error(result.missing_files)
+                logger.warning(
+                    "PDF compile log found missing files for %s %s: %s",
+                    prescription.burn_id,
+                    downloadname,
+                    result.missing_files,
+                )
+            else:
+                err_msg = u"PDF generation failed for "
+                result.err_msg = "{0}\n\n{1}\n\n{2}".format(err_msg,prescription.burn_id,downloadname)
             logger.info("PDF generation failed after subprocess run for {} {}. Check the log file located at {} for errors ".format(prescription.burn_id, downloadname, result.log_file))            
         # logfile = os.path.join(directory, logfilename)
         # if os.path.exists(logfile):
