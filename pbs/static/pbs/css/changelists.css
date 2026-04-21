@@ -9,8 +9,13 @@ textarea {
 }
 
 #changelist-form .results {
-    overflow-x: auto;
+    overflow-x: scroll;
     width: 100%;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+#changelist-form .results::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
 }
 
 #result_list {
@@ -39,14 +44,10 @@ ul.nav-filter li.active a {
     font-weight: bold;
 }
 
-table .header-fixed {
-  position: fixed;
-  top: 56px;
-  z-index: 1020; /* 10 less than .fixed-top navbar (z-index: 1030) to prevent any overlap */
+/* Fixed header wrapper - positioned dynamically by table-fixed-header.js */
+.fixed-header-wrapper {
   border-bottom: 1px solid #d5d5d5;
-  -webkit-border-radius: 0;
-     -moz-border-radius: 0;
-          border-radius: 0;
+  background-color: #fff;
 }
 
 input {

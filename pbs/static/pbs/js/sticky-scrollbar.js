@@ -14,7 +14,7 @@
         var $proxy = $('<div class="sticky-hscroll-proxy"><div></div></div>');
         $proxy.css({
             position: 'fixed',
-            bottom: '54px', // sits just above the fixed-bottom save bar
+            bottom: '0',
             overflowX: 'scroll',
             overflowY: 'hidden',
             zIndex: 1019,
