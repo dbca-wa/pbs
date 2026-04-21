@@ -233,11 +233,11 @@ h1#site-title, div#site-title {
 
 .topmast {
   background: url("../img/top-bg.gif") repeat-x scroll center bottom #3580CA;
-  padding-top: 40px;
+  padding-top: 43px;
 }
 
 .masthead {
-  min-height: 115px;
+  min-height: 95px;
   padding: 0;
 }
 
@@ -392,6 +392,17 @@ div.freetext {
 /* Remove underline from sidebar nav-list links */
 .nav-list a {
     text-decoration: none;
+}
+
+/* Reduce height of top fixed navbar */
+.navbar.fixed-top {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.navbar.fixed-top .nav-link {
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 /* Override Bootstrap 5 btn-info to match the original muted teal color */
