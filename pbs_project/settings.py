@@ -119,6 +119,7 @@ MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'pbs.middleware.CurrentUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -344,6 +345,12 @@ LOGGING = {
            'class': 'logging.FileHandler',
            'filename': os.path.join(BASE_DIR, 'logs', 'pbs.log'),
        },
+        'job_queue_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'job_queue.log'),
+            'formatter': 'console',
+        },
     },
     'loggers': {
         'django': {
@@ -361,6 +368,11 @@ LOGGING = {
             'handlers': ['file', 'pdf_debugging'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'job_queue_processing': {
+            'handlers': ['job_queue_file'],
+            'level': 'INFO',
+            'propagate': False,
         }
     }
 }
@@ -431,3 +443,4 @@ GIT_COMMIT_DATE = os.popen(f"cd {BASE_DIR}; git log -1 --format=%cd").read()
 # (_save method of FileSystemStorage class)
 # As it causes a permission exception when using azure network drives
 FILE_UPLOAD_PERMISSIONS = None
+PRESCRIPTION_ARCHIVE_USE_QUEUE = env('PRESCRIPTION_ARCHIVE_USE_QUEUE', True)

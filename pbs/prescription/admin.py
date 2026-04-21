@@ -48,7 +48,8 @@ from pbs.prescription.forms import (
     PrescriptionPriorityForm, BriefingChecklistForm,
     FundingAllocationInlineFormSet)
 from pbs.prescription.models import (
-    Season, Prescription, RegionalObjective, Region, FundingAllocation, EndorsingRole)
+    Season, Prescription, RegionalObjective, Region, FundingAllocation,
+    EndorsingRole, JobQueue)
 from django.forms.models import inlineformset_factory
 
 from pbs.report.models import Evaluation
@@ -73,6 +74,36 @@ logger = logging.getLogger('pbs')
 
 class DistrictAdmin(admin.ModelAdmin):
     list_display = ('name', 'region', 'code')
+
+
+class JobQueueAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'job_type', 'status', 'prescription', 'requested_by',
+        'requested_at', 'created_at', 'updated_at', 'attempts'
+    )
+    list_display_links = ('id',)
+    list_editable = ('status',)
+    list_filter = ('status', 'job_type', 'requested_at', 'created_at')
+    search_fields = (
+        'dedupe_key', 'job_type', 'prescription__burn_id',
+        'prescription__name', 'error_message'
+    )
+    list_select_related = ('prescription', 'requested_by')
+    ordering = ('-requested_at', '-id')
+    readonly_fields = (
+        'job_type', 'prescription', 'requested_by', 'dedupe_key', 'payload',
+        'created_at', 'updated_at', 'requested_at', 'started_at',
+        'finished_at', 'attempts', 'error_message'
+    )
+    fields = (
+        'job_type', 'status', 'prescription', 'requested_by', 'dedupe_key',
+        'payload', 'created_at', 'updated_at', 'requested_at', 'started_at',
+        'finished_at', 'attempts', 'error_message'
+    )
+
+    def has_add_permission(self, request):
+        # Queue rows are system generated; allow admin users to review/update.
+        return False
 
 
 class PrescriptionAdmin(DetailAdmin, BaseAdmin):
@@ -1136,12 +1167,12 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                 'admin:prescription_prescription_detail', args=[str(obj.id)]))
             return HttpResponseRedirect(url)
 
-        can_edit = True
-        if obj.archive_successful==False:
-            if obj.override_admin(request.user):
-                can_edit = True
-            else:
-                can_edit = False
+        can_edit = obj.check_archive_status(request)
+        # if obj.archive_successful==False:
+        #     if obj.override_admin(request.user):
+        #         can_edit = True
+        #     else:
+        #         can_edit = False
         objectives = RegionalObjective.objects.filter(
             region=obj.region).exclude(pk__in=obj.regional_objectives.all())
         context = {
@@ -1182,12 +1213,13 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                     return HttpResponse(json.dumps({'errors': form.errors}))
         else:
             form = SummaryCompletionStateForm(instance=obj.pre_state)
-        can_edit = True
-        if obj.archive_successful==False:
-            if obj.override_admin(request.user):
-                can_edit = True
-            else:
-                can_edit = False
+        # can_edit = True
+        # if obj.archive_successful==False:
+        #     if obj.override_admin(request.user):
+        #         can_edit = True
+        #     else:
+        #         can_edit = False
+        can_edit = obj.check_archive_status(request)
         context = {
             'current': obj,
             'form': form,
@@ -1377,12 +1409,13 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                     return HttpResponse(json.dumps({'errors': form.errors}))
         else:
             form = BurnImplementationStateForm(instance=obj.day_state)
-        can_edit = True
-        if obj.archive_successful==False:
-            if obj.override_admin(request.user):
-                can_edit = True
-            else:
-                can_edit = False
+        # can_edit = True
+        # if obj.archive_successful==False:
+        #     if obj.override_admin(request.user):
+        #         can_edit = True
+        #     else:
+        #         can_edit = False
+        can_edit = obj.check_archive_status(request)
         context = {
             'current': obj,
             'form': form,
@@ -1421,12 +1454,13 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
                     return HttpResponse(json.dumps({'errors': form.errors}))
         else:
             form = BurnClosureStateForm(instance=obj.post_state)
-        can_edit = True
-        if obj.archive_successful==False:
-            if obj.override_admin(request.user):
-                can_edit = True
-            else:
-                can_edit = False
+        # can_edit = True
+        # if obj.archive_successful==False:
+        #     if obj.override_admin(request.user):
+        #         can_edit = True
+        #     else:
+        #         can_edit = False
+        can_edit = obj.check_archive_status(request)
         context = {
             'current': obj,
             'form': form,
@@ -1553,14 +1587,16 @@ class PrescriptionMixin(object):
         else:
             #editable = True
             #Remove the save button if pdf archive has failed for the prescription
-            if prescription and hasattr(prescription, 'archive_successful'):
-                if prescription.archive_successful:
-                    editable = True
-                else:
-                    if prescription.override_admin(request.user):
-                        editable = True
-                    else:
-                        editable = False
+            # if prescription and hasattr(prescription, 'archive_successful'):
+            #     if prescription.archive_successful:
+            #         editable = True
+            #     else:
+            #         if prescription.override_admin(request.user):
+            #             editable = True
+            #         else:
+            #             editable = False
+            if prescription and hasattr(prescription, 'check_archive_status'):
+                editable = prescription.check_archive_status(request)
         context = {
             'current': prescription,
             'editable': editable,
@@ -1620,14 +1656,11 @@ class PrescriptionMixin(object):
         base_permission = request.user.has_perm("%s.%s" % (opts.app_label, codename))
         prescription = self.prescription
         if base_permission:
-            if prescription and hasattr(prescription, 'archive_successful'):
-                if prescription.archive_successful:
+            if prescription and hasattr(prescription, 'check_archive_status'):
+                if prescription.check_archive_status(request):
                     return base_permission
                 else:
-                    if prescription.override_admin(request.user):
-                        return base_permission
-                    else:
-                        return False
+                    return False
         return request.user.has_perm("%s.%s" % (opts.app_label, codename))
     
     def has_change_permission(self, request, obj=None):
@@ -1642,14 +1675,11 @@ class PrescriptionMixin(object):
             request.user.has_perm("%s.%s" % (opts.app_label, codename), obj)])
         prescription = self.prescription
         if base_permission:
-            if prescription and hasattr(prescription, 'archive_successful'):
-                if prescription.archive_successful:
+            if prescription and hasattr(prescription, 'check_archive_status'):
+                if prescription.check_archive_status(request):
                     return base_permission
                 else:
-                    if prescription.override_admin(request.user):
-                        return base_permission
-                    else:
-                        return False
+                    return False
         return base_permission
         
     def has_delete_permission(self, request, obj=None):
@@ -1664,14 +1694,11 @@ class PrescriptionMixin(object):
             request.user.has_perm("%s.%s" % (opts.app_label, codename), obj)])
         prescription = self.prescription
         if base_permission:
-            if prescription and hasattr(prescription, 'archive_successful'):
-                if prescription.archive_successful:
+            if prescription and hasattr(prescription, 'check_archive_status'):
+                if prescription.check_archive_status(request):
                     return base_permission
                 else:
-                    if prescription.override_admin(request.user):
-                        return base_permission
-                    else:
-                        return False
+                    return False
         return base_permission
 
     def history_view(self, request, object_id, prescription_id,
