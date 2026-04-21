@@ -4,13 +4,9 @@
 
 {% block content %}
 <style>
-.filter-pad {
-  margin-top: 5px;
-  margin-bottom: -17px !important;
-  margin-left: 10px;
-}
-.adjust-legend{
-  margin-bottom:-40px;
+.filter-form select,
+.filter-form .form-select {
+    width: auto !important;
 }
 
 .ui-datepicker {
@@ -26,79 +22,76 @@
 </style>
 
 {% if report == "summary" or report == "approvals" %}
-<div class="row">
-  <div class="span8 filter-top-pad">
-  </div>
-  <div class="span3 adjust-legend" >
-    <table class="table table-compressed table-bordered table-striped">
-      <tbody>
-        <tr>
-          <th colspan="2">Legend</th>
-        </tr>
-        <tr>
-          <td>Required but not completed</td>
-          <td><i class="icon-warning-sign text-error"></i></td>
-        </tr>
-        {% if report == "summary" %}
-        <tr>
-          <td>Required and completed</td>
-          <td><i class="icon-ok text-success"></i></td>
-        </tr>
-        {% endif %}
-      </tbody>
-    </table>
-  </div>
+<div class="float-end ms-3 mb-2">
+  <table class="table table-compressed table-bordered table-striped">
+    <tbody>
+      <tr>
+        <th colspan="2">Legend</th>
+      </tr>
+      <tr>
+        <td>Required but not completed</td>
+        <td><i class="fa-solid fa-triangle-exclamation text-danger"></i></td>
+      </tr>
+      {% if report == "summary" %}
+      <tr>
+        <td>Required and completed</td>
+        <td><i class="fa-solid fa-check text-success"></i></td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
 </div>
 {% endif %}
 
 <ul id="report-tabs" class="nav nav-tabs">
-    <li id="summary-tab"  "{% if report == "summary" %} class="active"{% endif %}>
-        <a href="{% url 'admin:endorse_authorise_summary' %}?report=summary">
-            <i class="icon-tag"></i>
+    <li class="nav-item">
+        <a class="nav-link {% if report == "summary" %}active{% endif %}" href="{% url 'admin:endorse_authorise_summary' %}?report=summary">
+            <i class="fa-solid fa-tag"></i>
             Endorsements
         </a>
     </li>
-    <li id="approvals-tab" {% if report == "approvals" %} class="active"{% endif %}>
-        <a href="{% url 'admin:endorse_authorise_summary' %}?report=approvals">
-            <i class="icon-plus"></i>
+    <li class="nav-item">
+        <a class="nav-link {% if report == "approvals" %}active{% endif %}" href="{% url 'admin:endorse_authorise_summary' %}?report=approvals">
+            <i class="fa-solid fa-plus"></i>
             Approvals
         </a>
     </li>
-    <li id="ignitions-tab"  "{% if report == "ignitions" %} class="active"{% endif %}>
-        <a href="{% url 'admin:endorse_authorise_summary' %}?report=ignitions">
-            <i class="icon-fire"></i>
+    <li class="nav-item">
+        <a class="nav-link {% if report == "ignitions" %}active{% endif %}" href="{% url 'admin:endorse_authorise_summary' %}?report=ignitions">
+            <i class="fa-solid fa-fire"></i>
             Ignitions
         </a>
     </li>
-    {% if report == "summary" or report == "approvals" %}
-        <li class="filter-pad">
-            <form class="form-inline">
-                <label for="id_region" class="control-label">Region</label>
-                {{ form.region }}
-                <label for="id_district" class="control-label">District</label>
-                {{ form.district }}
-                <button type="submit" class="btn btn-primary">Update</button>
-                {% if report == "approvals" %}
-                    <input class="hidden" name="report" value="approvals">
-                {% endif %}
-            </form>
-        </li>
-    {% else %}
-        <p align="right">
-            <a id="id_href" href="">
-                <button id="id_csv" class="csv_btn btn-primary">Export As CSV</button></a></p>
-    <li class="filter-pad">
-        <form class="form-inline">
-            <label for="id_fromDate" class="control-label">From Date</label>
-            <input type="text" id="id_fromDate" value="{{ fromDate|date:'d-m-Y' }}" name="fromDate"/>
-            <label for="id_toDate" class="control-label">To Date</label>
-            <input type="text" id="id_toDate" value="{{ toDate|date:'d-m-Y' }}" name="toDate"/>
-            <button id="submit" class="btn btn-primary">Update</button>
-            <input class="hidden" name="report" value="ignitions">
-        </form>
-    </li>
-    {% endif %}
 </ul>
+
+{% if report == "summary" or report == "approvals" %}
+<div class="d-flex align-items-center gap-2 mt-2 mb-3 filter-form">
+    <label for="id_region" class="mb-0">Region</label>
+    <form class="d-flex align-items-center gap-2 filter-form">
+        {{ form.region }}
+        <label for="id_district" class="mb-0">District</label>
+        {{ form.district }}
+        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+        {% if report == "approvals" %}
+            <input type="hidden" name="report" value="approvals">
+        {% endif %}
+    </form>
+</div>
+{% else %}
+<div class="d-flex align-items-center gap-2 mt-2 mb-3 filter-form">
+    <form class="d-flex align-items-center gap-2 filter-form">
+        <label for="id_fromDate" class="mb-0 text-nowrap">From Date</label>
+        <input type="text" id="id_fromDate" value="{{ fromDate|date:'d-m-Y' }}" name="fromDate" class="form-control form-control-sm"/>
+        <label for="id_toDate" class="mb-0 text-nowrap">To Date</label>
+        <input type="text" id="id_toDate" value="{{ toDate|date:'d-m-Y' }}" name="toDate" class="form-control form-control-sm"/>
+        <button id="submit" class="btn btn-primary btn-sm">Update</button>
+        <input type="hidden" name="report" value="ignitions">
+    </form>
+    <a id="id_href" href="" class="ms-auto">
+        <button id="id_csv" class="btn btn-primary btn-sm">Export As CSV</button>
+    </a>
+</div>
+{% endif %}
 
 {% if report == "ignitions" %}
 <table id="burns-table" class="table table-striped table-hover table-compressed">
@@ -158,9 +151,9 @@
       <td><a href="{% url 'admin:prescription_prescription_detail' prescription.id %}">{{ prescription.burn_id }}</a></td>
       <td>{{ prescription.name }}</td>
       {% if report == "approvals" %}
-      <td>{% if prescription.maximum_risk == 'Low' %}<div class="text-center"><i class="icon-warning-sign text-error"></i></div>{% endif %}</td>
-      <td>{% if prescription.maximum_risk == 'Medium' %}<div class="text-center"><i class="icon-warning-sign text-error"></i></div>{% endif %}</td>
-      <td>{% if prescription.maximum_risk == 'High' %}<div class="text-center"><i class="icon-warning-sign text-error"></i></div>{% endif %}</td>
+      <td>{% if prescription.maximum_risk == 'Low' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-danger"></i></div>{% endif %}</td>
+      <td>{% if prescription.maximum_risk == 'Medium' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-danger"></i></div>{% endif %}</td>
+      <td>{% if prescription.maximum_risk == 'High' %}<div class="text-center"><i class="fa-solid fa-triangle-exclamation text-danger"></i></div>{% endif %}</td>
       {% else %}
       <td>{% role_required prescription "District Program Leader - Parks and Visitor Services" %}</td>
       <td>{% role_required prescription "Regional Program Leader - Parks and Visitor Services" %}</td>

@@ -4,5 +4,5 @@
 
 
 {% block modal_trigger_label %}
-  <i class="icon-ok"></i> {% if current.endorsement_status == current.ENDORSEMENT_DRAFT %}Submit for endorsement{% else %}Endorse{% endif %}
+  <i class="fa-solid fa-check"></i> {% if current.endorsement_status == current.ENDORSEMENT_DRAFT %}Submit for endorsement{% else %}Endorse{% endif %}
 {% endblock %}

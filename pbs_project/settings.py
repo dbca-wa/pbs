@@ -227,7 +227,7 @@ SITE_TITLE = 'Prescribed Burn System'
 # Define a maximum filesize for file uploads.
 MAXIMUM_FILESIZE_UPLOAD = 200 * 1024 * 1024
 
-CRISPY_TEMPLATE_PACK = 'bootstrap'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Hack to get smart_selects working / happy.
 ADMIN_MEDIA_PREFIX = os.path.join(STATIC_URL, 'admin/')

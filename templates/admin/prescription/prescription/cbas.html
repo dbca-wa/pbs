@@ -2,26 +2,26 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li>{% if current.planning_status == current.PLANNING_DRAFT %}Submit for corporate approval{% else %}Apply corporate approval{% endif %}</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item">{% if current.planning_status == current.PLANNING_DRAFT %}Submit for corporate approval{% else %}Apply corporate approval{% endif %}</li>
+</ol>
 {% endblock %}
 
 {% block content %}
 {% if current.planning_status == current.PLANNING_DRAFT %}
 <h1>Submit for Corporate Approval</h1>
 {% if not current.can_corporate_approve %}
-<div class="alert alert-error">
-    <i class="icon-warning-sign"></i>
+<div class="alert alert-danger">
+    <i class="fa-solid fa-triangle-exclamation"></i>
     Please complete any mandatory Corporate Burn Attributes before submitting for corporate approval.<br>
     They are highlighted in the tables in red below.<br>
     <a href="{{ sectiona1 }}">Click here to navigate to Section A1 - Summary & approval.</a>
 </div>
 {% endif %}
-<div class="alert alert-error">
-    <i class="icon-warning-sign"></i>
+<div class="alert alert-danger">
+    <i class="fa-solid fa-triangle-exclamation"></i>
     <strong>Are you sure you wish to submit this to Corporate Executive?</strong><br>
     This will lock the information in the table below and will prevent further modification of this information for the remainder of the ePFP process.
 </div>

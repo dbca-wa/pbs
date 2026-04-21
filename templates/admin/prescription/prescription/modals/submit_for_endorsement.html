@@ -7,13 +7,13 @@
 
 {% block modal_body %}
   {% if not current.can_endorse %}
-  <div class="alert alert-error">
+  <div class="alert alert-danger">
       <strong>Warning!</strong> Please ensure all areas have been completed before seeking endorsement. <a href="{% url 'admin:prescription_prescription_summary' current.pk %}">Edit Prescription.</a>
   </div>
   {% else %}
   <p>Are you sure you wish to submit this ePFP for endorsement?</p>
   <form action="{% url 'admin:prescription_prescription_endorse' current.pk %}" method="post">{% csrf_token %}
-    <input type="submit" id="id_submit_for_endorsement_form_submit" value="{% trans 'Submit' %}" class="btn btn-primary hide" name="_save"/>
+    <input type="submit" id="id_submit_for_endorsement_form_submit" value="{% trans 'Submit' %}" class="btn btn-primary d-none" name="_save"/>
   </form>
   {% endif %}
 {% endblock %}

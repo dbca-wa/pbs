@@ -3,10 +3,10 @@
 {% load admin_urls admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li>{{ title }}</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item">{{ title }}</li>
+</ol>
 {% endblock %}
 {% block content_title %}<h1>{{ title }}</h1>{% endblock %}
 {% block extrahead %}{{ block.super }}
@@ -41,8 +41,8 @@
     $('#id_bushfire_risk_text_div').insertAfter('label[for="id_purposes_1"]');
     $('#id_vegetation_text_div').insertAfter('label[for="id_purposes_5"]');
 
-    $('td').children('.text-error').parent().addClass('error');
-    $('div#id_pageerrors').find('.text-error').parents('div#id_pageerrors').addClass('error');
+    $('td').children('.text-danger').parent().addClass('error');
+    $('div#id_pageerrors').find('.text-danger').parents('div#id_pageerrors').addClass('error');
     $('input[id^=id_purposes]').change();
 });
 </script>
@@ -70,13 +70,13 @@
 {% block content %}
 <div>
 {% if errors %}
-    <p class="errornote alert alert-block alert-error fade in">
+    <p class="errornote alert alert-block alert-danger fade in">
     {% blocktrans count counter=errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
     </p>
     </div>
 {% endif %}
 <div class="row">
-<div class="span12">
+<div class="col-12">
 <div id="id_pageerrors"><span id="id__all__">
     {% if adminform.form.non_field_errors %}
         {% include "admin/prescription/prescription/display_errors.html" with errors=adminform.form.non_field_errors %}
@@ -141,7 +141,7 @@
                 {% if adminform.form.location.errors %}
                     {% include "admin/prescription/prescription/display_errors.html" with errors=adminform.form.location.errors %}
                 {% endif %}
-                <span id="id_location" class="hidden"></span>
+                <span id="id_location" class="d-none"></span>
             </td>
         </tr>
         <tr>

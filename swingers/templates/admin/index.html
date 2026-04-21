@@ -25,12 +25,12 @@
             <li>
                 {% if entry.is_deletion or not entry.get_admin_url %}
                     <a href="#">
-                      <i class="pull-right icon-trash"></i>
+                      <i class="pull-right fa-solid fa-trash"></i>
                       {{ entry.object_repr }}
                     </a>
                 {% else %}
                     <a href="{{ entry.get_admin_url }}">
-                      <i class="pull-right icon-{% if entry.is_addition %}plus{% endif %}{% if entry.is_change %}edit{% endif %}{% if entry.is_deletion %}trash{% endif %}"></i>
+                      <i class="float-end fa-solid {% if entry.is_addition %}fa-plus{% endif %}{% if entry.is_change %}fa-pen-to-square{% endif %}{% if entry.is_deletion %}fa-trash{% endif %}"></i>
                       {{ entry.object_repr }}
                       {% if entry.content_type %}
                           <small>({% filter capfirst %}{% trans entry.content_type.name %}{% endfilter %})</small>
@@ -52,7 +52,7 @@
     {% for app in app_list %}
         <div class="table-panel">
         <h4>
-          <i class="icon-share-alt"></i>
+          <i class="fa-solid fa-share-nodes"></i>
             <a href="{{ app.app_url }}" class="section" title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}">
                 {% blocktrans with name=app.name %}{{ name }}{% endblocktrans %}
             </a>
@@ -67,13 +67,13 @@
             {% endif %}
 
             {% if model.add_url %}
-                <td style="white-space: nowrap;"><a href="{{ model.add_url }}" class="btn btn-small btn-success"><i class="icon-plus icon-white"></i>{% trans 'Add' %}</a></td>
+                <td style="white-space: nowrap;"><a href="{{ model.add_url }}" class="btn btn-small btn-success"><i class="fa-solid fa-plus text-white"></i>{% trans 'Add' %}</a></td>
             {% else %}
                 <td>&nbsp;</td>
             {% endif %}
 
             {% if model.admin_url %}
-                <td style="white-space: nowrap;"><a href="{{ model.admin_url }}" class="btn btn-small"><i class="icon-edit"></i>{% trans 'Change' %}</a></td>
+                <td style="white-space: nowrap;"><a href="{{ model.admin_url }}" class="btn btn-small"><i class="fa-solid fa-pen-to-square"></i>{% trans 'Change' %}</a></td>
             {% else %}
                 <td>&nbsp;</td>
             {% endif %}

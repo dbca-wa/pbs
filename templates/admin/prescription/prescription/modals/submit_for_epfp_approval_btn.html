@@ -4,10 +4,10 @@
 
 {% block modal_trigger_label %}
 {% if current.approval_status == current.APPROVAL_SUBMITTED %}
-<i class="icon-ok"></i> Approve this ePFP
+<i class="fa-solid fa-check"></i> Approve this ePFP
 {% elif current.approval_status == current.APPROVAL_DRAFT %}
-<i class="icon-ok"></i> Submit for approval
+<i class="fa-solid fa-check"></i> Submit for approval
 {% elif current.current_approval.extension_count < 3 and not current.is_closed %}
-<i class="icon-double-angle-right"></i> Extend Approval
+<i class="fa-solid fa-angles-right"></i> Extend Approval
 {% endif %}
 {% endblock %}

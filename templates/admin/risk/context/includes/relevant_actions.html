@@ -16,7 +16,7 @@
       <td>
         {% if current.is_draft or perms.prescription.can_admin %}
         <input rel="{% url 'admin:risk_contextrelevantaction_change' relevant_action.id current.id %}" type="checkbox"{% if relevant_action.considered %} checked="checked"{% endif %} />
-        <img class="hide" src="{{ spinner_url }}" alt="Saving ..." />
+        <img class="d-none" src="{{ spinner_url }}" alt="Saving ..." />
         {% else %}
         {{ relevant_action.considered|yesno:"Yes,No" }}
         {% endif %}

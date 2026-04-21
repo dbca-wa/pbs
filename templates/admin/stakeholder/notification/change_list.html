@@ -17,7 +17,7 @@
       $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
-        addText: '<i class="icon-plus"></i> Add another notification'
+        addText: '<i class="fa-solid fa-plus"></i> Add another notification'
       });
     });
   })(django.jQuery);
@@ -25,15 +25,15 @@
 {% endblock %}
 
 {% block object-tools-items %}
-<a value="Section D1 &#x2010; Notifications" class="btn-small btn" href="{{ download_pdf }}?template=sectiond1"><i class="icon-print"></i> Download</a>
+<a value="Section D1 &#x2010; Notifications" class="btn-sm btn" href="{{ download_pdf }}?template=sectiond1"><i class="fa-solid fa-print"></i> Download</a>
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li>Section D1 &#x2010; Notifications</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item">Section D1 &#x2010; Notifications</li>
+</ol>
 {% endblock %}
 
 {% block content_title %}
@@ -41,7 +41,7 @@
 
 <script>
   $(document).ready(function () {
-    $('input.vDateField').addClass('input-medium');
+    $('input.vDateField').addClass('form-control');
   });
 </script>
 {% endblock %}

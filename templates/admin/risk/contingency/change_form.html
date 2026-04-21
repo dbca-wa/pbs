@@ -2,13 +2,13 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:risk_contingency_changelist' current.id %}">Section B6 &#x2010; Contingency Plan</a> <span class="divider">/</span></li>
-  <li>Add contingency plan</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:risk_contingency_changelist' current.id %}">Section B6 &#x2010; Contingency Plan</a></li>
+  <li class="breadcrumb-item">Add contingency plan</li>
+</ol>
 {% endblock %}
 
 {% block content_title %}

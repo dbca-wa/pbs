@@ -10,7 +10,7 @@
       $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
-        addText: '<i class="icon-plus"></i> Add another objective'
+        addText: '<i class="fa-solid fa-plus"></i> Add another objective'
       });
     });
   })(django.jQuery);
@@ -19,12 +19,12 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a> <span class="divider">/</span></li>
-  <li>Section A3 &#x2010; Burn Objectives</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a></li>
+  <li class="breadcrumb-item">Section A3 &#x2010; Burn Objectives</li>
+</ol>
 {% endblock %}
 
 {% block pretitle %}
@@ -48,7 +48,7 @@
       <td>{{ objective.objectives }}</td>
       <td>
         {% if 'prescription.delete_regionalobjective' in request.user.get_all_permissions %}
-          <a href="{% url 'admin:prescription_prescription_delete_regional_objective' current.id objective.id %}" class="btn btn-mini alert-error" title="Delete regional objective"><i class="icon-trash"></i></a>
+          <a href="{% url 'admin:prescription_prescription_delete_regional_objective' current.id objective.id %}" class="btn btn-sm alert-danger" title="Delete regional objective"><i class="fa-solid fa-trash"></i></a>
         {% endif %}
       </td>
     </tr>

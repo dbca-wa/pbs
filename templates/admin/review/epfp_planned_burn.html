@@ -30,7 +30,7 @@
 .myCollapse {
       display: none;
 }
-.myCollapse.in {
+.myCollapse.show {
       display: table-row;
 }
 </style>
@@ -38,7 +38,7 @@
 
 {% block content %}
 <div class="row">
-  <div class="span12 filter-top-pad">
+  <div class="col-12 filter-top-pad">
       <p>Click on each row to view a summary for each burn, and to mark each as reviewed.</p>
   </div>
 </div>
@@ -46,19 +46,19 @@
 <ul id="report-tabs" class="nav nav-tabs">
         <li class="filter-pad">
             <form class="form-inline">
-                <label for="id_date" class="control-label">Date</label>
+                <label for="id_date" class="form-label">Date</label>
                 <input type="text" id="id_date" value="{{date}}" name="date"/>
 
-                <label for="id_region" class="control-label">Region</label>
+                <label for="id_region" class="form-label">Region</label>
                 {{ form.region }}
 
                 {% comment %}
-                <label for="id_district" class="control-label">District</label>
+                <label for="id_district" class="form-label">District</label>
                 {{ form.district }}
                 {% endcomment %}
                 <button type="submit" class="btn btn-primary">Update</button>
                 {% if report == "epfp_planned_burn" %}
-                    <input class="hidden" name="report" value="epfp_planned_burn">
+                    <input class="d-none" name="report" value="epfp_planned_burn">
                 {% endif %}
             </form>
         </li>
@@ -69,19 +69,19 @@
 <ul id="report-tabs" class="nav nav-tabs">
     <li id="planned-tab"  "{% if report == "epfp_planned_burns" %} class="active"{% endif %}>
         <a href="{% url 'admin:epfp_planned_burn' %}?report=epfp_planned_burns">
-            <i class="icon-tag"></i>
+            <i class="fa-solid fa-tag"></i>
             Planned
         </a>
     </li>
     <li id="ongoing-tab" {% if report == "epfp_ongoing_burns" %} class="active"{% endif %}>
         <a href="{% url 'admin:epfp_ongoing_burn' %}?report=epfp_ongoing_burns">
-            <i class="icon-plus"></i>
+            <i class="fa-solid fa-plus"></i>
             Ongoing
         </a>
     </li>
     <li id="summary-tab"  "{% if report == "epfp_summary_burns" %} class="active"{% endif %}>
         <a href="{% url 'admin:epfp_planned_burn' %}?report=epfp_summary_burns">
-            <i class="icon-fire"></i>
+            <i class="fa-solid fa-fire"></i>
             Summary
         </a>
     </li>
@@ -112,7 +112,7 @@
   <tbody>
     {% autopaginate queryset 25 %}
     {% for qs in queryset %}
-    <tr class="row-vm" data-toggle="myCollapse" data-target="#{{qs.id}}">
+    <tr class="row-vm" data-bs-toggle="myCollapse" data-bs-target="#{{qs.id}}">
       <td><a href="{% url 'admin:prescription_prescription_detail' qs.prescription.id %}">{{ qs.prescription.burn_id }}</a></td>
       <td>{{ qs.prescription.name }}</td>
       <td>{{ qs.prescription.location }}</td>
@@ -124,10 +124,10 @@
        </td>
       <td>{{ qs.area }}</td>
       <td>{{ qs.est_start }}</td>
-      <td>{% if qs.has_contigency %}<div class="text-center"><i class="icon-ok text-success"></i></div>{% endif %}</td>
-      <td>{% if qs.has_monitoring %}<div class="text-center"><i class="icon-ok text-success"></i></div>{% endif %}</td>
-      <td>{% if qs.contains_lga %}<div class="text-center"><i class="icon-ok text-success"></i></div>{% endif %}</td>
-      <td>{% if qs.contains_dfes %}<div class="text-center"><i class="icon-ok text-success"></i></div>{% endif %}</td>
+      <td>{% if qs.has_contigency %}<div class="text-center"><i class="fa-solid fa-check text-success"></i></div>{% endif %}</td>
+      <td>{% if qs.has_monitoring %}<div class="text-center"><i class="fa-solid fa-check text-success"></i></div>{% endif %}</td>
+      <td>{% if qs.contains_lga %}<div class="text-center"><i class="fa-solid fa-check text-success"></i></div>{% endif %}</td>
+      <td>{% if qs.contains_dfes %}<div class="text-center"><i class="fa-solid fa-check text-success"></i></div>{% endif %}</td>
       <td>{{ qs.conditions }}</td>
     </tr>
     {% endfor %}
@@ -142,7 +142,7 @@
 
 <script>
 $(function(){
-     $("[data-toggle=myCollapse]").click(function( ev ) {
+     $("[data-bs-toggle=myCollapse]").click(function( ev ) {
        ev.preventDefault();
        var target;
        if (this.hasAttribute('data-target')) {
@@ -150,7 +150,7 @@ $(function(){
        } else {
      target = $(this.getAttribute('href'));
        };
-       target.toggleClass("in");
+       target.toggleClass("show");
      });
 
      $("#sorted-table td a").on('click', function (e) { e.stopPropagation(); })

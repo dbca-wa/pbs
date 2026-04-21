@@ -14,7 +14,7 @@ import requests
 
 from pbs.prescription.models import Prescription, Region, District
 from pbs.review.models import PrescribedBurn, AircraftBurn
-from pbs.forms import RequestMixin,SessionPersistenceMixin
+from pbs.forms import Bootstrap5FormMixin, RequestMixin, SessionPersistenceMixin
 
 def check_date(dt):
     today = date.today()
@@ -23,12 +23,12 @@ def check_date(dt):
         raise ValidationError("You must enter burn plans for today or tomorrow's date only.")
 
 
-class BurnStateSummaryForm(forms.Form):
+class BurnStateSummaryForm(Bootstrap5FormMixin, forms.Form):
     region = forms.ModelChoiceField(required=False, queryset=Region.objects.all())
     district = forms.ModelChoiceField(required=False, queryset=District.objects.all())
 
 
-class PrescribedBurnForm(forms.ModelForm):
+class PrescribedBurnForm(Bootstrap5FormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PrescribedBurnForm, self).__init__(*args, **kwargs)
 
@@ -91,7 +91,7 @@ class PrescribedBurnForm(forms.ModelForm):
                  )
 
 
-class PrescribedBurnEditForm(forms.ModelForm):
+class PrescribedBurnEditForm(Bootstrap5FormMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(PrescribedBurnEditForm, self).__init__(*args, **kwargs)
@@ -160,7 +160,7 @@ class PrescribedBurnEditForm(forms.ModelForm):
                  )
 
 
-class PrescribedBurnActiveForm(forms.ModelForm):
+class PrescribedBurnActiveForm(Bootstrap5FormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PrescribedBurnActiveForm, self).__init__(*args, **kwargs)
 
@@ -215,7 +215,7 @@ class PrescribedBurnActiveForm(forms.ModelForm):
             )
 
 
-class PrescribedBurnEditActiveForm(forms.ModelForm):
+class PrescribedBurnEditActiveForm(Bootstrap5FormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PrescribedBurnEditActiveForm, self).__init__(*args, **kwargs)
         prescribed_burn = kwargs.get('instance')
@@ -293,7 +293,7 @@ class ChoiceFieldNoValidation(forms.ChoiceField):
     def validate(self, value):
         pass
 
-class FireForm(forms.ModelForm):
+class FireForm(Bootstrap5FormMixin, forms.ModelForm):
     fire_number = ChoiceFieldNoValidation(required=False)
     year = forms.ChoiceField(required=False)
     include_final_report = forms.BooleanField(label="Show Final Authorised Bushfire Report", required=False)
@@ -349,7 +349,7 @@ class FireForm(forms.ModelForm):
         fields = ('region', 'district', 'year','include_final_report', 'fire_number', 'fire_id','date', 'status', 'area', 'fire_name', 'tenures',)
 
 
-class FireEditForm(forms.ModelForm):
+class FireEditForm(Bootstrap5FormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(FireEditForm, self).__init__(*args, **kwargs)
         prescribed_burn = kwargs.get('instance')
@@ -419,7 +419,7 @@ class FireEditForm(forms.ModelForm):
         fields = ('region', 'district', 'fire_id', 'fire_name', 'tenures', 'date', 'status', 'area',)
 
 
-class PrescribedBurnFilterForm(RequestMixin,SessionPersistenceMixin,forms.ModelForm):
+class PrescribedBurnFilterForm(Bootstrap5FormMixin, RequestMixin, SessionPersistenceMixin, forms.ModelForm):
     approval_status = forms.MultipleChoiceField(required=False, choices=PrescribedBurn.APPROVAL_CHOICES)
 
     def default_initial(self):
@@ -433,7 +433,7 @@ class PrescribedBurnFilterForm(RequestMixin,SessionPersistenceMixin,forms.ModelF
         fields = ('region', 'district', 'approval_status')
         model = PrescribedBurn
 
-class FireSummaryFilterForm(RequestMixin,SessionPersistenceMixin,forms.ModelForm):
+class FireSummaryFilterForm(Bootstrap5FormMixin, RequestMixin, SessionPersistenceMixin, forms.ModelForm):
 
     def default_initial(self):
         return {
@@ -447,7 +447,7 @@ class FireSummaryFilterForm(RequestMixin,SessionPersistenceMixin,forms.ModelForm
 
 
 
-class FireLoadFilterForm(RequestMixin,SessionPersistenceMixin,forms.ModelForm):
+class FireLoadFilterForm(Bootstrap5FormMixin, RequestMixin, SessionPersistenceMixin, forms.ModelForm):
     fire_type = forms.TypedChoiceField(required=False, choices=[(0, '------'), (1, 'Burns'), (2, 'Bushfires')],coerce=lambda val:int(val))
     approval_status = forms.MultipleChoiceField(required=False, choices=PrescribedBurn.APPROVAL_CHOICES)
 
@@ -464,7 +464,7 @@ class FireLoadFilterForm(RequestMixin,SessionPersistenceMixin,forms.ModelForm):
         model = PrescribedBurn
 
 
-class CsvForm(forms.Form):
+class CsvForm(Bootstrap5FormMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         super(CsvForm, self).__init__(*args, **kwargs)
         self.fields['fromDate'].label = 'ha)'
@@ -479,7 +479,7 @@ class CsvForm(forms.Form):
     toDate = forms.DateField(required=True)
 
 
-class AircraftBurnFilterForm(forms.ModelForm):
+class AircraftBurnFilterForm(Bootstrap5FormMixin, forms.ModelForm):
     region = forms.ModelChoiceField(required=False, queryset=Region.objects.all())
     approval_status = forms.ChoiceField(required=False, choices=AircraftBurn.APPROVAL_CHOICES)
 
@@ -488,7 +488,7 @@ class AircraftBurnFilterForm(forms.ModelForm):
         model = AircraftBurn
 
 
-class AircraftBurnForm(forms.ModelForm):
+class AircraftBurnForm(Bootstrap5FormMixin, forms.ModelForm):
     region = forms.ModelChoiceField(required=True, queryset=Region.objects.all())
 
     def __init__(self, *args, **kwargs):
@@ -513,7 +513,7 @@ class AircraftBurnForm(forms.ModelForm):
         model = AircraftBurn
 
 
-class AircraftBurnEditForm(forms.ModelForm):
+class AircraftBurnEditForm(Bootstrap5FormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AircraftBurnEditForm, self).__init__(*args, **kwargs)
 

@@ -1,9 +1,11 @@
-<div id="{% block modal_id %}myModal{% endblock %}" class="modal {% block modal_class %}hide {% endblock %}" tabindex="-1" role="dialog" aria-labelledby="{{ modal_label|default:'myModalLabel' }}" aria-hidden="true">
+<div id="{% block modal_id %}myModal{% endblock %}" class="modal fade {% block modal_class %}{% endblock %}" tabindex="-1" role="dialog" aria-labelledby="{{ modal_label|default:'myModalLabel' }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
 {% block modal %}
   <div class="modal-header">
     {% block modal_header %}
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="{{ modal_label|default:'myModalLabel' }}">{% block modal_header_text %}Modal header{% endblock %}</h3>
+      <h5 class="modal-title" id="{{ modal_label|default:'myModalLabel' }}">{% block modal_header_text %}Modal header{% endblock %}</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     {% endblock %}
   </div>
   <div class="modal-body">
@@ -13,9 +15,11 @@
   </div>
   <div class="modal-footer">
     {% block modal_footer %}
-      {% block modal_btn_close %}<button class="{% block modal_btn_close_class %}btn{% endblock %}" data-dismiss="modal" aria-hidden="true" onclick="{% block modal_btn_close_onclick %}return false;{% endblock %}">{% block modal_btn_close_label %}Close{% endblock %}</button>{% endblock %}
+      {% block modal_btn_close %}<button class="{% block modal_btn_close_class %}btn btn-secondary{% endblock %}" data-bs-dismiss="modal" onclick="{% block modal_btn_close_onclick %}return false;{% endblock %}">{% block modal_btn_close_label %}Close{% endblock %}</button>{% endblock %}
       {% block modal_btn_primary %}<button class="{% block modal_btn_primary_class %}btn btn-primary{% endblock %}" onclick="{% block modal_btn_primary_onclick %}return true;{% endblock %}">{% block modal_btn_primary_label %}Save changes{% endblock %}</button>{% endblock %}
     {% endblock %}
   </div>
 {% endblock %}
+    </div>
+  </div>
 </div>

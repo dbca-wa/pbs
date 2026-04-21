@@ -309,6 +309,7 @@ height: 100%;
 figure {margin:10px;}
 
 .breadcrumb {margin: 10px 0 0 0}
+.breadcrumb a {text-decoration: none;}
 
 .container .visible-phone { display: none !important }
 .container .visible-tablet { display: none !important }

@@ -11,20 +11,20 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a> <span class="divider">/</span></li>
-  <li>Section A2 &#x2010; Risk Management Context Statement</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a></li>
+  <li class="breadcrumb-item">Section A2 &#x2010; Risk Management Context Statement</li>
+</ol>
 {% endblock %}
 
 {% block pretitle %}
 <ul class="nav nav-tabs">
-    <li class="active"><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="icon-legal"></i> Risk management context statement</a></li>
-    <li><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="icon-user"></i> Critical stakeholders</a></li>
-    <li><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="icon-legal"></i> Actions</a></li>
-    <li><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="icon-warning-sign"></i> Risk Register</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{% url 'admin:risk_context_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Risk management context statement</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="fa-solid fa-user"></i> Critical stakeholders</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Actions</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:risk_register_changelist' current.id %}"><i class="fa-solid fa-triangle-exclamation"></i> Risk Register</a></li>
 </ul>
 {% endblock %}
 
@@ -56,7 +56,7 @@ There are no relevant actions for this context statement.
 {% endif %}
 
 <h1>Risk Management Context Statement</h1>
-<p>This burn plan is consistent with <a class="btn btn-small btn-info" href="https://dpaw.sharepoint.com/Key%20documents/Forms/fire%20policies.aspx" target="_blank"><b>Policy Statement No. 88</b></a></p>
+<p>This burn plan is consistent with <a class="btn btn-sm btn-info" href="https://dpaw.sharepoint.com/Key%20documents/Forms/fire%20policies.aspx" target="_blank"><b>Policy Statement No. 88</b></a></p>
 <p>Consider political, economic, social, technical, legal, environmental and other contextual factors including seasonal variations when creating this statement.</p>
 {% if not current.can_corporate_approve and not current.is_draft %}
 <div class="alert clearfix"><strong>Warning!</strong> In order to edit this section, you need to complete all information.</div>
@@ -69,7 +69,7 @@ There are no relevant actions for this context statement.
 {{ block.super }}
 <h1>Context Maps</h1>
 {% if current.endorsement_status == current.ENDORSEMENT_DRAFT %}
-<a href="{{ upload_document }}?tag={{ "Context Map"|tag_id }}&next={{ request.get_full_path }}" class="pull-right btn btn-info btn-small"><b><i class="icon-plus"></i> Upload Context Map</b></a>
+<a href="{{ upload_document }}?tag={{ "Context Map"|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-info btn-sm"><b><i class="fa-solid fa-plus"></i> Upload Context Map</b></a>
 {% endif %}
 {% filter_by_tag_name current.document_set "Context Map" as document_set %}
 {% include "admin/document_list.html" with document_type="Context Maps" %}

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 from django.template.defaultfilters import date, time
 from django.utils.safestring import mark_safe
 
@@ -9,7 +10,6 @@ from pbs.implementation.utils import field_range
 from pbs.prescription.admin import (PrescriptionMixin,
                                     SavePrescriptionMixin)
 
-from chosen.widgets import ChosenSelectMultiple
 from django.conf import settings
 import json
 
@@ -138,7 +138,7 @@ class LightingSequenceAdmin(PrescriptionMixin, SavePrescriptionMixin,
     lock_after = 'endorsement'
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        kwargs['widget'] = ChosenSelectMultiple()
+        kwargs['widget'] = forms.SelectMultiple(attrs={'class': 'form-select form-select-sm'})
         return super(LightingSequenceAdmin, self).formfield_for_manytomany(
             db_field, request, **kwargs)
 
@@ -147,7 +147,7 @@ class LightingSequenceAdmin(PrescriptionMixin, SavePrescriptionMixin,
         for ignition_type in obj.ignition_types.all():
             output += "<li>%s</li>" % ignition_type
         output += "</ul>"
-        return output
+        return mark_safe(output)
     display_ignition_types.short_description = "Planned Core Ignition Types"
     display_ignition_types.admin_order_field = 'ignition_types'
     display_ignition_types.allow_tags = True

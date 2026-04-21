@@ -13,7 +13,7 @@
     {% for document in document_set %}
     {% get_obj_perms request.user for document as "document_perms" %}
     <tr>
-      <td><a href="{% url 'document_download' pk=document.pk %}" target="_blank" download><i class="icon-file"></i> {{ document.filename }}</a></td>
+      <td><a href="{% url 'document_download' pk=document.pk %}" target="_blank" download class="text-decoration-none"><i class="fa-solid fa-file"></i> {{ document.filename }}</a></td>
       <td>
 	{% if document.exists %}
 		{{ document.document.size|filesizeformat }}
@@ -23,7 +23,7 @@
 </td>
       <td>{{ document.modified }}</td>
       <td>{{ document.modifier.get_full_name }}</td>
-      <td>{% if "delete_document" in document_perms %}<a class="btn btn-mini alert-error" href="{% url 'admin:document_document_delete' document.pk current.pk %}?next={{ request.get_full_path }}"><i class="icon-trash"></i></a>{% endif %}</td>
+      <td>{% if "delete_document" in document_perms %}<a class="text-danger" href="{% url 'admin:document_document_delete' document.pk current.pk %}?next={{ request.get_full_path }}" title="Delete" style="line-height:1;"><i class="fa-solid fa-trash"></i></a>{% endif %}</td>
     </tr>
     {% empty %}
     <tr>

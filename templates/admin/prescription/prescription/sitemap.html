@@ -2,11 +2,11 @@
 {% load i18n static %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li>Sitemap</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item">Sitemap</li>
+</ol>
 {% endblock %}
 
 {% block content_title %}
@@ -14,74 +14,74 @@
 {% endblock %}
 
 {% block content %}
-<div class="span12">
-<div class="span10">
+<div class="col-12">
+<div class="col-10">
     <h3><a href="{{ overview }}">ePFP Overview</a></h3>
 </div>
 </div>
-<div class="span12">
-<div class="span3">
+<div class="col-12">
+<div class="col-3">
 <h3><a href="{{ parta }}">Part A</a></h3>
 <ul>
-    <li><a href="{{ parta }}"><i class="icon-dashboard"></i> Part A Summary</a></li>
-    <li><a href="{{ sectiona1 }}"><i class="icon-lemon"></i> Summary &amp; Approval</a></li>
-    <li><a href="{{ sectiona2 }}"><i class="icon-legal"></i> Context Statement</a></li>
-    <li><a href="{{ critical_stakeholders }}"><i class="icon-user"></i> Critical Stakeholders</a></li>
-    <li><a href="{{ objectives_url }}"><i class="icon-list"></i> Burn Objectives</a></li>
-    <li><a href="{{ success_criteria }}"><i class="icon-ok"></i> Success Criteria</a></li>
-    <li><a href="{{ priority_justification }}"><i class="icon-thumbs-up"></i> Priority Justification</a></li>
-    <li><a href="{{ sectiona5 }}"><i class="icon-eye-open"></i> Complexity Analysis</a></li>
-    <li><a href="{{ sectiona6 }}"><i class="icon-warning-sign"></i> Risk Register</a></li>
+    <li><a href="{{ parta }}"><i class="fa-solid fa-gauge"></i> Part A Summary</a></li>
+    <li><a href="{{ sectiona1 }}"><i class="fa-solid fa-lemon"></i> Summary &amp; Approval</a></li>
+    <li><a href="{{ sectiona2 }}"><i class="fa-solid fa-scale-balanced"></i> Context Statement</a></li>
+    <li><a href="{{ critical_stakeholders }}"><i class="fa-solid fa-user"></i> Critical Stakeholders</a></li>
+    <li><a href="{{ objectives_url }}"><i class="fa-solid fa-list"></i> Burn Objectives</a></li>
+    <li><a href="{{ success_criteria }}"><i class="fa-solid fa-check"></i> Success Criteria</a></li>
+    <li><a href="{{ priority_justification }}"><i class="fa-solid fa-thumbs-up"></i> Priority Justification</a></li>
+    <li><a href="{{ sectiona5 }}"><i class="fa-solid fa-eye"></i> Complexity Analysis</a></li>
+    <li><a href="{{ sectiona6 }}"><i class="fa-solid fa-triangle-exclamation"></i> Risk Register</a></li>
 </ul>
 </div>
-<div class="span4">
+<div class="col-4">
 <h3><a href="{{ partb }}">Part B</a></h3>
 <ul>
-    <li><a href="{{ partb }}"><i class="icon-dashboard"></i> Part B Summary</a></li>
-    <li><a href="{{ actions }}"><i class="icon-list-ol"></i> Plan Actions</a></li>
-    <li><a href="{{ actions }}?pre_burn=True"><i class="icon-tasks"></i> Pre-burn actions</a></li>
-    <li><a href="{{ actions }}?day_of_burn=True"><i class="icon-legal"></i> Day of burn actions</a></li>
-    <li><a href="{{ sectionb3_roads }}"><i class="icon-road"></i> Roads</a></li>
-    <li><a href="{{ sectionb3_trails }}"><i class="icon-code-fork"></i> Tracks and Trails</a></li>
-    <li><a href="{{ sectionb3_inspection }}"><i class="icon-credit-card"></i> Sign Inspection & Surveillance</a></li>
-    <li><a href="{{ burning_prescription }}"><i class="icon-leaf"></i> Burning Prescription</a></li>
-    <li><a href="{{ edging_plan }}"><i class="icon-check-empty"></i> Edging Plan</a></li>
-    <li><a href="{{ lighting_sequence }}"><i class="icon-list-ol"></i> Lighting Sequence</a></li>
-    <li><a href="{{ exclusion_area }}"><i class="icon-ban-circle"></i> Areas to be Excluded from ignition</a></li>
-    <li><a href="{{ contingency }}"><i class="icon-warning-sign"></i> Contingency Plan</a></li>
-    <li><a href="{{ org_structure }}"><i class="icon-group"></i> Organisational Structure</a></li>
-    <li><a href="{{ briefing_checklist }}"><i class="icon-align-left"></i> Briefing Checklist (SMEACS)</a></li>
-    <li><a href="{{ sectionb9 }}"><i class="icon-align-left"></i> Operations Officer's Day of Burn Checklist</a></li>
-    <li><a href="{{ sectionb10 }}"><i class="icon-fire"></i> Fire and Weather Observations</a></li>
-    <li><a href="{{ area_achievement }}"><i class="icon-fire"></i> DoB achievement update</a></li>
+    <li><a href="{{ partb }}"><i class="fa-solid fa-gauge"></i> Part B Summary</a></li>
+    <li><a href="{{ actions }}"><i class="fa-solid fa-list-ol"></i> Plan Actions</a></li>
+    <li><a href="{{ actions }}?pre_burn=True"><i class="fa-solid fa-list-check"></i> Pre-burn actions</a></li>
+    <li><a href="{{ actions }}?day_of_burn=True"><i class="fa-solid fa-scale-balanced"></i> Day of burn actions</a></li>
+    <li><a href="{{ sectionb3_roads }}"><i class="fa-solid fa-road"></i> Roads</a></li>
+    <li><a href="{{ sectionb3_trails }}"><i class="fa-solid fa-code-fork"></i> Tracks and Trails</a></li>
+    <li><a href="{{ sectionb3_inspection }}"><i class="fa-solid fa-credit-card"></i> Sign Inspection & Surveillance</a></li>
+    <li><a href="{{ burning_prescription }}"><i class="fa-solid fa-leaf"></i> Burning Prescription</a></li>
+    <li><a href="{{ edging_plan }}"><i class="fa-regular fa-square"></i> Edging Plan</a></li>
+    <li><a href="{{ lighting_sequence }}"><i class="fa-solid fa-list-ol"></i> Lighting Sequence</a></li>
+    <li><a href="{{ exclusion_area }}"><i class="fa-solid fa-ban"></i> Areas to be Excluded from ignition</a></li>
+    <li><a href="{{ contingency }}"><i class="fa-solid fa-triangle-exclamation"></i> Contingency Plan</a></li>
+    <li><a href="{{ org_structure }}"><i class="fa-solid fa-users"></i> Organisational Structure</a></li>
+    <li><a href="{{ briefing_checklist }}"><i class="fa-solid fa-align-left"></i> Briefing Checklist (SMEACS)</a></li>
+    <li><a href="{{ sectionb9 }}"><i class="fa-solid fa-align-left"></i> Operations Officer's Day of Burn Checklist</a></li>
+    <li><a href="{{ sectionb10 }}"><i class="fa-solid fa-fire"></i> Fire and Weather Observations</a></li>
+    <li><a href="{{ area_achievement }}"><i class="fa-solid fa-fire"></i> DoB achievement update</a></li>
 </ul>
 </div>
-<div class="span3">
+<div class="col-3">
 <h3><a href="{{ post_summary}}">Part C</a></h3>
 <ul>
-    <li><a href="{{ post_summary }}"><i class="icon-dashboard"></i> Part C Summary</a></li>
-    <li><a href="{{ actions }}?post_burn=True"><i class="icon-warning-sign"></i> Post burn actions</a></li>
-    <li><a href="{{ evaluation }}"><i class="icon-trophy"></i> Burn evaluation summary</a></li>
-    <li><a href="{{ proposed_action }}"><i class="icon-bell"></i> Lessons learned</a></li>
-    <li><a href="{{ post_burn_checklist }}"><i class="icon-list"></i> Post burn checklist</a></li>
-    <li{% if not current.can_close or current.is_closed %} class="disabled"{% endif %}><a href="{% if current.can_close and not current.is_closed %}{% url 'admin:prescription_prescription_close' current.pk %}{% else %}javascript:void(0);{% endif %}"><i class="icon-folder-close"></i> {% if current.can_close %}{% if current.is_closed %}Burn closed{% else %}Close this burn{% endif %}{% else %}Burn closure unavailable{% endif %}</a></li>
+    <li><a href="{{ post_summary }}"><i class="fa-solid fa-gauge"></i> Part C Summary</a></li>
+    <li><a href="{{ actions }}?post_burn=True"><i class="fa-solid fa-triangle-exclamation"></i> Post burn actions</a></li>
+    <li><a href="{{ evaluation }}"><i class="fa-solid fa-trophy"></i> Burn evaluation summary</a></li>
+    <li><a href="{{ proposed_action }}"><i class="fa-solid fa-bell"></i> Lessons learned</a></li>
+    <li><a href="{{ post_burn_checklist }}"><i class="fa-solid fa-list"></i> Post burn checklist</a></li>
+    <li{% if not current.can_close or current.is_closed %} class="disabled"{% endif %}><a href="{% if current.can_close and not current.is_closed %}{% url 'admin:prescription_prescription_close' current.pk %}{% else %}javascript:void(0);{% endif %}"><i class="fa-solid fa-folder"></i> {% if current.can_close %}{% if current.is_closed %}Burn closed{% else %}Close this burn{% endif %}{% else %}Burn closure unavailable{% endif %}</a></li>
 </ul>
 </div>
 </div>
-<div class="span12">
-<div class="span3">
+<div class="col-12">
+<div class="col-3">
 <h3><a href="{{ documents }}">Part D</a></h3>
 <ul>
-    <li><a href="{{ upload_document }}"><i class="icon-plus"></i> Upload Document </a></li>
+    <li><a href="{{ upload_document }}"><i class="fa-solid fa-plus"></i> Upload Document </a></li>
 </ul>
 </div>
-<div class="span3">
+<div class="col-3">
 {% if perms.add_regionalobjective %}
 <h3><a href="{% url 'admin:site_admin' %}">Administration</a></h3>
 <ul>
-  <li><a href="{% url 'admin:auth_user_changelist' %}"><i class="icon-user"></i> Users</a></li>
-  <li><a href="{% url 'admin:auth_group_changelist' %}"><i class="icon-group"></i> Groups</a></li>
-  <li><a href="{% url 'admin:prescription_regionalobjective_changelist' %}"><i class="icon-tasks"></i> Regional objectives</a></li>
+  <li><a href="{% url 'admin:auth_user_changelist' %}"><i class="fa-solid fa-user"></i> Users</a></li>
+  <li><a href="{% url 'admin:auth_group_changelist' %}"><i class="fa-solid fa-users"></i> Groups</a></li>
+  <li><a href="{% url 'admin:prescription_regionalobjective_changelist' %}"><i class="fa-solid fa-list-check"></i> Regional objectives</a></li>
 </ul>
 {% endif %}
 </div>

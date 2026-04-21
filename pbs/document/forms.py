@@ -1,8 +1,9 @@
 from django import forms
 from pbs.document.models import DocumentTag, Document
+from pbs.forms import Bootstrap5FormMixin
 
 
-class DocumentForm(forms.ModelForm):
+class DocumentForm(Bootstrap5FormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DocumentForm, self).__init__(*args, **kwargs)
         if (kwargs.get('initial') is not None and

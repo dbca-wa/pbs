@@ -12,11 +12,11 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li>{{ title }}</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item">{{ title }}</li>
+</ol>
 {% endblock %}
 
 {% block content %}
@@ -47,7 +47,7 @@ the DPaW procedure for planning prescribed fire plans.</blockquote>
         <label for="id_valid_to">Valid to ({{ current.planned_season_object.start }} - {{ current.planned_season_object.end }}):</label> {{ form.form.valid_to }}
         {% if form.form.valid_to.errors %}
             {% for error in form.form.valid_to.errors %}
-            <p class="errornote alert alert-block alert-error fade in"><i class='icon-warning-sign'></i> {{ error }}</p>
+            <p class="errornote alert alert-block alert-danger fade in"><i class='fa-solid fa-triangle-exclamation'></i> {{ error }}</p>
             {% endfor %}
         {% endif %}
 

@@ -2,9 +2,10 @@ from django import forms
 
 from pbs.risk.models import Risk, Treatment, TreatmentLocation
 from pbs.utils.widgets import CheckboxSelectMultiple
+from pbs.forms import Bootstrap5FormMixin
 
 
-class RiskForm(forms.ModelForm):
+class RiskForm(Bootstrap5FormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RiskForm, self).__init__(*args, **kwargs)
         if (kwargs.get('initial') is not None and
@@ -18,7 +19,7 @@ class RiskForm(forms.ModelForm):
         fields = ('prescription', 'category', 'name', )
 
 
-class TreatmentForm(forms.ModelForm):
+class TreatmentForm(Bootstrap5FormMixin, forms.ModelForm):
     #locations = forms.ModelMultipleChoiceField(required=True,
     #    queryset=TreatmentLocation.objects.all(),
     #    widget=CheckboxSelectMultiple())
@@ -35,7 +36,7 @@ class TreatmentForm(forms.ModelForm):
         exclude = ('register', 'complete')
 
 
-class TreatmentCompleteForm(forms.ModelForm):
+class TreatmentCompleteForm(Bootstrap5FormMixin, forms.ModelForm):
     class Meta:
         model = Treatment
         exclude = ('register', 'description', 'location')

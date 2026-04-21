@@ -15,7 +15,7 @@
       $("#result_list tbody tr").tabularFormset(this, {
         prefix: "{{ cl.formset.prefix }}",
         adminStaticPrefix: '{% static "admin/" %}',
-        addText: '<i class="icon-plus"></i> Add another ignition'
+        addText: '<i class="fa-solid fa-plus"></i> Add another ignition'
       });
     });
   })(django.jQuery);
@@ -71,11 +71,11 @@
       $('<tr>').appendTo('#result-list tbody');
       // Unhide the alert div if total_edged exceeds planned prescription perimeter.
       if (total_edged > planned_edged) {
-          $('div#id_div_edged_alert').removeClass('hidden');
+          $('div#id_div_edged_alert').removeClass('d-none');
       }
       // Unhide the alert div if total_area exceeds planned prescription area.
       if (total_treated > planned_burnt_area) {
-          $('div#id_div_burnt_area_alert').removeClass('hidden');
+          $('div#id_div_burnt_area_alert').removeClass('d-none');
       }
     });
 
@@ -96,18 +96,18 @@
 {% block object-tools %}{% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a> <span class="divider">/</span></li>
-  <li>Section B11 &#x2010; Day of burn achievement update</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
+  <li class="breadcrumb-item">Section B11 &#x2010; Day of burn achievement update</li>
+</ol>
 {% endblock %}
 
 {% block content_title %}
 <h1>Day of Burn Achievement Update</h1>
-<div id="id_div_burnt_area_alert" class="alert alert-info hidden"><i class="icon-exclamation-sign"></i> <strong>Notice:</strong> Total treatment area exceeds the planned burn area ({{ current.area }} ha). If this is valid for this burn, please ignore this message.</div>
-<div id="id_div_edged_alert" class="alert alert-info hidden"><i class="icon-exclamation-sign"></i> <strong>Notice:</strong> The successful length of edging exceeds the planned burn perimeter ({{ current.perimeter }} km). If this is valid for this burn, please ignore this message.</div>
+<div id="id_div_burnt_area_alert" class="alert alert-info d-none"><i class="fa-solid fa-circle-exclamation"></i> <strong>Notice:</strong> Total treatment area exceeds the planned burn area ({{ current.area }} ha). If this is valid for this burn, please ignore this message.</div>
+<div id="id_div_edged_alert" class="alert alert-info d-none"><i class="fa-solid fa-circle-exclamation"></i> <strong>Notice:</strong> The successful length of edging exceeds the planned burn perimeter ({{ current.perimeter }} km). If this is valid for this burn, please ignore this message.</div>
 {% endblock %}
 
 {% block content %}
@@ -115,7 +115,7 @@
 {% endblock %}
 
 {% block extra-forms-bottom %}
-<div class="pull-right">
+<div class="float-end">
 {{ ignition_completed_date_form.as_p }}
 </div>
 {% endblock %}

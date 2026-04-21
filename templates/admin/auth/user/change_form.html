@@ -3,11 +3,11 @@
 
 {% if not is_popup %}
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:auth_user_changelist' %}">Manage Users</a> <span class="divider">/</span></li>
-  <li>Update User</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:auth_user_changelist' %}">Manage Users</a></li>
+  <li class="breadcrumb-item">Update User</li>
+</ol>
 {% endblock %}
 {% endif %}
 

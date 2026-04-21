@@ -1,24 +1,30 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static admin_list %}
 
+{% block extrastyle %}
+<style>
+#state td select { min-width: 9rem; }
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li>Part C &#x2010; Burn closure and evaluation</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item">Part C &#x2010; Burn closure and evaluation</li>
+</ol>
 {% endblock %}
 
 {% block contentwrapper %}
 <div class="row">
-<div class="span12">
-<ul class="nav nav-tabs">
-    <li><a href="{% url 'admin:prescription_prescription_detail' current.pk %}">Overview</a></li>
-    <li><a href="{% url 'admin:prescription_prescription_summary' current.pk %}">Part A</a></li>
-    <li><a href="{% url 'admin:prescription_prescription_day_summary' current.pk %}">Part B</a></li>
-    <li class="active"><a href="{% url 'admin:prescription_prescription_post_summary' current.pk %}">Part C</a></li>
+<div class="col-12">
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_detail' current.pk %}">Overview</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_summary' current.pk %}">Part A</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_day_summary' current.pk %}">Part B</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{% url 'admin:prescription_prescription_post_summary' current.pk %}">Part C</a></li>
 </ul>
-<h1>Part C Summary &#x2010; Burn Closure and Evaluation <a value="Preview Part C" class="btn pull-right" href="{{ download_pdf }}?template=partc"><i class="icon-print"></i> Preview Part C</a></h1>
+<h1>Part C Summary &#x2010; Burn Closure and Evaluation <a value="Preview Part C" class="btn btn-sm btn-primary float-end" href="{{ download_pdf }}?template=partc"><i class="fa-solid fa-print"></i> Preview Part C</a></h1>
 <h2>Completion Checklist</h2>
 {% if not current.is_approved %}
 <div class="alert clearfix">
@@ -32,59 +38,59 @@
     <tr>
       <th>Section</th>
       <th width="10%">Complete</th>
-      <th width="1%">Preview</th>
+      <th width="1%" class="text-center">Preview</th>
     </tr>
   </thead>
   <tbody>
     <tr class="{% if current.post_state.post_actions %}success{% else %}{% if current.post_state.post_actions == None %}info{% else %}error{% endif %}{% endif %}">
       <th><a href="{% url 'admin:risk_action_changelist' current.id %}?post_burn=True">Section C1 &#x2010; Post-burn actions</a></th>
       <td>{% if not current.is_closed %}{{ form.post_actions }}{% else %}{{ current.post_state.post_actions|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section C1 &#x2010; Post-burn actions" class="btn" href="{{ download_pdf }}?template=sectionc1"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section C1 &#x2010; Post-burn actions" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionc1"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.post_state.evaluation_summary %}success{% else %}error{% endif %}">
       <th><a href="{% url 'admin:report_evaluation_changelist' current.id %}">Section C2 &#x2010; Burn evaluation summary</a></th>
       <td>{% if not current.is_closed %}{{ form.evaluation_summary }}{% else %}{{ current.post_state.evaluation_summary|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section C2 &#x2010; Burn evaluation summary" class="btn" href="{{ download_pdf }}?template=sectionc2"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section C2 &#x2010; Burn evaluation summary" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionc2"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.post_state.evaluation %}success{% else %}{% if current.post_state.evaluation == None %}info{% else %}error{% endif %}{% endif %}">
       <th><a href="{% url 'admin:report_proposedaction_changelist' current.id %}">Section C3 &#x2010; Burn evaluation &#x2010; Lessons learned</a></th>
       <td>{% if not current.is_closed %}{{ form.evaluation }}{% else %}{{ current.post_state.evaluation|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section C3 &#x2010; Burn evaluation &#x2010; Lessons learned" class="btn" href="{{ download_pdf }}?template=sectionc3"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section C3 &#x2010; Burn evaluation &#x2010; Lessons learned" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionc3"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.post_state.post_burn_checklist %}success{% else %}error{% endif %}">
       <th><a href="{% url 'admin:report_postburnchecklist_changelist' current.id %}">Section C4 &#x2010; Post&#x2010;burn checklist</a></th>
       <td>{% if not current.is_closed %}{{ form.post_burn_checklist }}{% else %}{{ current.post_state.post_burn_checklist|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section C4 &#x2010; Post&#x2010;burn checklist" class="btn" href="{{ download_pdf }}?template=sectionc4"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section C4 &#x2010; Post&#x2010;burn checklist" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionc4"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.post_state.closure_declaration %}success{% else %}error{% endif %}">
       <th><a href="{% if current.can_close %}{% url 'admin:prescription_prescription_close' current.id %}{% else %}javascript:void(0);{% endif %}">Section C4 &#x2010; Closure declaration</a></th>
       <td>{% if not current.is_closed %}{{ form.closure_declaration }}{% else %}{{ current.post_state.closure_declaration|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section C4 &#x2010; Closure declaration" class="btn" href="{{ download_pdf }}?template=sectionc4"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section C4 &#x2010; Closure declaration" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionc4"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.post_state.signage %}success{% else %}{% if current.post_state.signage == None %}info{% else %}error{% endif %}{% endif %}">
       <th><a href="{{ sectionb3_inspection }}">Section B3 &#x2010; Sign Inspection and Surveillance</a></th>
       <td>{% if not current.is_closed %}{{ form.signage }}{% else %}{{ current.post_state.signage|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Section B3 &#x2010; Sign Inspection and Surveillance" class="btn" href="{{ download_pdf }}?template=sectionb3"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section B3 &#x2010; Sign Inspection and Surveillance" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectionb3"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.post_state.post_ignitions %}success{% elif current.post_state.post_ignitions == None %}info{% else %}error{% endif %}">
         <th><a href="{% url 'admin:document_document_changelist' current.id %}">Maps of burn after each ignition</a></th>
       <td>{% if not current.is_closed %}{{ form.post_ignitions }}{% else %}{{ current.post_state.post_ignitions|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Maps of burn after each ignition" class="btn" href="{{ download_pdf }}?template=partd"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Maps of burn after each ignition" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=partd"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.post_state.aerial_intensity %}success{% elif current.post_state.aerial_intensity == None %}info{% else %}error{% endif %}">
       <th><a href="{% url 'admin:document_document_changelist' current.id %}">Aerial plot burnt/unburnt</a></th>
       <td>{% if not current.is_closed %}{{ form.aerial_intensity }}{% else %}{{ current.post_state.aerial_intensity|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Aerial plot burnt/unburnt" class="btn" href="{{ download_pdf }}?template=partd"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Aerial plot burnt/unburnt" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=partd"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.post_state.satellite_intensity %}success{% elif current.post_state.satellite_intensity == None %}info{% else %}error{% endif %}">
       <th><a href="{% url 'admin:document_document_changelist' current.id %}">Satellite imagery burnt/unburnt</a></th>
       <td>{% if not current.is_closed %}{{ form.satellite_intensity }}{% else %}{{ current.post_state.satellite_intensity|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Satellite imagery burnt/unburnt" class="btn" href="{{ download_pdf }}?template=partd"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Satellite imagery burnt/unburnt" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=partd"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.post_state.other %}success{% else %}{% if current.post_state.other == None %}info{% else %}error{% endif %}{% endif %}">
       <th>Other</th>
       <td>{% if not current.is_closed %}{{ form.other }}{% else %}{{ current.post_state.other|yesno:"Complete,Incomplete,Not Applicable" }}{% endif %}</td>
-        <td><a value="Other" class="btn" href="{{ download_pdf }}?template=partc"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Other" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=partc"><i class="fa-solid fa-print"></i></a></td>
     </tr>
   </tbody>
 </table>
@@ -129,16 +135,16 @@ $(function() {
     });
     request.done(function(data) {
       if (data.errors) {
-        select.parent().prev('th').children('.text-error').remove();
+        select.parent().prev('th').children('.text-danger').remove();
         var errors = [];
         for (var error in data.errors) {
           errors.push($('<p>').text(' ' + data.errors[error].join(", ")).prepend(
-            $('<i>').addClass('icon-warning-sign')).addClass('text-error'));
+            $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-danger'));
         }
         select.parent().prev('th').append(errors);
         select.val(select.data('lastSelected'));
       } else {
-        select.parent().prev('th').children('.text-error').remove();
+        select.parent().prev('th').children('.text-danger').remove();
         var selects = $('select');
         var total = selects.filter(function() {
             return $(this).val() === 'True' || $(this).val() === 'False';

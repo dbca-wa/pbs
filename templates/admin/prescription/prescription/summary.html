@@ -1,24 +1,30 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static admin_list %}
 
+{% block extrastyle %}
+<style>
+#state td select { min-width: 9rem; }
+</style>
+{% endblock %}
+
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li>Part A &#x2010; Summary and Approval</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item">Part A &#x2010; Summary and Approval</li>
+</ol>
 {% endblock %}
 
 {% block contentwrapper %}
 <div class="row">
-<div class="span12">
-<ul class="nav nav-tabs">
-    <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">Overview</a></li>
-    <li class="active"><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a></li>
-    <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
-    <li><a href="{% url 'admin:prescription_prescription_post_summary' current.id %}">Part C</a></li>
+<div class="col-12">
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_detail' current.id %}">Overview</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_post_summary' current.id %}">Part C</a></li>
 </ul>
-<h1>Part A Summary &#x2010; Summary and Approval <a value="Preview Part A" class="btn pull-right" href="{{ download_pdf }}?template=parta"><i class="icon-print"></i> Preview Part A</a></h1>
+<h1>Part A Summary &#x2010; Summary and Approval <a value="Preview Part A" class="btn btn-sm btn-primary float-end" href="{{ download_pdf }}?template=parta"><i class="fa-solid fa-print"></i> Preview Part A</a></h1>
 <h2>Completion Checklist</h2>
 <div id="message"></div>
 <form action="" method="post">{% csrf_token %}
@@ -27,49 +33,49 @@
     <tr>
       <th>Section</th>
       <th width="10%">Complete</th>
-      <th width="1%">Preview</th>
+      <th width="1%" class="text-center">Preview</th>
     </tr>
   </thead>
   <tbody>
     <tr class="{% if current.pre_state.summary %}success{% else %}error{% endif %}">
         <th><a href="{% url 'admin:prescription_prescription_pre_summary' current.id %}">Section A1 &#x2010; Burn Summary & Approval</a></th>
         <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.summary }}{% else %}{{ current.pre_state.summary|yesno:"Complete,Incomplete" }}{% endif %}</td>
-        <td><a value="Section A1 &#x2010; Burn Summary & Approval" class="btn" href="{{ download_pdf }}?template=sectiona1"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section A1 &#x2010; Burn Summary & Approval" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectiona1"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.pre_state.context_statement %}success{% else %}error{% endif %}">
         <th><a href="{% url 'admin:risk_context_changelist' current.id %}">Section A2 &#x2010; Risk management context statement</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.context_statement }}{% else %}{{ current.pre_state.context_statement|yesno:"Complete,Incomplete" }}{% endif %}</td>
-        <td><a value="Section A2 &#x2010; Risk management context statement" class="btn" href="{{ download_pdf }}?template=sectiona2"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section A2 &#x2010; Risk management context statement" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectiona2"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.pre_state.context_map %}success{% else %}error{% endif %}">
         <th><a href="{% url 'admin:document_document_tag' current.id "context_map" %}">Section A2 &#x2010; Context map</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.context_map }}{% else %}{{ current.pre_state.context_map|yesno:"Complete,Incomplete" }}{% endif %}</td>
-        <td><a value="Section A2 &#x2010; Context map" class="btn" href="{{ download_pdf }}?template=sectiona2"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section A2 &#x2010; Context map" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectiona2"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.pre_state.objectives %}success{% else %}error{% endif %}">
       <th><a href="{% url 'admin:prescription_objective_changelist' current.id %}">Section A3 &#x2010; Burn objectives</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.objectives }}{% else %}{{ current.pre_state.objectives|yesno:"Complete,Incomplete" }}{% endif %}</td>
-        <td><a value="Section A3 &#x2010; Burn objectives" class="btn" href="{{ download_pdf }}?template=sectiona3"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section A3 &#x2010; Burn objectives" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectiona3"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.pre_state.success_criteria %}success{% else %}error{% endif %}">
       <th><a href="{% url 'admin:prescription_successcriteria_changelist' current.id %}">Section A3 &#x2010; Success criteria</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.success_criteria }}{% else %}{{ current.pre_state.success_criteria|yesno:"Complete,Incomplete" }}{% endif %}</td>
-        <td><a value="Section A3 &#x2010; Success criteria" class="btn" href="{{ download_pdf }}?template=sectiona3"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section A3 &#x2010; Success criteria" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectiona3"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.pre_state.priority_justification %}success{% else %}error{% endif %}">
       <th><a href="{% url 'admin:prescription_priorityjustification_changelist' current.id %}">Section A4 &#x2010; Burn priority justification</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.priority_justification }}{% else %}{{ current.pre_state.priority_justification|yesno:"Complete,Incomplete" }}{% endif %}</td>
-        <td><a value="Section A4 &#x2010; Burn priority justification" class="btn" href="{{ download_pdf }}?template=sectiona4"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section A4 &#x2010; Burn priority justification" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectiona4"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.pre_state.complexity_analysis %}success{% else %}error{% endif %}">
       <th><a href="{% url 'admin:risk_complexity_changelist' current.id %}">Section A5 &#x2010; Prescribed burn complexity analysis summary</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.complexity_analysis }}{% else %}{{ current.pre_state.complexity_analysis|yesno:"Complete,Incomplete" }}{% endif %}</td>
-        <td><a value="Section A5 &#x2010; Prescribed burn complexity analysis summary" class="btn" href="{{ download_pdf }}?template=sectiona5"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section A5 &#x2010; Prescribed burn complexity analysis summary" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectiona5"><i class="fa-solid fa-print"></i></a></td>
     </tr>
     <tr class="{% if current.pre_state.risk_register %}success{% else %}error{% endif %}">
       <th><a href="{% url 'admin:risk_register_changelist' current.id %}">Section A6 &#x2010; Prescribed burn risk register</a></th>
       <td>{% if current.is_draft or perms.prescription.can_admin %}{{ form.risk_register }}{% else %}{{ current.pre_state.risk_register|yesno:"Complete,Incomplete" }}{% endif %}</td>
-        <td><a value="Section A6 &#x2010; Prescribed burn risk register" class="btn" href="{{ download_pdf }}?template=sectiona6"><i class="icon-print"></i></a></td>
+        <td class="text-center"><a value="Section A6 &#x2010; Prescribed burn risk register" class="btn btn-sm btn-outline-secondary" href="{{ download_pdf }}?template=sectiona6"><i class="fa-solid fa-print"></i></a></td>
     </tr>
   </tbody>
 </table>
@@ -111,16 +117,16 @@ $(function() {
     });
     request.done(function(data) {
       if (data.errors) {
-        select.parent().prev('th').children('.text-error').remove();
+        select.parent().prev('th').children('.text-danger').remove();
         var errors = [];
         for (var error in data.errors) {
           errors.push($('<p>').text(' ' + data.errors[error].join(", ")).prepend(
-            $('<i>').addClass('icon-warning-sign')).addClass('text-error'));
+            $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-danger'));
         }
         select.parent().prev('th').append(errors);
         select.val(select.data('lastSelected'));
       } else {
-        select.parent().prev('th').children('.text-error').remove();
+        select.parent().prev('th').children('.text-danger').remove();
         var selects = $('select');
         var total = selects.filter(function() {
             return $(this).val() === 'True' || $(this).val() === 'False';

@@ -2,17 +2,17 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a> <span class="divider">/</span></li>
-  <li>Section B3 &#x2010; Sign inspection and surveillance</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
+  <li class="breadcrumb-item">Section B3 &#x2010; Sign inspection and surveillance</li>
+</ol>
 {% endblock %}
 
 {% block content_title %}
 <h1>Sign Inspection and Surveillance</h1>
 <p>
-<a class="btn btn-small btn-info" href="{% url 'admin:prescription_prescription_download' current.id %}?download=true&template=form-signinspection" target="_blank"><i class='icon-download-alt'></i> Download the Sign Inspection and Surveillance template</a>
+<a class="btn btn-sm btn-info" href="{% url 'admin:prescription_prescription_download' current.id %}?download=true&template=form-signinspection" target="_blank"><i class='fa-solid fa-download'></i> Download the Sign Inspection and Surveillance template</a>
 </p>
 {% endblock %}

@@ -3,12 +3,12 @@
 {% load admin_urls %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-<li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-<li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-<li><a href="{% url 'admin:risk_context_changelist' current.id %}">Regional Objectives</a> <span class="divider">/</span></li>
-<li>{% trans 'Remove regional objective from ePFP' %}</li>
-</ul>
+<ol class="breadcrumb">
+<li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'admin:risk_context_changelist' current.id %}">Regional Objectives</a></li>
+<li class="breadcrumb-item">{% trans 'Remove regional objective from ePFP' %}</li>
+</ol>
 {% endblock %}
 
 {% block content %}

@@ -6,9 +6,10 @@ from pbs.report.models import (SummaryCompletionState, BurnImplementationState,
                                BurnClosureState, AreaAchievement, IgnitionType,
                                PostBurnChecklist)
 from django.contrib.admin.widgets import FilteredSelectMultiple
+from pbs.forms import Bootstrap5FormMixin
 
 
-class SummaryCompletionStateForm(forms.ModelForm):
+class SummaryCompletionStateForm(Bootstrap5FormMixin, forms.ModelForm):
     """
     Validates the completion status of the ePFP.
     """
@@ -18,7 +19,7 @@ class SummaryCompletionStateForm(forms.ModelForm):
         exclude = ('prescription',)
 
 
-class PatchedModelForm(forms.ModelForm):
+class PatchedModelForm(Bootstrap5FormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PatchedModelForm, self).__init__(*args, **kwargs)
         # there is a bug in django's fields.NullBooleanField
@@ -50,7 +51,7 @@ class BurnClosureStateForm(PatchedModelForm):
         exclude = ('prescription',)
 
 
-class AreaAchievementForm(forms.ModelForm):
+class AreaAchievementForm(Bootstrap5FormMixin, forms.ModelForm):
 
     #ignition_types = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
     ignition_types = forms.ModelMultipleChoiceField(queryset=IgnitionType.objects.all(),
@@ -64,8 +65,8 @@ class AreaAchievementForm(forms.ModelForm):
         super(AreaAchievementForm, self).__init__(*args, **kwargs)
         # if self.fields.has_key('ignition'):
         if 'ignition' in self.fields:
-            self.fields['ignition'].widget.attrs.update({'class': 'vDateField input-small'})
-            self.fields['date_escaped'].widget.attrs.update({'class': 'vDateField input-small'})
+            self.fields['ignition'].widget.attrs.update({'class': 'vDateField form-control form-control-sm'})
+            self.fields['date_escaped'].widget.attrs.update({'class': 'vDateField form-control form-control-sm'})
         #self.fields['ignition_types'] = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
         # if(self.instance and self.instance.id):
         #     self.fields['ignition_types'].initial= self.instance.ignition_types.all()
@@ -93,12 +94,12 @@ class AreaAchievementForm(forms.ModelForm):
         fields ='__all__'
 
 
-class PostBurnChecklistForm(forms.ModelForm):
+class PostBurnChecklistForm(Bootstrap5FormMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(PostBurnChecklistForm, self).__init__(*args, **kwargs)
         if 'completed_on' in self.fields:
-          self.fields['completed_on'].widget.attrs.update({'class': 'vDateField input-small'})
+          self.fields['completed_on'].widget.attrs.update({'class': 'vDateField form-control form-control-sm'})
 
     class Meta:
         model = PostBurnChecklist
