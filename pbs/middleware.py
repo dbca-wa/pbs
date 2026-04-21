@@ -1,8 +1,48 @@
+import threading
+
 from django import http
 from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from dbca_utils.middleware import SSOLoginMiddleware
+
+# Thread-local storage used by CurrentUserMiddleware to make the current
+# authenticated user available anywhere in the process (e.g. model signals).
+_thread_local = threading.local()
+
+
+def get_current_user():
+    """Return the authenticated user for the current request thread.
+
+    Returns the User instance stored by CurrentUserMiddleware, or None if called
+    outside of a request context (e.g. from a management command or test).
+    """
+    return getattr(_thread_local, 'user', None)
+
+
+class CurrentUserMiddleware:
+    """Store the current request user in thread-local storage.
+
+    This middleware must be placed after AuthenticationMiddleware in the
+    MIDDLEWARE setting so that request.user is already populated when it runs.
+    It allows model signals and other code that does not have direct access to
+    the HTTP request to discover who initiated the current operation via the
+    module-level get_current_user() helper.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Store the user before the view so downstream code in signals can read it.
+        _thread_local.user = getattr(request, 'user', None)
+        try:
+            response = self.get_response(request)
+        finally:
+            # Always clear after the request completes to avoid leaking the
+            # user reference across requests in the same thread.
+            _thread_local.user = None
+        return response
 
 
 # class SSOLoginMiddleware(object):

@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.contrib import messages
 from django.contrib.admin import helpers
 from django.contrib.admin.utils import model_ngettext
-from django.db import router
+from django.db import router, transaction
 from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils import timezone
@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy, gettext as _
 
 from guardian.shortcuts import assign_perm
 
-from pbs.prescription.models import Prescription
+from pbs.prescription.models import JobQueue, Prescription
 from pbs.utils import get_deleted_objects, update_permissions, support_email
 
 from pbs.document.models import Document, DocumentCategory
@@ -29,6 +29,79 @@ from pbs.utils import pdflatex
 
 import logging
 logger = logging.getLogger('pbs')
+
+
+def _carry_over_archive_name(prescription, now=None):
+    local_now = timezone.localtime(now or timezone.now())
+    timestamp = local_now.strftime("%Y-%m-%dT%H%M%S")
+    return "{0}_pre_carry_over_{1}".format(prescription.burn_id, timestamp)
+
+
+def _archive_prescription_for_carry_over(prescription, archive_name):
+    with pdflatex(
+        prescription,
+        template="pfp",
+        downloadname=archive_name,
+        embed=True,
+        headers=True,
+        title="Prescribed Fire Plan"
+    ) as pdfresult:
+        if pdfresult.succeed:
+            directory = os.path.join(
+                settings.MEDIA_ROOT,
+                'snapshots',
+                prescription.financial_year.replace("/", "-"),
+                prescription.burn_id
+            )
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+
+            source_file = pdfresult.pdf_file
+            shutil.copyfile(source_file, os.path.join(directory, "{}.pdf".format(archive_name)))
+            os.remove(source_file)
+            Prescription.objects.filter(pk=prescription.pk).update(archive_successful=True)
+            return
+
+        title = 'PDF production failed when attempting to archive Prescription at Carry over burn function: {}'.format(prescription)
+        logger.warning(title)
+        Prescription.objects.filter(pk=prescription.pk).update(archive_successful=False)
+        raise Exception(pdfresult.errormessage)
+
+
+def _apply_carry_over_changes(prescription, admin_site, request=None, user=None):
+    prescription.clear_approvals()
+    prescription.carried_over = True
+    prescription.planning_status = prescription.PLANNING_DRAFT
+    prescription.planning_status_modified = timezone.now()
+    prescription.prescribing_officer = None
+    prescription.financial_year = ''
+    # Skip the status-change archive signal: the pre-carry-over archive created
+    # by this workflow is the authoritative snapshot for this action.
+    prescription._updating_pdf_status = True
+    prescription.save()
+    update_permissions(prescription, admin_site, "endorsement", assign_perm)
+    _create_approvals_pdf(prescription, request=request, user=user)
+
+
+def _enqueue_carry_over_prescription(prescription, requested_by):
+    archive_name = _carry_over_archive_name(prescription)
+
+    def _enqueue():
+        JobQueue.objects.get_or_create(
+            dedupe_key=archive_name,
+            defaults={
+                'job_type': JobQueue.TYPE_CARRY_OVER_PRESCRIPTION,
+                'prescription': prescription,
+                'requested_by': requested_by,
+                'payload': {
+                    'archive_name': archive_name,
+                },
+                'status': JobQueue.STATUS_QUEUED,
+            }
+        )
+        Prescription.objects.filter(pk=prescription.pk).update(archive_in_progress=True)
+
+    transaction.on_commit(_enqueue)
 
 
 def delete_selected(modeladmin, request, queryset):
@@ -205,40 +278,78 @@ def carry_over_burns(modeladmin, request, queryset):
 
     # The user confirmed they want to carry over the selected burns.
     if request.POST.get('post'):
+        if getattr(settings, 'PRESCRIPTION_ARCHIVE_USE_QUEUE', False):
+            for prescription in queryset:
+                _enqueue_carry_over_prescription(
+                    prescription=prescription,
+                    requested_by=request.user,
+                )
+
+            modeladmin.message_user(
+                request,
+                _("Queued carry over for %s burns. They will become available for editing once archiving finishes." % queryset.count()),
+                messages.SUCCESS
+            )
+            url = reverse('admin:prescription_prescription_changelist')
+            return HttpResponseRedirect(url)
+
+        # Queue processing is disabled, so preserve the legacy synchronous
+        # carry-over flow: archive first, then mutate the prescription.
         for prescription in queryset:
-            #archive prescription before carry over
-            now = timezone.localtime(timezone.now())
-            timestamp = now.strftime("%Y-%m-%dT%H%M%S")
-            archivename = "{0}_pre_carry_over_{1}".format(prescription.burn_id,timestamp)
-            with pdflatex(prescription,template="pfp",downloadname=archivename,embed=True,headers=True,title="Prescribed Fire Plan") as pdfresult:
-                if pdfresult.succeed:
-                    directory = os.path.join(settings.MEDIA_ROOT, 'snapshots', prescription.financial_year.replace("/","-"), prescription.burn_id)
-                    if not os.path.exists(directory):
-                        os.makedirs(directory)
-                    source_file = pdfresult.pdf_file
-                    shutil.copyfile(source_file, os.path.join(directory,"{}.pdf".format(archivename)))
-                    os.remove(source_file)
-                    prescription._updating_pdf_status = True
-                    Prescription.objects.filter(pk=prescription.pk).update(archive_successful=True)
-                else:
-                    title = 'PDF production failed when attempting to archive Prescription at Cary over burn function: {}'.format(prescription)
-                    logger.warning(title)
-                    prescription._updating_pdf_status = True
-                    Prescription.objects.filter(pk=prescription.pk).update(archive_successful=False)
-                    raise Exception(pdfresult.errormessage)
-
-            prescription.clear_approvals()
-            prescription.carried_over = True
-            prescription.planning_status = prescription.PLANNING_DRAFT
-            prescription.planning_status_modified = timezone.now()
-            prescription.prescribing_officer = None
-            #prescription.planned_year = None
-            prescription.financial_year = ''
-            prescription.save()
-            update_permissions(prescription, modeladmin.admin_site,
-                "endorsement", assign_perm)
-
-            _create_approvals_pdf(prescription, request)
+            # Legacy synchronous implementation retained for reference.
+            # now = timezone.localtime(timezone.now())
+            # timestamp = now.strftime("%Y-%m-%dT%H%M%S")
+            # archivename = "{0}_pre_carry_over_{1}".format(prescription.burn_id, timestamp)
+            # with pdflatex(
+            #     prescription,
+            #     template="pfp",
+            #     downloadname=archivename,
+            #     embed=True,
+            #     headers=True,
+            #     title="Prescribed Fire Plan"
+            # ) as pdfresult:
+            #     if pdfresult.succeed:
+            #         directory = os.path.join(
+            #             settings.MEDIA_ROOT,
+            #             'snapshots',
+            #             prescription.financial_year.replace("/", "-"),
+            #             prescription.burn_id
+            #         )
+            #         if not os.path.exists(directory):
+            #             os.makedirs(directory)
+            #         source_file = pdfresult.pdf_file
+            #         shutil.copyfile(
+            #             source_file,
+            #             os.path.join(directory, "{}.pdf".format(archivename))
+            #         )
+            #         os.remove(source_file)
+            #         prescription._updating_pdf_status = True
+            #         Prescription.objects.filter(pk=prescription.pk).update(archive_successful=True)
+            #     else:
+            #         title = 'PDF production failed when attempting to archive Prescription at Cary over burn function: {}'.format(prescription)
+            #         logger.warning(title)
+            #         prescription._updating_pdf_status = True
+            #         Prescription.objects.filter(pk=prescription.pk).update(archive_successful=False)
+            #         raise Exception(pdfresult.errormessage)
+            #
+            # prescription.clear_approvals()
+            # prescription.carried_over = True
+            # prescription.planning_status = prescription.PLANNING_DRAFT
+            # prescription.planning_status_modified = timezone.now()
+            # prescription.prescribing_officer = None
+            # prescription.financial_year = ''
+            # prescription.save()
+            # update_permissions(prescription, modeladmin.admin_site,
+            #     "endorsement", assign_perm)
+            # _create_approvals_pdf(prescription, request)
+            archive_name = _carry_over_archive_name(prescription)
+            _archive_prescription_for_carry_over(prescription, archive_name)
+            _apply_carry_over_changes(
+                prescription,
+                modeladmin.admin_site,
+                request=request,
+                user=request.user,
+            )
 
         modeladmin.message_user(request,
             _("Successfully carried over %s burns. They are now available for "
@@ -270,7 +381,7 @@ def carry_over_burns(modeladmin, request, queryset):
 carry_over_burns.short_description = gettext_lazy("Carry over burns")
 
 
-def _create_approvals_pdf(prescription, request=None):
+def _create_approvals_pdf(prescription, request=None, user=None):
     now = datetime.datetime.now()
     date_str = now.strftime('%d%b%Y_%H%M%S')
     texname = '/tmp/parta_approvals-' + date_str + '.tex'
@@ -301,7 +412,7 @@ def _create_approvals_pdf(prescription, request=None):
     with open(texname.replace('tex','pdf'), "rb") as f:
         suf = SimpleUploadedFile('Approvals PDF', f.read(), content_type='application/pdf')
 
-    uid = request.user.id if request else 1
+    uid = request.user.id if request else (user.id if user else 1)
     cat = DocumentCategory.objects.get(pk=61) # defined in pbs/document/fixtures/initial_data.json
     tag = cat.documenttag_set.get(pk=218)
 
