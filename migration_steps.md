@@ -50,27 +50,71 @@ DROP table reversion_revision;
 admin
  0001_initial
 
+./manage.py migrate admin 0001_initial --fake
+
+Output:
+Operations to perform:
+  Target specific migration: 0001_initial, from admin
+Running migrations:
+  Applying contenttypes.0001_initial... FAKED
+  Applying auth.0001_initial... FAKED
+  Applying admin.0001_initial... FAKED
+
+
+
+
 guardian
  0001_initial
+
+ ./manage.py migrate guardian 0001_initial --fake
+
+ Output:
+ Operations to perform:
+  Target specific migration: 0001_initial, from guardian
+Running migrations:
+  Applying guardian.0001_initial... FAKED
 
 tastypie
  0001_initial
 
+ ./manage.py migrate tastypie 0001_initial --fake
+
+ output:
+ Operations to perform:
+  Target specific migration: 0001_initial, from tastypie
+Running migrations:
+  Applying tastypie.0001_initial... FAKED
+
+
 document
  0001_initial
+ ./manage.py migrate document 0001_initial --fake
+
  0002_initial
+ ./manage.py migrate document 0002_initial --fake
+
+ Output:
+ Operations to perform:
+  Target specific migration: 0002_initial, from document
+Running migrations:
+  Applying prescription.0001_initial... FAKED
+  Applying document.0002_initial... FAKED
 
 implementation
  0001_initial
+ ./manage.py migrate implementation 0001_initial --fake
  0002_initial
+ ./manage.py migrate implementation 0002_initial --fake
 
 pbs
  0001_initial
+ ./manage.py migrate pbs 0001_initial --fake
  0002_initial
+ ./manage.py migrate pbs 0002_initial --fake
 
 prescription
- 0001_initial
  0002_initial
+ ./manage.py migrate prescription 0002_initial --fake
 
 Operations to perform:
   Target specific migration: 0002_initial, from prescription
@@ -80,19 +124,25 @@ Running migrations:
 
 report
  0001_initial
+ ./manage.py migrate report 0001_initial --fake
 
 review
  0001_initial
+ ./manage.py migrate review 0001_initial --fake
 
 sessions
  0001_initial
+ ./manage.py migrate sessions 0001_initial --fake
 
 stakeholder
  0001_initial
+ ./manage.py migrate stakeholder 0001_initial --fake
+
+
 
 ```
 
-## Step 7: Apply the remaining migrations
+## Step 6: Apply the remaining migrations
 
 ```
 ./manage.py migrate admin
@@ -103,7 +153,7 @@ stakeholder
 ./manage.py migrate
 
 ```
-## Step 8: Apply the script to change the EndorsingRole disclaimer text (change word 'DPaW' to 'department).
+## Step 7: Apply the script to change the EndorsingRole disclaimer text (change word 'DPaW' to 'department).
   Do the dry run first to check if 9 records are changing then run the script to apply the change.
   ```
   python pbs/scripts/update_endorsingrole_disclaimers.py --dry-run
