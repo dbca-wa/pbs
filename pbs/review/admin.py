@@ -37,6 +37,7 @@ from django.db.models import Q
 import subprocess
 import sys, traceback
 from django.db import IntegrityError
+from django.db.models.deletion import ProtectedError
 from django.forms import ModelChoiceField, ChoiceField
 import requests
 from pbs.utils.pdf import PdflatexResult
@@ -1072,8 +1073,16 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             if objects:
                 for o in objects:
                     logger.info('Deleting PrescribedBurn: USER: {}, ID: {}, BURN_ID: {}'.format(request.user.get_full_name(), o.id, o.fire_idd))
-                objects.delete()
-                return HttpResponseRedirect(reverse('admin:daily_burn_program'))
+                try:
+                    objects.delete()
+                    return HttpResponseRedirect(reverse('admin:daily_burn_program'))
+                except ProtectedError:
+                    self.message_user(
+                        request,
+                        "Cannot delete one or more selected records because they are referenced by acknowledgements.",
+                        level=messages.ERROR
+                    )
+                    return HttpResponseRedirect(referrer_url)
             else:
                 self.message_user(request, "Cannot delete rolled records (records that were active or planned yesterday)", level=messages.ERROR)
                 return HttpResponseRedirect(referrer_url)
