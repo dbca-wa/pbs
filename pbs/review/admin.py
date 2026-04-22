@@ -37,6 +37,7 @@ from django.db.models import Q
 import subprocess
 import sys, traceback
 from django.db import IntegrityError
+from django.db.models.deletion import ProtectedError
 from django.forms import ModelChoiceField, ChoiceField
 import requests
 from pbs.utils.pdf import PdflatexResult
@@ -545,6 +546,8 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         #today = date(2016,4,12)
         tomorrow = today + timedelta(days=1)
         yesterday = today - timedelta(days=1)
+        message = "No records were processed"
+        msg_type = messages.INFO
 
 
         if self.is_role_based_user(request):
@@ -560,7 +563,13 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
                 unset_acknowledged = []
                 for obj in objects:
                     if (obj.prescription and obj.prescription.planning_status == obj.prescription.PLANNING_APPROVED) or obj.fire_id:
-                        if (obj.planned_area>=0 or obj.planned_distance>=0):
+                        # if (obj.planned_area>=0 or obj.planned_distance>=0):
+                        
+                        if (
+                        (obj.planned_area is not None and obj.planned_area >= 0)
+                            or
+                            (obj.planned_distance is not None and obj.planned_distance >= 0)
+                        ):
                             if obj.formA_isDraft:
                                 if Acknowledgement.objects.filter(burn=obj, acknow_type='USER_A').count() == 0:
                                     Acknowledgement.objects.get_or_create(burn=obj, user=request.user, acknow_type='USER_A', acknow_date=now)
@@ -680,7 +689,8 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             dt = datetime.strptime(request.GET.get('date'), '%Y-%m-%d').date()
         else:
             raise Http404('Could not get Date')
-
+        print("----------------------------------------------------")
+        print("report {}, action {}, date {}".format(report, action, dt))
         referrer_url = request.META.get('HTTP_REFERER')
         if 'object_ids' in request.GET:
             object_ids = request.GET.get('object_ids', None)
@@ -753,6 +763,10 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
                         message = "record must first be submitted by district"
                         msg_type = messages.ERROR
 
+                if not_acknowledged:
+                    message = "record already endorsed {}".format(', '.join(not_acknowledged))
+                    msg_type = messages.ERROR
+
 #                    elif obj.formA_srm_acknowledged:
 #                        already_acknowledged.append(obj.fire_idd)
 #                        message = "record already approved {}".format(', '.join(already_acknowledged))
@@ -785,6 +799,14 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
                         already_acknowledged.append(obj.fire_idd)
                         message = "record already acknowledged {}".format(', '.join(already_acknowledged))
                         msg_type = messages.ERROR
+
+                if not_acknowledged:
+                    message = "record already acknowledged {}".format(', '.join(not_acknowledged))
+                    msg_type = messages.ERROR
+
+            else:
+                message = "Unsupported report '{}' for regional action".format(report)
+                msg_type = messages.ERROR
 
 #                if not_acknowledged:
 #                    message = "record already acknowledged {}".format(', '.join(not_acknowledged))
@@ -855,8 +877,10 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             BurnProgramLink.populate() # update the BurnProgramLink links
             return HttpResponse(json.dumps({"redirect": referrer_url, "message": "Updated Daily Burn Links", "type": "info"}))
 
-        if 'report' in request.GET:
-            report = request.GET.get('report', None)
+        # if 'report' in request.GET:
+        #     report = request.GET.get('report', None)
+        if 'report' in request.POST:
+            report = request.POST.get('report', None)
 
         if 'date' in request.POST:
             dt = datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
@@ -1049,8 +1073,16 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
             if objects:
                 for o in objects:
                     logger.info('Deleting PrescribedBurn: USER: {}, ID: {}, BURN_ID: {}'.format(request.user.get_full_name(), o.id, o.fire_idd))
-                objects.delete()
-                return HttpResponseRedirect(reverse('admin:daily_burn_program'))
+                try:
+                    objects.delete()
+                    return HttpResponseRedirect(reverse('admin:daily_burn_program'))
+                except ProtectedError:
+                    self.message_user(
+                        request,
+                        "Cannot delete one or more selected records because they are referenced by acknowledgements.",
+                        level=messages.ERROR
+                    )
+                    return HttpResponseRedirect(referrer_url)
             else:
                 self.message_user(request, "Cannot delete rolled records (records that were active or planned yesterday)", level=messages.ERROR)
                 return HttpResponseRedirect(referrer_url)
