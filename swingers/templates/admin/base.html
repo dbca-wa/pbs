@@ -7,20 +7,19 @@
   <meta name="author" content="{% block page_author %}{% endblock %}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
   <title>{% block title %}{% endblock %}</title>
-  <link rel="stylesheet" href="{% static "css/bootstrap.css" %}">
-  <link rel="stylesheet" href="{% static "css/bootstrap-responsive.css" %}">
-  <link rel="stylesheet" href="{% static "css/font-awesome.min.css" %}">
-  <link rel="stylesheet" href="{% static "css/fonts.css" %}">
-  <link rel="stylesheet" href="{% static "css/styles.css" %}">
-  <link rel="stylesheet" href="{% static "css/toastr.css" %}">
-  <link rel="stylesheet" href="{% static "css/fullcalendar.css" %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap5.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/fontawesome6.all.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/fullcalendar.css' %}">
 
   {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
   <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
-  <script src="{% static 'js/jquery-1.9.1.min.js' %}"></script>
-  <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+  <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+  <script src="{% static 'js/jquery-ui-1.11.4.min.js' %}"></script>
   <script src="{% static 'js/modernizr.js' %}"></script>
-  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap5.bundle.min.js' %}"></script>
   <script src="{% static 'js/fullcalendar.min.js' %}"></script>
   <script src="{% static 'js/gcal.js' %}"></script>
   <script src="{% static 'js/tasks.js' %}"></script>
@@ -33,10 +32,10 @@
 <div id="in-nav">
   <div class="container">
     <div class="row">
-      <div class="span12">
+      <div class="col-12">
       {% block branding %}{% endblock %}
       {% if user.is_active and user.is_staff %}
-      <div id="user-tools" class="pull-right">
+      <div id="user-tools" class="float-end">
             {% trans 'Welcome,' %}
             <strong>{% filter force_escape %}{% firstof user.get_short_name user.get_username %}{% endfilter %}</strong>.
             {% block userlinks %}
@@ -62,7 +61,7 @@
     <div class="container">
     {% if not is_popup %}
     <div class="row">
-      <div class="span12">
+      <div class="col-12">
         {% block breadcrumbs %}
         <ul class="breadcrumb">
           {{ breadcrumb_trail|safe }}
@@ -74,8 +73,8 @@
 
     {% block messages %}
     {% if messages %}
-    <div class="row-fluid">
-      <div class="span12">
+    <div class="row">
+      <div class="col-12">
         {% for message in messages %}
         <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">
           {{ message }}
@@ -88,12 +87,12 @@
     <div class="row">
       {% block contentwrapper %}
       {% block content %}
-      <div class="span3">
+      <div class="col-3">
         <div class="sidebar">
         {% block sidebar %}{% endblock %}
         </div>
       </div>
-      <div class="span9">
+      <div class="col-9">
       </div>
       {% endblock %}
       {% endblock %}
@@ -104,8 +103,8 @@
 {% block footer %}
 <footer class="footer">
   <div class="container-fluid">
-    <div class="span12">
-    <p class="pull-right">&copy; 2013 Department of Environment and Conservation</p>
+    <div class="col-12">
+    <p class="float-end">&copy; 2013 Department of Environment and Conservation</p>
     </div>
   </div>
 </footer>

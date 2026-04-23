@@ -6,10 +6,10 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.templatetags.static import static
 
-from pbs.forms import PbsErrorList
+from pbs.forms import Bootstrap5FormMixin, PbsErrorList
 
 
-class RegistrationForm(forms.Form):
+class RegistrationForm(Bootstrap5FormMixin, forms.Form):
     """
     Form for registering a new user account.
 

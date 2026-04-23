@@ -10,8 +10,8 @@
 
     <p>Are you sure you wish to submit this for approval?</p>
     <form action="{% url "admin:prescription_prescription_approve" current.id %}" method="post">{% csrf_token %}
-    <input type="submit" id="id_submit_for_epfp_approval_form_submit" value="{% trans 'Submit' %}" class="hide btn btn-primary" name="_save"/>
-    <input type="submit" value="{% trans 'Go back' %}" class="hide btn" name="_cancel"/>
+    <input type="submit" id="id_submit_for_epfp_approval_form_submit" value="{% trans 'Submit' %}" class="d-none btn btn-primary" name="_save"/>
+    <input type="submit" value="{% trans 'Go back' %}" class="d-none btn" name="_cancel"/>
     </form>
 
     {% elif current.approval_status ==  current.APPROVAL_SUBMITTED %}
@@ -32,15 +32,15 @@
             <label for="id_valid_to">Valid to ({{ current.planned_season_object.start }} - {{ current.planned_season_object.end }}):</label> {{ submit_for_epfp_approval_form.form.valid_to }}
             {% if submit_for_epfp_approval_form.form.valid_to.errors %}
                 {% for error in submit_for_epfp_approval_form.form.valid_to.errors %}
-                <p class="errornote alert alert-block alert-error fade in"><i class='icon-warning-sign'></i> {{ error }}</p>
+                <p class="errornote alert alert-block alert-danger fade in"><i class='fa-solid fa-triangle-exclamation'></i> {{ error }}</p>
                 {% endfor %}
             {% endif %}
 
             {{ submit_for_epfp_approval_form.form.initial_valid_to }}
             {{ submit_for_epfp_approval_form.form.prescription }}
         </div>
-        <input type="submit" id="id_submit_for_epfp_approval_form_submit" value="{% trans 'Approve' %}" class="btn btn-primary hide" name="_save" />
-        <input type="submit" id="id_submit_for_epfp_approval_form_cancel" value="{% trans 'Reviewed and not approved' %}" class="btn btn-danger hide" name="_cancel"/>
+        <input type="submit" id="id_submit_for_epfp_approval_form_submit" value="{% trans 'Approve' %}" class="btn btn-primary d-none" name="_save" />
+        <input type="submit" id="id_submit_for_epfp_approval_form_cancel" value="{% trans 'Reviewed and not approved' %}" class="btn btn-danger d-none" name="_cancel"/>
     </form>
     {% elif current.approval_status ==  current.APPROVAL_APPROVED %}
     <p>Are you sure to wish to extend the approval of this ePFP for two weeks from {{ current.current_approval.valid_to }} to {{ current.current_approval.next_valid_to }}?</p>
@@ -55,8 +55,8 @@
     do so and I confirm that the plan has been prepared in accordance with
     the department procedure for planning prescribed fire plans.</blockquote>
     <form id="id_submit_for_epfp_approval_form" action="{% url "admin:prescription_prescription_approve" current.id %}" method="post">{% csrf_token %}
-    <input type="submit" id="id_submit_for_epfp_approval_form_submit" value="{% trans 'Extend Approval' %}" class="btn btn-primary hide" name="_save"/>
-    <input id="id_cancel_button" type="submit" value="{% trans 'Cancel' %}" class="btn btn-danger hide" name="_cancel"/>
+    <input type="submit" id="id_submit_for_epfp_approval_form_submit" value="{% trans 'Extend Approval' %}" class="btn btn-primary d-none" name="_save"/>
+    <input id="id_cancel_button" type="submit" value="{% trans 'Cancel' %}" class="btn btn-danger d-none" name="_cancel"/>
     </form>
     {% endif %}
 

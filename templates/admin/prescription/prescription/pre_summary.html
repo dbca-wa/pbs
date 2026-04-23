@@ -2,13 +2,13 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
+<ol class="breadcrumb">
   {% url 'admin:prescription_priorityjustification_changelist' as priority_justification %}
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a> <span class="divider">/</span></li>
-  <li>Section A1 &#x2010; Summary &amp; approval</li>
-</ul>
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_summary' current.id %}">Part A</a></li>
+  <li class="breadcrumb-item">Section A1 &#x2010; Summary &amp; approval</li>
+</ol>
 {% endblock %}
 
 {% block extrahead %}{{ block.super }}
@@ -37,7 +37,7 @@
 {% block contentwrapper %}
 {% url 'admin:prescription_priorityjustification_changelist' current.id as priority_justification %}
 <div class="row">
-<div class="span12">
+<div class="col-12">
 <h1>Summary &amp; Approval</h1>
 {% if current.is_draft or perms.prescription.can_admin %}
 <div id="id_pageerrors"><span id="id__all__"></span></div>
@@ -104,7 +104,7 @@
             {% if current.is_draft or perms.prescription.can_admin %}
                 <span>You must enter/select a value in all fields.<br>Alternatively, if entering only a locality (first input field), location will be stored as "Within the locality of ____"</span><br>
                 {{ form.form.location }}
-                <span id="id_location" class="hidden"></span>
+                <span id="id_location" class="d-none"></span>
             {% else %}
                 {{ current.location_text }}
             {% endif %}
@@ -285,7 +285,7 @@
         {% for fundform in formset %}
         <tr>
             {{ fundform.id  }}
-            <td class="hide"> {{ fundform.prescription }}</td>
+            <td class="d-none"> {{ fundform.prescription }}</td>
             <th> Allocation code </th>
             <td >{{ fundform.allocation }}</td>
             <th> Proportion of funding [%] </th>
@@ -294,10 +294,10 @@
         {% endfor %}
     </tbody>
 </table>
-<div class="navbar navbar-fixed-bottom">
-  <div class="navbar-inner">
+<div class="navbar fixed-bottom">
+  <div class="">
     <div class="container">
-        <a id="id_save_button" href="#" class="btn pull-right btn-success">{% trans 'Save' %}</a>
+        <a id="id_save_button" href="#" class="btn float-end btn-success">{% trans 'Save' %}</a>
     </div>
   </div>
 </div>
@@ -487,11 +487,11 @@ function addElementID(error, idx, errors) {
 // Add error styles
 function highlight(error, idx, errors) {
     if (Object.keys(error).length > 0) {
-        var icon = $("<i>").addClass('icon-warning-sign');
+        var icon = $("<i>").addClass('fa-solid fa-triangle-exclamation');
         var para = $('<p>')  // The order of these operations is important!
             .text(error.msg)
             .prepend(icon)
-            .addClass('text-error');
+            .addClass('text-danger');
         $("#" + error.id)
             .parent()
             .addClass('error')
@@ -501,12 +501,12 @@ function highlight(error, idx, errors) {
 var ajaxPost = function(evt) {
     // First remove all existing error messages.
     viewPort.save();
-    $('p').remove('.text-error');
+    $('p').remove('.text-danger');
     $('[id^=id_]').parent().removeClass('error');
     $('div#id_pageerrors').removeClass('error alert alert-success').text('');
-    $('#id_biodiversity_text').parent().removeClass('alert-error').addClass('alert-info');
-    $('#id_bushfire_risk_text').parent().removeClass('alert-error').addClass('alert-info');
-    $('#id_vegetation_text').parent().removeClass('alert-error').addClass('alert-info');
+    $('#id_biodiversity_text').parent().removeClass('alert-danger').addClass('alert-info');
+    $('#id_bushfire_risk_text').parent().removeClass('alert-danger').addClass('alert-info');
+    $('#id_vegetation_text').parent().removeClass('alert-danger').addClass('alert-info');
     select_to_values();
     var target = $(evt.target);
     var request = $.ajax({
@@ -521,14 +521,14 @@ var ajaxPost = function(evt) {
                 'Overall rationale must be set. Click the Edit link to navigate ' +
                 'to the Priority Justification page to update it. Note that this will ' +
                 'discard any unsaved changes on this screen.').prepend(
-                    $('<i>').addClass('icon-warning-sign')).addClass('text-error'));
+                    $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-danger'));
         }
         if ($('#id_td_priority').text() == "Unset ‐ Edit"){
             $('#id_td_priority').addClass('error').append($('<p>').text(
                 'Overall priority must be set. Click the Edit link to navigate ' +
                 'to the Priority Justification page to set it. Note that this will ' +
                 'discard any unsaved changes on this screen.').prepend(
-                    $('<i>').addClass('icon-warning-sign')).addClass('text-error'));
+                    $('<i>').addClass('fa-solid fa-triangle-exclamation')).addClass('text-danger'));
         }
         if (data.errors) {
             console.log(data);
@@ -538,8 +538,8 @@ var ajaxPost = function(evt) {
                         .text('Please correct the errors below.')
                         .prepend(
                             $('<i>')
-                                 .addClass('icon-warning-sign'))
-                        .addClass('text-error'));
+                                 .addClass('fa-solid fa-triangle-exclamation'))
+                        .addClass('text-danger'));
             if (data.errors) {
                 for (var error in data.errors) {
                 var errors = [];
@@ -548,8 +548,8 @@ var ajaxPost = function(evt) {
                         $('<p>')
                             .text(' ' + data.errors[error].join(", "))
                             .prepend($('<i>')
-                                     .addClass('icon-warning-sign'))
-                            .addClass('text-error'));
+                                     .addClass('fa-solid fa-triangle-exclamation'))
+                            .addClass('text-danger'));
                 targetField.parent().addClass('error').append(errors);
                 }
             };
@@ -558,7 +558,7 @@ var ajaxPost = function(evt) {
             };
         } else {
             $('div#id_pageerrors').addClass('alert alert-success').text(
-                ' ' + data.message).prepend($('<i>').addClass('icon-ok'));
+                ' ' + data.message).prepend($('<i>').addClass('fa-solid fa-check'));
 
             //if not cross tenure, reset corss_tenure_approved to False
             if (document.getElementById("id_non_calm_tenure").value !== "true") {

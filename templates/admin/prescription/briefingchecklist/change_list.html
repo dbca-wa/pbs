@@ -15,27 +15,27 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a> <span class="divider">/</span></li>
-  <li>Section B8 &#x2010; Briefing Checklist</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
+  <li class="breadcrumb-item">Section B8 &#x2010; Briefing Checklist</li>
+</ol>
 {% endblock %}
 
 {% block content_title %}
 {% load risk_tags %}
 {% show_treatments "Day Of Burn Briefing" %}
 <h1>Checklist Report</h1>
-<a href="{{ upload_document }}?tag={{ "Briefing Checklist"|tag_id }}&next={{ request.get_full_path }}" class="pull-right btn btn-small btn-info"><b><i class="icon-plus"></i> Upload Briefing Checklist</b></a>
-<a class="btn btn-small btn-info" href="{{ download_pdf }}?template=form-briefing-checklist&download=true"><b><i class="icon-download-alt"></i> Download the Briefing Checklist template</b></a>
+<a href="{{ upload_document }}?tag={{ "Briefing Checklist"|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><b><i class="fa-solid fa-plus"></i> Upload Briefing Checklist</b></a>
+<a class="btn btn-sm btn-info" href="{{ download_pdf }}?template=form-briefing-checklist&download=true"><b><i class="fa-solid fa-download"></i> Download the Briefing Checklist template</b></a>
 <div id="briefing-checklists">
 {% filter_by_tag_name current.document_set "Briefing Checklist" as document_set %}
 {% include "admin/document_list.html" with document_type="Briefing Checklist" %}
 </div>
-{#<a href="{{ upload_document }}?tag={{ actions_form_name|tag_id }}&next={{ request.get_full_path }}" class="pull-right btn btn-small"><i class="icon-plus"></i> Upload {{ actions_form_name }}</a>#}
+{#<a href="{{ upload_document }}?tag={{ actions_form_name|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm"><i class="fa-solid fa-plus"></i> Upload {{ actions_form_name }}</a>#}
 
-<h1>Briefing Checklist{% if current.status == current.STATUS_OPEN %}<a href="{% url 'admin:prescription_briefingchecklist_add' current.id %}?prescription={{ current.id }}&next={{ request.get_full_path }}" class="pull-right btn btn-small btn-info"><i class="icon-plus"></i> Add Briefing Checklist Item</a>{% endif %}</h1>
+<h1>Briefing Checklist{% if current.status == current.STATUS_OPEN %}<a href="{% url 'admin:prescription_briefingchecklist_add' current.id %}?prescription={{ current.id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="fa-solid fa-plus"></i> Add Briefing Checklist Item</a>{% endif %}</h1>
 {% endblock %}
 
 {% block object-tools %}{% endblock %}

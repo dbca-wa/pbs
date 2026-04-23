@@ -73,23 +73,18 @@
 {% endblock %}
 
 {% block extrahead %}
-<link rel="stylesheet" href="{% static "pbs/css/changelists.css" %}">
+<link rel="stylesheet" href="{% static "pbs/css/changelists.css" %}?ver={{ GIT_COMMIT_HASH }}">
 {{ block.super }}
 {{ media.js }}
 <!-- <script src="{% static 'admin/js/inlines.min.js' %}"></script> -->
 <script src="{% static 'admin/js/inlines.js' %}"></script>
 <!-- <script src="{% static 'pbs/js/inlines.js' %}"></script> -->
 <script src="{% static 'pbs/js/table-fixed-header.js' %}"></script>
-{% if action_form %}{% if actions_on_top or actions_on_bottom %}
-<script type="text/javascript">
-  $ = jQuery.noConflict();
-(function($) {
-    $(document).ready(function($) {
-        $("tr input.action-select").actions();
-    });
-})(django.jQuery);
-</script>
-{% endif %}{% endif %}
+<script src="{% static 'pbs/js/sticky-scrollbar.js' %}"></script>
+{% comment %}
+  NOTE: django.jQuery.fn.actions() plugin was removed in Django 3.x.
+  Modern admin/js/actions.js auto-initializes via DOMContentLoaded.
+{% endcomment %}
 
 <script>
 $ = jQuery;
@@ -158,10 +153,10 @@ $(document).ready(function() {
 
 {% if not is_popup %}
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li>{{ cl.opts.verbose_name_plural|capfirst }}</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item">{{ cl.opts.verbose_name_plural|capfirst }}</li>
+</ol>
 {% endblock %}
 {% endif %}
 {% block coltype %}flex{% endblock %}
@@ -170,16 +165,16 @@ $(document).ready(function() {
 
 {% block contentwrapper %}
 <div class="row">
-<div class="{% block contentclass %}{% if cl.has_filters %}span9{% else %}span12{% endif %}{% endblock %}">
+<div class="{% block contentclass %}{% if cl.has_filters %}col-9{% else %}col-12{% endif %}{% endblock %}">
   {% block pretitle %}{% endblock %}
   {% block content_title %}{{ block.super }}{% endblock %}
   {% block content %}
   {% block object-tools %}
     {% if has_add_permission %}
-      <div class="object-tools pull-right">
+      <div class="object-tools float-end">
         {% block object-tools-items %}
-        <a class="btn btn-small btn-info" href="{% if current %}{% url cl.opts|admin_urlname:'add' current.id %}{% else %}{% url cl.opts|admin_urlname:'add' %}{% endif %}{% if is_popup %}?_popup=1{% endif %}">
-          <i class="icon-plus icon-white"></i>
+        <a class="btn btn-sm btn-info" href="{% if current %}{% url cl.opts|admin_urlname:'add' current.id %}{% else %}{% url cl.opts|admin_urlname:'add' %}{% endif %}{% if is_popup %}?_popup=1{% endif %}">
+          <i class="fa-solid fa-plus text-white"></i>
           {% blocktrans with cl.opts.verbose_name as name %}Create {{ name }}{% endblocktrans %}
         </a>
         {% endblock %}
@@ -187,12 +182,12 @@ $(document).ready(function() {
     {% endif %}
   {% endblock %}
   {% if cl.formset.errors %}
-  <p class="errornote alert alert-block alert-error fade in">
-    <i class="icon-warning-sign"></i> {% blocktrans count cl.formset.errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+  <p class="errornote alert alert-block alert-danger fade in">
+    <i class="fa-solid fa-triangle-exclamation"></i> {% blocktrans count cl.formset.errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
   </p>
   {% for error in cl.formset.non_form_errors %}
-    <p class="errornote alert alert-block alert-error fade in">
-    <i class="icon-warning-sign"></i> {{ error }}
+    <p class="errornote alert alert-block alert-danger fade in">
+    <i class="fa-solid fa-triangle-exclamation"></i> {{ error }}
     </p>
   {% endfor %}
   {% endif %}
@@ -217,19 +212,17 @@ $(document).ready(function() {
     {% block pre-submit-line %}{% endblock %}
     {% block submit-line %}
     {% if editable %}
-    <div class="navbar navbar-fixed-bottom">
-      <div class="navbar-inner">
-        <div class="container">
+    <div class="navbar fixed-bottom bg-light border-top py-2">
+      <div class="container-fluid d-flex justify-content-end pe-4">
             <input type="submit"
                    id="id_save_submit_button"
                    name="_save"
-                   class="btn pull-right btn-success"
+                   class="btn btn-success"
                    value="{% trans 'Save' %}"/>
-        </div>
+      </div>
         <script src="{% static 'js/view-port.js' %}"></script>
         <script>$(document).ready(function () {viewPort.update();});
                 $('#id_save_submit_button').click(function() {viewPort.save();}); </script>
-      </div>
     </div>
     {% endif %}
     {% endblock %}
@@ -240,9 +233,9 @@ $(document).ready(function() {
 </div>
 {% block filters %}
 {% if cl.has_filters %}
-<div class="span3">
+<div class="col-3">
   <h5>Filter</h5>
-  <ul class="nav nav-list">
+  <ul class="nav flex-column nav-filter">
       {% for spec in cl.filter_specs %}
         {% admin_list_filter cl spec %}
       {% endfor %}

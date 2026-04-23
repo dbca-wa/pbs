@@ -2,12 +2,12 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_post_summary' current.id %}">Part C</a> <span class="divider">/</span></li>
-  <li>Section C2 &#x2010; Burn evaluation summary</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_post_summary' current.id %}">Part C</a></li>
+  <li class="breadcrumb-item">Section C2 &#x2010; Burn evaluation summary</li>
+</ol>
 {% endblock %}
 
 {% block object-tools %}{% endblock %}
@@ -19,7 +19,7 @@
 {% if current.is_approved %}
 
 <div class="row">
-<div class="span5">
+<div class="col-5">
 <h1>Burn Objectives</h1>
 {% if current.objective_set.all.count > 0 %}
     <ul>
@@ -31,7 +31,7 @@
     <span>There are no burn objectives associated with this burn.</span>
 {% endif %}
 </div>
-<div class="span5 offset1">
+<div class="col-5 offset1">
 <h1>Burn Purposes</h1>
 <ul>
     {% for purpose in current.purposes.all %}

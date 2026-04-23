@@ -2,10 +2,10 @@
 {% if cl.search_fields %}
 <div id="toolbar"><form id="changelist-search" action="" method="get">
 <div><!-- DIV needed for valid HTML -->
-    <div class="input-prepend input-append">
-        <span class="add-on"><i class="icon-search"></i></span>
-        <input type="text" size="40" name="{{ search_var }}" value="{{ cl.query }}" id="searchbar" />
-        <button class="btn">{% trans 'Search' %}</button>
+    <div class="input-group">
+        <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="text" name="{{ search_var }}" value="{{ cl.query }}" id="searchbar" style="width: 200px;" />
+        <button class="btn btn-secondary">{% trans 'Search' %}</button>
     </div>
 {% if show_result_count %}
     <span class="small quiet">{% blocktrans count counter=cl.result_count %}{{ counter }} result{% plural %}{{ counter }} results{% endblocktrans %} (<a href="?{% if cl.is_popup %}pop=1{% endif %}">{% blocktrans with full_result_count=cl.full_result_count %}{{ full_result_count }} total{% endblocktrans %}</a>)</span>

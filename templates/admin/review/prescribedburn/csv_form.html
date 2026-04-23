@@ -2,12 +2,12 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
+<ol class="breadcrumb">
   {% url 'admin:prescription_priorityjustification_changelist' as priority_justification %}
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:daily_burn_program' %}?report=epfp_summary">{% trans 'Daily Burn Program' %}</a> <span class="divider">/</span></li>
-  <li>FMSB Report</li>
-</ul>
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:daily_burn_program' %}?report=epfp_summary">{% trans 'Daily Burn Program' %}</a></li>
+  <li class="breadcrumb-item">FMSB Report</li>
+</ol>
 {% endblock %}
 
 {% block extrahead %}{{ block.super }}
@@ -36,16 +36,16 @@
 {% block contentwrapper %}
 <h1>FMSB Report - Export as CSV</h1>
 <div class="row">
-<div class="span12">
+<div class="col-12">
 <div id="id_pageerrors"><span id="id__all__"></span></div>
 <form action="" method="post">{% csrf_token %}
     From Date: {{ form.fromDate }}
     ToDate: {{ form.toDate }}
     {% comment %}
-    <a id="id_save_button" href="#" class="btn pull-right btn-success">{% trans 'Export' %}</a>
+    <a id="id_save_button" href="#" class="btn float-end btn-success">{% trans 'Export' %}</a>
     {% endcomment %}
-    <p class="pull-right">
-        <a class="btn btn-small btn-info" href="javascript: csv_url();" target=""><i class="icon-plus icon-white"></i> Export CSV</a>
+    <p class="float-end">
+        <a class="btn btn-sm btn-info" href="javascript: csv_url();" target=""><i class="fa-solid fa-plus text-white"></i> Export CSV</a>
         <a id="id_cancel_button" href="javascript: history.go(-1)" class="btn btn-danger">Return</a>
     </p>
 

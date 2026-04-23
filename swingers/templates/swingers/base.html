@@ -1,27 +1,8 @@
-{% extends "swingers/core.html" %}
+{% load static %}{% extends "swingers/core.html" %}
 {% block basestyle %}
-    <!--[if lt IE 8]>
-        <link rel="stylesheet" href="{{ CDNJS_URL }}font-awesome/2.0/css/font-awesome-ie7.css" />
-    <![endif]-->
-    <link rel="stylesheet" href="{{ CDNJS_URL }}font-awesome/2.0/css/font-awesome.css" />
-    <link href='//fonts.googleapis.com/css?family=Ubuntu:700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{% static 'css/fontawesome6.all.min.css' %}" />
 {% endblock %}
 {% block base_js %}
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{{ CDNJS_URL }}twitter-bootstrap/2.2.1/bootstrap.min.js"></script>
-    <script async src="https://login.persona.org/include.js" type="text/javascript"></script>
-    <script>
-        $(window).load(function() {
-            $('#browserid').bind('click', function(e) {
-                e.preventDefault();
-                navigator.id.get(function(assertion) {
-                    if (assertion) {
-                        var $e = $('#id_assertion');
-                        $e.val(assertion.toString());
-                        $e.parent().submit();
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="{% static 'js/bootstrap5.bundle.min.js' %}"></script>
 {% endblock %}

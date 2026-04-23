@@ -2,10 +2,10 @@
 {% load i18n static admin_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li>Regional Fire Management Plan Objectives</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item">Regional Fire Management Plan Objectives</li>
+</ol>
 {% endblock %}
 {% block content_title %}
 <h1>Manage Regional Fire Management Plan Objectives</h1><br>

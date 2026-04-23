@@ -11,26 +11,26 @@
 {% endblock %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a> <span class="divider">/</span></li>
-  <li>Section B2 &#x2010; Day of burn actions</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
+  <li class="breadcrumb-item">Section B2 &#x2010; Day of burn actions</li>
+</ol>
 {% endblock %}
 
 {% block pretitle %}
 <ul id="car" class="nav nav-tabs">
-    <li><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="icon-legal"></i> Risk management context statement</a></li>
-    <li><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="icon-user"></i> Critical stakeholders</a></li>
-    <li class="active"><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="icon-legal"></i> Actions</a></li>
-    <li><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="icon-warning-sign"></i> Risk register</a></li>
+    <li><a href="{% url 'admin:risk_context_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Risk management context statement</a></li>
+    <li><a href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="fa-solid fa-user"></i> Critical stakeholders</a></li>
+    <li class="active"><a href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Actions</a></li>
+    <li><a href="{% url 'admin:risk_register_changelist' current.id %}"><i class="fa-solid fa-triangle-exclamation"></i> Risk register</a></li>
 </ul>
 <ul class="nav nav-pills">
-    <li><a href="{% url 'admin:report_preburnaction_changelist' current.id %}"><i class="icon-tasks"></i> Pre-burn actions</a></li>
-    <li class="active"><a href="{% url 'admin:report_dayofburnaction_changelist' current.id %}"><i class="icon-legal"></i> Day of burn actions</a></li>
-    <li><a href="{% url 'admin:report_postburnaction_changelist' current.id %}"><i class="icon-warning-sign"></i> Post&#x2010;burn actions</a></li>
-</ul>
+    <li><a href="{% url 'admin:report_preburnaction_changelist' current.id %}"><i class="fa-solid fa-list-check"></i> Pre-burn actions</a></li>
+    <li class="active"><a href="{% url 'admin:report_dayofburnaction_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Day of burn actions</a></li>
+    <li><a href="{% url 'admin:report_postburnaction_changelist' current.id %}"><i class="fa-solid fa-triangle-exclamation"></i> Post&#x2010;burn actions</a></li>
+</ol>
 {% endblock %}
 
 {% block content_title %}

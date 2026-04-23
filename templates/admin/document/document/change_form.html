@@ -11,23 +11,23 @@
             // All the File APIs are supported. Old browser get no warning.
             $('#id_document').change(function() {
                 $('#id_large_file_alert').hide();
-                var alert_div = '<div id="id_large_file_alert" class="alert alert-error"> ' +
-                                  '<button type="button" class="close" data-dismiss="alert">×</button>' +
-                                  '<i class="icon-exclamation-sign"></i> <strong>Notice:</strong>' +
+                var alert_div = '<div id="id_large_file_alert" class="alert alert-danger"> ' +
+                                  '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                                  '<i class="fa-solid fa-circle-exclamation"></i> <strong>Notice:</strong>' +
                                   ' this is a large file, which take some time to upload.'+
                                 '</div>';
                 var files = this.files; // FileList object
                 var max_filesize = 10485760;  // 10 Mb
                 for (var i = 0, f; f = files[i]; i++) {
                     if (f.size > max_filesize) {
-                        $('#id_document').closest('.control-group').before(alert_div);
+                        $('#id_document').closest('.mb-3').before(alert_div);
                     }
                 }
             });
         };
         // monitor tag field for other, show/hide custom_tag if other is visible
         var tag = $("select#id_tag");
-        var custom_tag = $("input#id_custom_tag").parents("div.controls-row");
+        var custom_tag = $("input#id_custom_tag").closest("div.mb-3");
         var show_custom_tag = function() {
             if (tag.find("option:selected").text() == "Other (free text)") {
                 custom_tag.show();
@@ -42,24 +42,24 @@
 {% endblock extrahead%}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-    <li>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
         <a href="{% url 'admin:index' %}">
             {% trans 'Regional Overview' %}
-        </a> <span class="divider">/</span>
+        </a>
     </li>
-  <li>
+  <li class="breadcrumb-item">
       <a href="{% url 'admin:prescription_prescription_detail' current.id %}">
       {{ current.burn_id }}
-      </a> <span class="divider">/</span>
+      </a>
   </li>
-  <li>
+  <li class="breadcrumb-item">
       <a href="{% url 'admin:document_document_all' current.id %}">
           Documents
-      </a><span class="divider">/</span>
+      </a>
   </li>
-  <li>Add document</li>
-</ul>
+  <li class="breadcrumb-item">Add document</li>
+</ol>
 {% endblock %}
 
 {% block submit_buttons_bottom %}

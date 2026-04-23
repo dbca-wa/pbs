@@ -8,18 +8,16 @@ var Vis =  (function visModule(window, document, $) {
         store.setItem(key, JSON.stringify(val));
     };
     function _ensureToolsHidden(tools, toolsButton, store, visKey) {
-        if (!tools.hasClass("hide")) {
-            toolsButton.removeClass("btn-danger");
-            tools.addClass("hide");
-            toolsButton.addClass("btn-success");
+        if (!tools.hasClass("d-none")) {
+            tools.addClass("d-none");
+            toolsButton.text("Show Filter and Column tools");
             this.setToolsVisibility(store, visKey, false);
         }
     };
     function _ensureToolsVisible(tools, toolsButton, store, visKey) {
-        if (tools.hasClass("hide")) {
-            toolsButton.removeClass("btn-success");
-            tools.removeClass("hide");
-            toolsButton.addClass("btn-danger");
+        if (tools.hasClass("d-none")) {
+            tools.removeClass("d-none");
+            toolsButton.text("Hide Filter and Column tools");
             this.setToolsVisibility(store, visKey, true);
         }
     }

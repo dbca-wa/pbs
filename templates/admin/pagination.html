@@ -2,13 +2,13 @@
 {% load pbs_list %}
 {% load i18n %}
 {% if pagination_required %}
-<div class="pagination">
-  <ul>
+<nav aria-label="Page navigation">
+  <ul class="pagination pagination-sm flex-wrap justify-content-center mb-1">
   {% for i in page_range %}
     {% paginator_number cl i %}
   {% endfor %}
   </ul>
-</div>
-{{ cl.result_count }} {% if cl.result_count == 1 %}{{ cl.opts.verbose_name }}{% else %}{{ cl.opts.verbose_name_plural }}{% endif %}
+</nav>
+<p class="text-center">{{ cl.result_count }} {% if cl.result_count == 1 %}{{ cl.opts.verbose_name }}{% else %}{{ cl.opts.verbose_name_plural }}{% endif %}</p>
 {% endif %}
 {% if show_all_url %}&nbsp;&nbsp;<a href="{{ show_all_url }}" class="showall">{% trans 'Show all' %}</a>{% endif %}

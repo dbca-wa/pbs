@@ -3,10 +3,10 @@
 {% load admin_urls %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-<li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-<li>{% trans 'Archive multiple objects' %}</li>
-</ul>
+<ol class="breadcrumb">
+<li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+<li class="breadcrumb-item">{% trans 'Archive multiple objects' %}</li>
+</ol>
 {% endblock %}
 
 {% block content %}

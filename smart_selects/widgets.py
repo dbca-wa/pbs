@@ -20,7 +20,7 @@ if django.VERSION >= (1, 2, 0) and getattr(settings,
     USE_DJANGO_JQUERY = True
 else:
     USE_DJANGO_JQUERY = False
-    JQUERY_URL = getattr(settings, 'JQUERY_URL', 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js')
+    JQUERY_URL = getattr(settings, 'JQUERY_URL', '')
 
 URL_PREFIX = getattr(settings, "SMART_SELECTS_URL_PREFIX", "")
 
@@ -200,8 +200,7 @@ class ChainedSelect(Select):
                     final_choices.append(ch)
         self.choices = ()
         attrs['name'] = name
-        # final_attrs = self.build_attrs(attrs, name=name)
-        final_attrs = self.build_attrs(attrs)
+        final_attrs = self.build_attrs(self.attrs, attrs)
         if 'class' in final_attrs:
             final_attrs['class'] += ' chained'
         else:

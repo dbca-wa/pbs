@@ -2,12 +2,12 @@
 {% load i18n static admin_list pbs_list %}
 
 {% block breadcrumbs %}
-<ul class="breadcrumb">
-  <li><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a> <span class="divider">/</span></li>
-  <li><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a> <span class="divider">/</span></li>
-  <li>Section B6 &#x2010; Contingency Plan</li>
-</ul>
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Regional Overview' %}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_detail' current.id %}">{{ current.burn_id }}</a></li>
+  <li class="breadcrumb-item"><a href="{% url 'admin:prescription_prescription_day_summary' current.id %}">Part B</a></li>
+  <li class="breadcrumb-item">Section B6 &#x2010; Contingency Plan</li>
+</ol>
 {% endblock %}
 
 {% block extrahead %}
@@ -15,7 +15,7 @@
 {% ifusergroup 'ePFP Application Administrator' %}
 <script>
 $(document).ready(function() {
-    $("a.adminonly").removeClass("hide");
+    $("a.adminonly").removeClass("d-none");
 });
 </script>
 {% endifusergroup %}
@@ -23,10 +23,10 @@ $(document).ready(function() {
 
 {% block object-tools %}
   {% if has_add_permission %}
-  <div class="object-tools pull-right">
+  <div class="object-tools float-end">
     {% block object-tools-items %}
-    <a class="btn btn-small btn-info{% if hide_adminonly %} {{ hide_adminonly }}{% endif %}" href="{% if current %}{% url 'admin:risk_contingency_add' current.id %}{% endif %}{% if is_popup %}?_popup=1{% endif %}">
-      <i class="icon-plus icon-white"></i>
+    <a class="btn btn-sm btn-info{% if hide_adminonly %} {{ hide_adminonly }}{% endif %}" href="{% if current %}{% url 'admin:risk_contingency_add' current.id %}{% endif %}{% if is_popup %}?_popup=1{% endif %}">
+      <i class="fa-solid fa-plus text-white"></i>
       {% blocktrans with cl.opts.verbose_name as name %}Create {{ name }}{% endblocktrans %}
     </a>
     {% endblock %}

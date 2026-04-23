@@ -7,6 +7,7 @@ from django.contrib.admin.utils import unquote, quote
 from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from pbs.admin import BaseAdmin, get_permission_codename
@@ -145,11 +146,11 @@ class RegisterAdmin(PrescriptionMixin, SavePrescriptionMixin,
 
     def all_treatments(self, obj):
         if obj.treatment_set.count() > 0:
-            output = '<ul>'
+            output = '<ul class="treatment-list">'
             for treatment in obj.treatment_set.all():
                 if treatment.complete:
                     status_class = ' class="text-success"'
-                    status_icon = '<i class="icon-ok"></i> '
+                    status_icon = '<i class="fa-solid fa-check"></i> '
                 else:
                     status_class = ''
                     status_icon = ''
@@ -176,12 +177,12 @@ class RegisterAdmin(PrescriptionMixin, SavePrescriptionMixin,
                 '<br><a id="add_treatment_%(pk)s" '
                 'onclick="return showAddAnotherPopup(this);" '
                 'class="add-another" href="%(url)s">'
-                '<i class="icon-plus"></i> Add a treatment</a>'
+                '<i class="fa-solid fa-plus"></i> Add a treatment</a>'
             ) % {
                 'pk': obj.pk,
                 'url': url,
             }
-        return output
+        return mark_safe(output)
     all_treatments.short_description = "Treatments"
     all_treatments.allow_tags = True
 
@@ -369,7 +370,7 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
         context = extra_context or {}
         current = Prescription.objects.get(pk=prescription_id)
         if not current.endorsement_status == current.ENDORSEMENT_DRAFT:
-            context['hide_adminonly'] = 'hide adminonly'
+            context['hide_adminonly'] = 'd-none adminonly'
         return super(ContingencyAdmin, self).changelist_view(request, prescription_id, context)
 
     def display_actions(self, obj):
@@ -393,8 +394,8 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                 output += '<tr><td><a href="{}">{}</a></td><td>{}</td></tr>'.format(
                     change_link, action.action, delete_link)
             else:
-                delete_link = delete_link.replace('class="', 'class="hide adminonly ')
-                output += '<tr><td><a class="hide adminonly" href="{}">(Edit) </a>{}</td><td>{}</td></tr>'.format(
+                delete_link = delete_link.replace('class="', 'class="d-none adminonly ')
+                output += '<tr><td><a class="d-none adminonly" href="{}">(Edit) </a>{}</td><td>{}</td></tr>'.format(
                     change_link, action.action, delete_link)
         output += "</tbody></table>"
         url = reverse('admin:risk_contingencyaction_add',
@@ -409,9 +410,9 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
         # We do this because we don't get access to the request object in this method.
         else:
             output += '''<a  onclick="return showAddAnotherPopup(this);"
-                class="add-another hide adminonly" href="{0}?contingency={1}&_popup=1">
+                class="add-another d-none adminonly" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add an action</a>'''.format(url, obj.pk)
-        return output
+        return mark_safe(output)
     display_actions.short_description = "Actions"
     display_actions.allow_tags = True
 
@@ -444,8 +445,8 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                     notification.location, notification.contact_number,
                     delete_link)
             else:
-                delete_link = delete_link.replace('class="', 'class="hide adminonly ')
-                output += '<tr><td><a class="hide adminonly" href="{}">(Edit) </a>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(
+                delete_link = delete_link.replace('class="', 'class="d-none adminonly ')
+                output += '<tr><td><a class="d-none adminonly" href="{}">(Edit) </a>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(
                     change_link, notification.name, notification.organisation,
                     notification.location, notification.contact_number,
                     delete_link)
@@ -462,9 +463,9 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
         # We do this because we don't get access to the request object in this method.
         else:
             output += '''<a onclick="return showAddAnotherPopup(this);"
-                class="add-another hide adminonly" href="{0}?contingency={1}&_popup=1">
+                class="add-another d-none adminonly" href="{0}?contingency={1}&_popup=1">
                 <i class="icon-plus"></i> Add a notification</a>'''.format(url, obj.pk)
-        return output
+        return mark_safe(output)
     display_notifications.short_description = 'Notifications'
     display_notifications.allow_tags = True
 
@@ -653,14 +654,14 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
             url = reverse('admin:risk_action_add',
                           args=(self.prescription.pk,),
                           current_app=self.admin_site.name)
-            return ('<a class="btn btn-mini btn-success" href="%s?risk=%s">'
-                    'Add</a>') % (url, obj.risk.pk)
+            return mark_safe(('<a class="btn btn-mini btn-success" href="%s?risk=%s">'
+                    'Add</a>') % (url, obj.risk.pk))
         else:
             url = reverse('admin:risk_action_delete',
                           args=(obj.pk, self.prescription.pk),
                           current_app=self.admin_site.name)
-            return ('<a class="btn btn-mini btn-danger" href="%s">'
-                    'Remove</a>') % url
+            return mark_safe(('<a class="btn btn-mini btn-danger" href="%s">'
+                    'Remove</a>') % url)
     add_action.short_description = "Multiple?"
     add_action.allow_tags = True
 

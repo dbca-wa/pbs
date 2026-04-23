@@ -45,10 +45,11 @@ class CheckboxSelectMultiple(SelectMultiple):
                 label_for = ''
 
             cb = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
+            cb.attrs['class'] = (cb.attrs.get('class', '') + ' form-check-input').strip()
             option_value = force_str(option_value)
             rendered_cb = cb.render(name, option_value)
             option_label = force_str(option_label)
-            output.append(format_html('<label{0} class="checkbox">{1} {2}</label>',
+            output.append(format_html('<div class="form-check"><label{0} class="form-check-label">{1} {2}</label></div>',
                                       label_for, rendered_cb, option_label))
         return mark_safe('\n'.join(output))
 

@@ -8,14 +8,46 @@ textarea {
     overflow-y: hidden;
 }
 
-table .header-fixed {
-  position: fixed;
-  top: 40px;
-  z-index: 1020; /* 10 less than .navbar-fixed to prevent any overlap */
+#changelist-form .results {
+    overflow-x: scroll;
+    width: 100%;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+#changelist-form .results::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+#result_list {
+    font-size: 0.85rem;
+}
+
+/* Filter sidebar */
+ul.nav-filter li.nav-header {
+    font-weight: bold;
+    padding: 8px 0 2px 0;
+    color: #555;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    border-top: 1px solid #dee2e6;
+    margin-top: 4px;
+}
+ul.nav-filter li.nav-header:first-child {
+    border-top: none;
+    margin-top: 0;
+}
+ul.nav-filter li a {
+    padding: 2px 0;
+    text-decoration: none;
+}
+ul.nav-filter li.active a {
+    font-weight: bold;
+}
+
+/* Fixed header wrapper - positioned dynamically by table-fixed-header.js */
+.fixed-header-wrapper {
   border-bottom: 1px solid #d5d5d5;
-  -webkit-border-radius: 0;
-     -moz-border-radius: 0;
-          border-radius: 0;
+  background-color: #fff;
 }
 
 input {
@@ -29,6 +61,43 @@ input.vIntegerField {
 
 thead {
   background-color: #fff;
+}
+
+thead th a {
+  text-decoration: none;
+}
+
+#result_list tbody td a,
+#result_list tbody th a {
+  text-decoration: none;
+}
+
+thead th {
+  overflow: visible;
+}
+
+/* Sorted column header highlight */
+thead th.col-sorted {
+  background-color: #dbeafe !important; /* Bootstrap blue-100 */
+  position: relative;
+  overflow: visible;
+}
+
+/* Sort priority badge (1st, 2nd, ...) - absolutely positioned in top-right corner */
+.sort-priority-badge {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  display: inline-block;
+  background-color: #3580CA;
+  color: #fff;
+  font-size: .75em;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 9999px;
+  min-width: 20px;
+  text-align: center;
 }
 
 input.vTextField:not([id*='fire_no']) {
@@ -45,4 +114,14 @@ select[id$='ignition_type'] {
 
 .chzn-drop {
     z-index: 1040 !important;  /* 10 more than .navbar-fixed */
+}
+
+/* Fix transparent background on DateTimeShortcuts clock/calendar popups.
+   Django admin uses CSS custom properties (--body-bg etc.) which are not
+   defined in the PBS theme, causing the popup to appear transparent. */
+.clockbox, .calendarbox {
+    background: #fff !important;
+    color: #333 !important;
+    border: 1px solid #ccc !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
 }

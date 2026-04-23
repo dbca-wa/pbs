@@ -160,6 +160,52 @@ class SessionPersistenceMixin(object):
         """
         return self.request.session.get(self.session_key)
 
+
+class Bootstrap5FormMixin:
+    """Inject Bootstrap 5 widget classes into all form fields automatically."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            widget = field.widget
+            existing = widget.attrs.get('class', '')
+            if isinstance(widget, (forms.RadioSelect, forms.CheckboxSelectMultiple)):
+                pass  # rendered as item lists; classes applied per-item in template/widget
+            elif isinstance(widget, (forms.Select, forms.SelectMultiple)):
+                if 'form-select' not in existing:
+                    widget.attrs['class'] = (existing + ' form-select form-select-sm').strip()
+            elif isinstance(widget, forms.CheckboxInput):
+                if 'form-check-input' not in existing:
+                    widget.attrs['class'] = (existing + ' form-check-input').strip()
+            elif isinstance(widget, forms.HiddenInput):
+                pass
+            elif isinstance(widget, forms.MultiWidget):
+                # Apply classes to each sub-widget individually so that existing
+                # sub-widget classes (e.g. vDateField, vTimeField for AdminSplitDateTime)
+                # are preserved. Setting class on the composite widget would cause
+                # MultiWidget.get_context to propagate it as extra_attrs to sub-widgets,
+                # where it would override the sub-widget's own class via build_attrs.
+                try:
+                    from django.contrib.admin.widgets import BaseAdminDateWidget, BaseAdminTimeWidget
+                    _admin_dt_widgets = (BaseAdminDateWidget, BaseAdminTimeWidget)
+                except ImportError:
+                    _admin_dt_widgets = ()
+                for sub_widget in widget.widgets:
+                    if isinstance(sub_widget, (forms.CheckboxInput, forms.HiddenInput)):
+                        continue
+                    sub_existing = sub_widget.attrs.get('class', '')
+                    if 'form-control' not in sub_existing:
+                        # Django admin date/time sub-widgets need d-inline-block w-auto
+                        # to preserve their side-by-side layout; plain form-control
+                        # would apply display:block; width:100% and stack them.
+                        if _admin_dt_widgets and isinstance(sub_widget, _admin_dt_widgets):
+                            sub_widget.attrs['class'] = (sub_existing + ' form-control form-control-sm d-inline-block w-auto').strip()
+                        else:
+                            sub_widget.attrs['class'] = (sub_existing + ' form-control form-control-sm').strip()
+            else:
+                if 'form-control' not in existing:
+                    widget.attrs['class'] = (existing + ' form-control form-control-sm').strip()
+
+
 class PbsErrorList(forms.utils.ErrorList):
     # custom error classes
     def as_ul(self):
@@ -173,7 +219,7 @@ class PbsErrorList(forms.utils.ErrorList):
         )
 
 
-class PbsModelForm(forms.models.ModelForm):
+class PbsModelForm(Bootstrap5FormMixin, forms.models.ModelForm):
     # custom error_class for modelforms created by .get_changelist_formset
     def __init__(self, *args, **kwargs):
         kwargs['error_class'] = PbsErrorList
@@ -228,10 +274,10 @@ class PbsModelForm(forms.models.ModelForm):
 
 class WideTextarea(forms.Textarea):
     """
-    Add span8 class to the stock Textarea widget, to make it full-width.
+    Add w-100 class to the stock Textarea widget, to make it full-width.
     """
     def __init__(self, *args, **kwargs):
-        self.attrs = {'class': 'span8'}
+        self.attrs = {'class': 'w-100'}
 
 
 class BaseFormHelper(FormHelper):
@@ -244,6 +290,8 @@ class BaseFormHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super(BaseFormHelper, self).__init__(*args, **kwargs)
         self.form_class = 'form-horizontal'
+        self.label_class = 'col-sm-3 text-sm-end'
+        self.field_class = 'col-sm-9'
         self.help_text_inline = True
         self.form_method = 'POST'
         save_btn = Submit('submit', 'Save')
@@ -251,7 +299,7 @@ class BaseFormHelper(FormHelper):
         self.add_input(save_btn)
 
 
-class HelperModelForm(forms.ModelForm):
+class HelperModelForm(Bootstrap5FormMixin, forms.ModelForm):
     """
     Stock ModelForm with a property named ``helper`` (used by crispy_forms to
     render in templates).
@@ -262,7 +310,7 @@ class HelperModelForm(forms.ModelForm):
         return helper
 
 
-class PbsAdminAuthenticationForm(AdminAuthenticationForm):
+class PbsAdminAuthenticationForm(Bootstrap5FormMixin, AdminAuthenticationForm):
     """
     A custom authentication form used in the offsets internal application.
     Subclasses the form in django.contrib.admin.forms because that form will
@@ -290,7 +338,7 @@ class PbsAdminAuthenticationForm(AdminAuthenticationForm):
         return self.cleaned_data
 
 
-class UserForm(forms.ModelForm):
+class UserForm(Bootstrap5FormMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
@@ -313,6 +361,12 @@ class ProfileForm(HelperModelForm):
         model = Profile
         exclude = ('user',)
 
+    @property
+    def helper(self):
+        helper = BaseFormHelper()
+        helper.field_class = 'col-sm-4'
+        return helper
+
     def clean(self):
         """District must be child of Region.
         """
@@ -328,7 +382,7 @@ class ProfileForm(HelperModelForm):
         return cleaned_data
 
 
-class PbsPasswordResetForm(PasswordResetForm):
+class PbsPasswordResetForm(Bootstrap5FormMixin, PasswordResetForm):
     def __init__(self, *args, **kwargs):
         kwargs['error_class'] = PbsErrorList
         super(PbsPasswordResetForm, self).__init__(*args, **kwargs)
@@ -344,7 +398,7 @@ class PbsPasswordResetForm(PasswordResetForm):
         return super(PbsPasswordResetForm, self).clean_email()
 
 
-class EndorseAuthoriseSummaryForm(forms.Form):
+class EndorseAuthoriseSummaryForm(Bootstrap5FormMixin, forms.Form):
     region = forms.ModelChoiceField(required=False,
         queryset=Region.objects.all())
     district = forms.ModelChoiceField(required=False, queryset=District.objects.all())
@@ -365,7 +419,7 @@ class EndorseAuthoriseSummaryForm(forms.Form):
         return d
 
 
-class BurnStateSummaryForm(forms.Form):
+class BurnStateSummaryForm(Bootstrap5FormMixin, forms.Form):
     region = forms.ModelChoiceField(required=False,
         queryset=Region.objects.all())
     district = forms.ModelChoiceField(required=False, queryset=District.objects.all())
