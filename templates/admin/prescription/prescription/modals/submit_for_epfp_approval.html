@@ -26,7 +26,7 @@
     I confirm that the persons who have prepared this plan and
     have provided the above endorsements are competent and authorised to
     do so and I confirm that the plan has been prepared in accordance with
-    the DPaW procedure for planning prescribed fire plans.</blockquote>
+    the department procedure for planning prescribed fire plans.</blockquote>
     <form id="id_submit_for_epfp_approval_form" action="{% url "admin:prescription_prescription_approve" current.id %}" method="post">{% csrf_token %}
         <div>
             <label for="id_valid_to">Valid to ({{ current.planned_season_object.start }} - {{ current.planned_season_object.end }}):</label> {{ submit_for_epfp_approval_form.form.valid_to }}
@@ -53,7 +53,7 @@
     I confirm that the persons who have prepared this plan and
     have provided the above endorsements are competent and authorised to
     do so and I confirm that the plan has been prepared in accordance with
-    the DPaW procedure for planning prescribed fire plans.</blockquote>
+    the department procedure for planning prescribed fire plans.</blockquote>
     <form id="id_submit_for_epfp_approval_form" action="{% url "admin:prescription_prescription_approve" current.id %}" method="post">{% csrf_token %}
     <input type="submit" id="id_submit_for_epfp_approval_form_submit" value="{% trans 'Extend Approval' %}" class="btn btn-primary d-none" name="_save"/>
     <input id="id_cancel_button" type="submit" value="{% trans 'Cancel' %}" class="btn btn-danger d-none" name="_cancel"/>
