@@ -910,7 +910,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
                 return HttpResponse(json.dumps({"redirect": referrer_url, "message": message, "type": "danger"}))
 
             if not (dt == yesterday or dt == today or dt == tomorrow) and not self.can_admin(request):
-                message = "Can only acknowledge {} for yesterday {}, today {}, or tomorrow {}.".format(burn_desc, today, tomorrow)
+                message = "Can only acknowledge {} for yesterday {}, today {}, or tomorrow {}.".format(burn_desc, yesterday, today, tomorrow)
                 return HttpResponse(json.dumps({"redirect": referrer_url, "message": message, "type": "danger"}))
 
             count = 0
