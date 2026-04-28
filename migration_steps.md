@@ -158,6 +158,7 @@ stakeholder
   ```
   python pbs/scripts/update_endorsingrole_disclaimers.py --dry-run
   python pbs/scripts/update_endorsingrole_disclaimers.py
+  python pbs/scripts/create_job_queue_groups.py
   
   ```
 
