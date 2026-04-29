@@ -10,17 +10,39 @@
 {% block extrastyle %}
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/widgets.css" %}" />
 <style>
+/* Django 5 switched selector to flexbox; override only what's needed */
 .selector {
-  width: 900px;
+  width: 100%;
 }
 
-.selector-available, .selector-chosen {
-  width: 410px;
+/* Restore legacy visual treatment for selector headings and borders. */
+.selector-available-title,
+.selector-chosen-title {
+  border: 1px solid #ccc;
+  border-radius: 4px 4px 0 0;
+  padding: 4px 8px;
+}
+
+.selector-available-title {
+  background: #f1f1f1;
+  color: #333;
+}
+
+.selector-chosen-title {
+  background: #7ca0c7;
+  color: #fff;
+}
+
+.selector .selector-filter {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
 }
 
 .selector select {
-  width: 410px;
+  border: 1px solid #ccc;
+  border-top: 0;
 }
 
 .selector-chooseall {

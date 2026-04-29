@@ -891,6 +891,14 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
 
             def __init__(self, *args, **kwargs):
                 super(AdminEndorsingRoleForm, self).__init__(*args, **kwargs)
+                # Django 5: formfield_callback on the class body is ignored by
+                # ModelFormMetaclass (must be on Meta), so FilteredSelectMultiple
+                # is never applied automatically. Set the widget BEFORE the
+                # queryset, because setting queryset binds choices to the current
+                # widget — replacing the widget afterwards would lose the choices.
+                self.fields["endorsing_roles"].widget = admin.widgets.FilteredSelectMultiple(
+                    _("endorsing roles"), False
+                )
                 self.fields["endorsing_roles"].queryset = EndorsingRole.objects.filter(archived=False)
 
         obj = self.get_object(request, unquote(object_id))
@@ -1665,8 +1673,6 @@ class PrescriptionMixin(object):
                     return HttpResponseRedirect(request.get_full_path())
 
         editable_fields = self.get_list_editable(request)
-        print("----------------------------------")
-        print("editable_fields", editable_fields)
         # Only allow editing if prescription is still in draft status
         # and fields are actually editable (not locked to 'id' only)
         if (not editable_fields or 
