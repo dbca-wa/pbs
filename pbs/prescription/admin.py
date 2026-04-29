@@ -1581,22 +1581,103 @@ class PrescriptionMixin(object):
             raise Http404(_('prescription object with primary key %(key)r '
                             'does not exist.') % {'key': prescription_id})
 
-        editable = self.get_list_editable(request)
-        if not editable or 'id' in editable and len(editable) == 1:
+        # Django 5 rejects new rows submitted via list_editable (BadRequest on
+        # _state.adding=True). Intercept POST+_save when list_empty_form is set,
+        # save any new rows ourselves, then redirect so super() never sees them.
+        if (request.method == 'POST' and '_save' in request.POST
+                and getattr(self, 'list_empty_form', False)):
+            editable_fields = self.get_list_editable(request)
+            if editable_fields and editable_fields != ('id',):
+                if not self.has_change_permission(request):
+                    raise PermissionDenied
+
+                FormSet = self.get_changelist_formset(request)
+                modified_objects = self._get_list_editable_queryset(
+                    request, FormSet.get_default_prefix())
+                formset = FormSet(
+                    request.POST,
+                    request.FILES,
+                    queryset=modified_objects,
+                )
+
+                has_new_rows = any(
+                    form.has_changed() and form.instance._state.adding
+                    for form in formset.forms
+                )
+                if has_new_rows and formset.is_valid():
+                    changed_count = 0
+                    added_count = 0
+                    with transaction.atomic(using=router.db_for_write(self.model)):
+                        for form in formset.forms:
+                            if not form.has_changed():
+                                continue
+
+                            is_new = form.instance._state.adding
+                            obj = self.save_form(request, form, change=not is_new)
+                            self.save_model(request, obj, form, change=not is_new)
+                            self.save_related(
+                                request,
+                                form,
+                                formsets=[],
+                                change=not is_new,
+                            )
+
+                            if is_new:
+                                self.log_addition(
+                                    request,
+                                    obj,
+                                    self.construct_change_message(
+                                        request,
+                                        form,
+                                        None,
+                                        add=True,
+                                    ),
+                                )
+                                added_count += 1
+                            else:
+                                self.log_change(
+                                    request,
+                                    obj,
+                                    self.construct_change_message(
+                                        request,
+                                        form,
+                                        None,
+                                    ),
+                                )
+                                changed_count += 1
+
+                    if changed_count:
+                        self.message_user(
+                            request,
+                            '{} record{} changed successfully.'.format(
+                                changed_count,
+                                's were' if changed_count > 1 else ' was',
+                            )
+                        )
+                    if added_count:
+                        self.message_user(
+                            request,
+                            '{} record{} added successfully.'.format(
+                                added_count,
+                                's were' if added_count > 1 else ' was',
+                            )
+                        )
+                    return HttpResponseRedirect(request.get_full_path())
+
+        editable_fields = self.get_list_editable(request)
+        print("----------------------------------")
+        print("editable_fields", editable_fields)
+        # Only allow editing if prescription is still in draft status
+        # and fields are actually editable (not locked to 'id' only)
+        if (not editable_fields or 
+                ('id' in editable_fields and len(editable_fields) == 1)):
             editable = False
+        elif prescription and hasattr(prescription, 'check_archive_status'):
+            # Archive status further restricts editability
+            editable = prescription.check_archive_status(request)
         else:
-            #editable = True
-            #Remove the save button if pdf archive has failed for the prescription
-            # if prescription and hasattr(prescription, 'archive_successful'):
-            #     if prescription.archive_successful:
-            #         editable = True
-            #     else:
-            #         if prescription.override_admin(request.user):
-            #             editable = True
-            #         else:
-            #             editable = False
-            if prescription and hasattr(prescription, 'check_archive_status'):
-                editable = prescription.check_archive_status(request)
+            editable = True
+        
         context = {
             'current': prescription,
             'editable': editable,
