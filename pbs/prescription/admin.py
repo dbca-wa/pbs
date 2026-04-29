@@ -1665,8 +1665,6 @@ class PrescriptionMixin(object):
                     return HttpResponseRedirect(request.get_full_path())
 
         editable_fields = self.get_list_editable(request)
-        print("----------------------------------")
-        print("editable_fields", editable_fields)
         # Only allow editing if prescription is still in draft status
         # and fields are actually editable (not locked to 'id' only)
         if (not editable_fields or 
