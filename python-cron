@@ -1,5 +1,5 @@
 10 9 * * *     cd /app && python manage.py appmonitor_check >> logs/appmonitor_check.log 2>&1
-*/5 * * * * cd /app && run-one python manage.py process_job_queue >> logs/job_queue.log 2>&1
+*/2 * * * * cd /app && run-one python manage.py process_job_queue >> logs/job_queue.log 2>&1
 
 # Log Rotate
 1 0 * * *  /bin/log_rotate.sh  >> /app/logs/log_rotate.log 2>&1
