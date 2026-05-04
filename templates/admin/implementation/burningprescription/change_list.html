@@ -43,7 +43,11 @@
 <h1>Fire Behaviour Calculations</h1>
 <p class="float-end">
 <a href="{{ upload_document }}?tag={{ "Fire Behaviour Calculation"|tag_id }}&next={{ request.get_full_path }}" class="btn btn-sm btn-info"><i class="fa-solid fa-plus"></i> Upload Fire Behaviour Calculations</a>
-<a class="btn btn-sm btn-info" href="https://fmsb.dpaw.wa.gov.au/images/documents/fire_doctrine/forms/FIRE_873_Forest_Fuels_Calculation_Sheet_Final_20130715.docx" target="_blank"><i class='fa-solid fa-download'></i> Download the FIRE 873 template</a>
+<a class="btn btn-small btn-info" 
+  href="https://dpaw.sharepoint.com/:w:/r/sites/Fire/_layouts/15/Doc.aspx?sourcedoc=%7BEAAC002B-03E3-4BA9-82F9-9198C2554C66%7D&file=FIRE873%20Forest%20fuels%20calculation%20sheet.docx&action=default&mobileredirect=true&DefaultItemOpen=1" target="_blank"><i class='icon-download-alt'>
+  </i> 
+  Download the FIRE 873 template
+</a>
 </p>
 {% filter_by_tag_name current.document_set "Fire Behaviour Calculation" as document_set %}
 {% include "admin/document_list.html" with document_type="Fire Behaviour Calculation" %}

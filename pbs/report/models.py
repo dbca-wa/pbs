@@ -925,7 +925,7 @@ class Evaluation(Audit):
         (ACHIEVED_PARTIAL, "Partially"),
     )
     criteria = models.OneToOneField(
-        SuccessCriteria, verbose_name="Success Criteria", on_delete=models.PROTECT)
+        SuccessCriteria, verbose_name="Success Criteria", on_delete=models.CASCADE)
     achieved = models.PositiveSmallIntegerField(
         choices=ACHIEVED_CHOICES, blank=True, null=True,
         verbose_name="Success Criteria Achieved?")
