@@ -144,12 +144,18 @@
 $(function(){
      $("[data-bs-toggle=myCollapse]").click(function( ev ) {
        ev.preventDefault();
-       var target;
-       if (this.hasAttribute('data-target')) {
-     target = $(this.getAttribute('data-target'));
-       } else {
-     target = $(this.getAttribute('href'));
-       };
+       // Original logic kept for reference during the Bootstrap 5 transition.
+       // var target;
+       // if (this.hasAttribute('data-target')) {
+       //   target = $(this.getAttribute('data-target'));
+       // } else {
+       //   target = $(this.getAttribute('href'));
+       // };
+       var targetSelector = this.getAttribute('data-bs-target') || this.getAttribute('data-target') || this.getAttribute('href');
+       if (!targetSelector) {
+         return;
+       }
+       var target = $(targetSelector);
        target.toggleClass("show");
      });
 
