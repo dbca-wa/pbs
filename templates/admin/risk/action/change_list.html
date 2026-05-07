@@ -117,3 +117,18 @@
   {% if current.endorsement_status == current.ENDORSEMENT_DRAFT and not 'pre_burn' in request.GET and not 'day_of_burn' in request.GET and not 'post_burn' in request.GET or perms.prescription.can_admin %}<a href="{% url 'admin:risk_risk_add' current.id %}?prescription={{ current.id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="fa-solid fa-plus"></i> Add source of risk</a>{% endif %}
 </h1>
 {% endblock %}
+
+{% block contentclass %}{% if cl.has_filters %}col-10{% else %}col-12{% endif %}{% endblock %}
+
+{% block filters %}
+{% if cl.has_filters %}
+<div style="flex: 0 0 auto; width: 16%;">
+  <h5>Filter</h5>
+  <ul class="nav flex-column nav-filter">
+      {% for spec in cl.filter_specs %}
+        {% admin_list_filter cl spec %}
+      {% endfor %}
+  </ul>
+</div>
+{% endif %}
+{% endblock %}

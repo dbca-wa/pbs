@@ -47,6 +47,11 @@ ul.nav-filter li a {
     font-size: 0.85rem;
     display: block;
 }
+ul.nav-filter li a:hover {
+    background-color: #d0e6f7;
+    border-radius: 3px;
+    color: #1a5a9a;
+}
 ul.nav-filter li.active {
     background-color: #3580CA;
     border-radius: 3px;
