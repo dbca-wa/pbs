@@ -164,7 +164,7 @@ $(document).ready(function() {
 {% block header %}{% endblock %}
 
 {% block contentwrapper %}
-<div class="row">
+<div class="row g-2">
 <div class="{% block contentclass %}{% if cl.has_filters %}col-9{% else %}col-12{% endif %}{% endblock %}">
   {% block pretitle %}{% endblock %}
   {% block content_title %}{{ block.super }}{% endblock %}

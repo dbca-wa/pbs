@@ -23,6 +23,11 @@ textarea {
 }
 
 /* Filter sidebar */
+.col-3 h5:first-child {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
 ul.nav-filter li.nav-header {
     font-weight: bold;
     padding: 8px 0 2px 0;
@@ -37,11 +42,18 @@ ul.nav-filter li.nav-header:first-child {
     margin-top: 0;
 }
 ul.nav-filter li a {
-    padding: 2px 0;
+    padding: 2px 5px;
     text-decoration: none;
+    font-size: 0.85rem;
+    display: block;
+}
+ul.nav-filter li.active {
+    background-color: #3580CA;
+    border-radius: 3px;
 }
 ul.nav-filter li.active a {
     font-weight: bold;
+    color: #fff;
 }
 
 /* Fixed header wrapper - positioned dynamically by table-fixed-header.js */
