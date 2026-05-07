@@ -412,6 +412,13 @@ div.freetext {
     white-space:pre;
 }
 
+/* Restore breadcrumb background (removed in Bootstrap 5) */
+.breadcrumb {
+    background-color: #f0f2f4;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+}
+
 /* Remove underline from breadcrumb links */
 .breadcrumb a {
     text-decoration: none;
