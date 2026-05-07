@@ -87,6 +87,10 @@ a.selector-chooseall {
     display: none !important;
 }
 
+body h1 {
+    font-weight: bold;
+}
+
 body h2 {
     font-weight: 500;
 }
