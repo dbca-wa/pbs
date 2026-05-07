@@ -8,8 +8,14 @@
 /* Filter dropdown buttons */
 .filter-dropdown-wrapper .btn-light,
 .column-tools .btn-light {
-  background-color: #d0d5da;
-  border-color: #b8bfc7;
+  background-color: #f0f2f4;
+  border-color: #ced4da;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.filter-dropdown-wrapper .btn-light:hover,
+.column-tools .btn-light:hover {
+  background-color: #dde1e6;
+  border-color: #adb5bd;
 }
 .filter-dropdown-wrapper .dropdown-menu {
   min-width: 180px;
@@ -31,7 +37,7 @@
 <div class="d-flex align-items-center justify-content-between mb-2">
   <h1 class="mb-0">Regional Overview</h1>
   <button id="toggletools" type="button" class="btn btn-success btn-sm">
-      Show Filter and Column tools
+      Search and Column tools
   </button>
 </div>
 {% endblock %}
@@ -60,7 +66,7 @@ list when it is altered by the JS below.
 
 <div class="row toggletools d-none mb-3">
     <div class="col-12">
-        <div class="alert alert-info py-2">
+        <div class="alert alert-success py-2">
             <strong>Filter</strong>
             <div class="row">
                 <div class="filter-tools col-12">
@@ -256,17 +262,22 @@ $(document).ready(function($) {
     {% endif %}
 
     $("#tablemask").removeClass("d-none");
+    if (tools.hasClass("d-none")) {
+        toolsButton.removeClass("btn-danger").addClass("btn-success");
+    } else {
+        toolsButton.removeClass("btn-success").addClass("btn-danger");
+    }
     toolsButton.click(function() {
         if (tools.hasClass("d-none")) {
             tools.removeClass("d-none").hide().slideDown(300);
-            toolsButton.text("Hide Filter and Column tools");
+            toolsButton.removeClass("btn-success").addClass("btn-danger");
             Vis.setToolsVisibility(myStore, visKey, true);
             initChoices();
         } else {
             tools.slideUp(300, function() {
                 tools.addClass("d-none");
             });
-            toolsButton.text("Show Filter and Column tools");
+            toolsButton.removeClass("btn-danger").addClass("btn-success");
             Vis.setToolsVisibility(myStore, visKey, false);
         }
     });
