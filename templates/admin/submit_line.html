@@ -1,6 +1,6 @@
 {% load i18n admin_urls %}
 <div class="navbar fixed-bottom bg-light border-top py-2">
-  <div class="container-fluid d-flex justify-content-end gap-2 pe-4">
+  <div class="container d-flex justify-content-end gap-2">
     {% if show_save %}<input type="submit" value="{% trans 'Save' %}" class="btn btn-success btn-sm" name="_save" {{ onclick_attrib }}/>{% endif %}
     {% if show_save_and_add_another and save_add_another_model %}<input type="submit" value="{% trans 'Save and add another' %}" class="btn btn-secondary btn-sm" name="_addanother" {{ onclick_attrib }}/>{% endif %}
     {% if show_save_as_new %}<input type="submit" value="{% trans 'Save as new' %}" name="_saveasnew" class="btn btn-secondary btn-sm" {{ onclick_attrib }}/>{%endif%}

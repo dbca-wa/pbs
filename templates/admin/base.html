@@ -221,7 +221,7 @@
 {% if not user.is_anonymous %}
 {% block navigation %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-secondary" id="mainnav">
-  <div class="container-fluid">
+  <div class="container">
     <div class="d-lg-none">
       <form action="{% url 'admin:prescription_prescription_changelist' %}" method="get" class="d-inline">
         <div class="input-group">
@@ -249,7 +249,7 @@
 </nav>
 {% if current %}
 <nav class="navbar navbar-expand-lg navbar-dark" id="subnav">
-  <div class="container-fluid">
+  <div class="container">
     <div class="collapse navbar-collapse show">
       <ul class="navbar-nav flex-nowrap">
         <li class="nav-item{% if request.path == overview %} active{% endif %}"><a class="nav-link text-nowrap" href="{{ overview }}">ePFP overview</a></li>
