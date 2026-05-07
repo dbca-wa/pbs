@@ -12,6 +12,17 @@
     {% if 'day_of_burn' in request.GET %}width: 25%;{% endif %}
     {% if 'post_burn' in request.GET %}width: 35%;{% endif %}
   }
+  .column-pre_burn_resolved {
+    width: 150px;
+    min-width: 150px;
+  }
+  .column-pre_burn_resolved select {
+    min-width: 130px;
+  }
+  .column-pre_burn_completed {
+    width: 160px;
+    min-width: 160px;
+  }
   .column-pre_burn_explanation {
     width: 20%;
   }
@@ -96,12 +107,12 @@
 {% endif %}
 
 {% if 'pre_burn' in request.GET or 'day_of_burn' in request.GET or 'post_burn' in request.GET %}
-<h1>Actions Report <a href="{{ upload_document }}?tag={{ actions_form_name|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="fa-solid fa-plus"></i> Upload {{ actions_form_name }}</a></h1>
+<h1 class="mt-4">Actions Report <a href="{{ upload_document }}?tag={{ actions_form_name|tag_id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="fa-solid fa-plus"></i> Upload {{ actions_form_name }}</a></h1>
 <h5><a class="btn btn-sm btn-info" href="{{ download_pdf }}?template=form-{{ actions_form_name|slugify }}&download=True"><i class="fa-solid fa-download"></i> Download the {{ actions_form_name }} template</a></h5>
 
 {% document_list %}
 {% endif %}
-<h1>
+<h1 class="mt-4">
   {% if 'pre_burn' in request.GET %}Pre-burn Actions{% elif 'day_of_burn' in request.GET %}Day of Burn Actions{% elif 'post_burn' in request.GET %}Post Burn Actions{% else %}Plan Actions{% endif %}
   {% if current.endorsement_status == current.ENDORSEMENT_DRAFT and not 'pre_burn' in request.GET and not 'day_of_burn' in request.GET and not 'post_burn' in request.GET or perms.prescription.can_admin %}<a href="{% url 'admin:risk_risk_add' current.id %}?prescription={{ current.id }}&next={{ request.get_full_path }}" class="float-end btn btn-sm btn-info"><i class="fa-solid fa-plus"></i> Add source of risk</a>{% endif %}
 </h1>
