@@ -344,6 +344,34 @@ div.navbar-fixed-bottom {
   margin: 0;
 }
 
+/* Align navbar containers and page content with .page width,
+   preventing Bootstrap's 1400px breakpoint from causing layout jumps */
+#mainnav > .container,
+#subnav > .container,
+.navbar.fixed-bottom > .container {
+  max-width: 980px;
+}
+
+.page-container > .container {
+  max-width: 100%;
+}
+
+@media (min-width: 1200px) {
+  #mainnav > .container,
+  #subnav > .container,
+  .navbar.fixed-bottom > .container {
+    max-width: 1210px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+  #mainnav > .container,
+  #subnav > .container,
+  .navbar.fixed-bottom > .container {
+    max-width: 764px;
+  }
+}
+
 .navbar .nav li.dropdown > .dropdown-toggle .caret,
 .navbar .nav li.dropdown > .dropdown-toggle .caret,
 .navbar .nav li.dropdown > a:hover .caret,
