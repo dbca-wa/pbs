@@ -150,16 +150,16 @@
             }
           });
 
-          var collapseAllLink = $('<a class="btn float-start btn-sm collapseAll" href="javascript:void(0);" title="Collapse all"><i class="fa-solid fa-minus"></i> Collapse all</a>');
-          var expandAllLink = $('<a class="btn float-start btn-sm expandAll" href="javascript:void(0);" title="Expand all"><i class="fa-solid fa-plus"></i> Expand all</a>');
-          $('div.fixed-bottom div.container'
-            ).append(collapseAllLink.clone().click(function() {
+          var collapseAllLink = $('<a class="btn btn-outline-dark btn-sm me-1 collapseAll" href="javascript:void(0);" title="Collapse all"><i class="fa-solid fa-minus"></i> Collapse all</a>');
+          var expandAllLink = $('<a class="btn btn-outline-dark btn-sm expandAll" href="javascript:void(0);" title="Expand all"><i class="fa-solid fa-plus"></i> Expand all</a>');
+          var buttonGroup = $('<div class="me-auto"></div>');
+          buttonGroup.append(collapseAllLink.clone().click(function() {
               $('a.collapse').click();
-            })
-            ).append(expandAllLink.click(function() {
+          }));
+          buttonGroup.append(expandAllLink.click(function() {
               $('a.expand').click();
-            })
-          );
+          }));
+          $('div.fixed-bottom div.container').prepend(buttonGroup);
       }
   });
   </script>
