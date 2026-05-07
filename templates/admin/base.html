@@ -137,8 +137,8 @@
     <div class="container">
       {% if current %}
       <ul class="navbar-nav">
-        <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_detail' current.id %}"><b>{{ current.burn_id }}</b> - {{ current.name }} ({{ current.season }})</a></li>
-        <li class="nav-item"><a class="nav-link{% if request.path == sitemap %} top-header-active{% endif %}" href="{{ sitemap }}">Sitemap</a></li>
+        <li class="nav-item text-nowrap"><a class="nav-link" href="{% url 'admin:prescription_prescription_detail' current.id %}"><b>{{ current.burn_id }}</b> - {{ current.name }} ({{ current.season }})</a></li>
+        <li class="nav-item text-nowrap"><a class="nav-link{% if request.path == sitemap %} top-header-active{% endif %}" href="{{ sitemap }}">Sitemap</a></li>
       </ul>
       {% endif %}
       <div class="collapse navbar-collapse" id="first-nav">
