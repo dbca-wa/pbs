@@ -412,7 +412,7 @@ div.navbar-fixed-bottom {
 .nav-tabs .nav-link.active {
     background-color: #eeeeee;
     color: #000000;
-    border-color: #dee2e6 #dee2e6 #eeeeee;
+    border-color: #dee2e6;
 }
 
 
