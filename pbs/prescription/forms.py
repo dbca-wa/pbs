@@ -517,20 +517,22 @@ class FundingAllocationForm(Bootstrap5FormMixin, forms.ModelForm):
 
     def save(self):
         # import ipdb; ipdb.set_trace()
-        _boom = 1 / 0
-        super(FundingAllocationForm, self).save()
+        # _boom = 1 / 0
+        return super(FundingAllocationForm, self).save()
 
     def is_valid(self):
         # import ipdb; ipdb.set_trace()
-        super(FundingAllocationForm, self).is_valid()
+        return super(FundingAllocationForm, self).is_valid()
 
     def clean(self):
         # import ipdb; ipdb.set_trace()
-        _boom = 1 / 0
-        super(FundingAllocationForm, self).clean()
+        # _boom = 1 / 0
+        # super(FundingAllocationForm, self).clean()
+        cleaned_data = super(FundingAllocationForm, self).clean()
         prop = self.cleaned_data.get('proportion')
-        if not (0 <= prop <= 100):
+        if prop is not None and not (0 <= prop <= 100):
             raise ValidationError("FundingAllocationForm.clean - Value must be between 0 and 100")
+        return cleaned_data
 
     class Meta:
         model = FundingAllocation
