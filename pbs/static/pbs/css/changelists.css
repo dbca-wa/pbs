@@ -13,39 +13,54 @@ textarea {
     width: 100%;
 }
 
-/* Desktop: flex layout with filter sidebar.
-   flex: 1 1 0% on content means it starts at 0 width and grows to fill
-   available space (total minus filter width). Because flex-basis is 0%
-   (not auto/content), the item cannot expand beyond available space
-   regardless of inner content width. This prevents the table from
-   pushing the content column into the filter column. */
-@media (min-width: 768px) {
-    .changelist-has-filter {
-        display: flex;
-        flex-wrap: nowrap;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-    .changelist-has-filter .changelist-content {
-        flex: 1 1 0%;
-        min-width: 0;
-    }
-    .changelist-filter-panel {
-        flex: 0 0 200px;
-        width: 200px;
-        position: sticky;
-        top: 60px;
-        max-height: calc(100vh - 70px);
-        overflow-y: auto;
-    }
+/* Freeze the first data column so it stays visible during horizontal scroll */
+#result_list thead th:first-child,
+#result_list tbody td:first-child {
+    position: sticky;
+    left: 0;
+    background: inherit;
+    z-index: 1;
+}
+
+/* Changelist wrapper: always full width, relative so the filter panel
+   can overlay on top of the table using absolute positioning. */
+.changelist-wrapper {
+    position: relative;
+}
+
+/* Content column: always full width */
+.changelist-content {
+    width: 100%;
+}
+
+/* filter-toggle-wrapper: anchor for the absolute-positioned panel. */
+.filter-toggle-wrapper {
+    position: relative;
+}
+
+/* Filter overlay panel: absolutely positioned below the toggle button,
+   overlays on top of the table. slideDown/Up animates from top: 100%
+   of the wrapper (= directly below the button). */
+.changelist-filter-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 200;
+    width: 220px;
+    overflow-y: visible;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    padding: 0.5rem 0.75rem;
 }
 
 #result_list {
     font-size: 0.85rem;
 }
 
-/* Filter sidebar */
-.changelist-filter-panel h5 {
+/* Filter panel heading */
+.changelist-filter-panel > .nav-filter-title {
     font-size: 0.9rem;
     font-weight: bold;
     margin-bottom: 4px;

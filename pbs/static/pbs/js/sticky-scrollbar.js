@@ -52,13 +52,13 @@
             });
             $proxy.find('div').css({ width: tableWidth });
 
-            // Only show proxy bar when table is wider than its container
+            // Show proxy bar only when table is wider than its container
             $proxy.toggle(tableWidth > containerWidth);
         }
 
         update();
         $(window).on('resize', update);
-        // Re-check after any dynamic content changes
-        setTimeout(update, 500);
+        // Re-check after dynamic content changes (e.g. inline rows added)
+        new MutationObserver(update).observe($results[0], { childList: true, subtree: true });
     });
 })(jQuery);
