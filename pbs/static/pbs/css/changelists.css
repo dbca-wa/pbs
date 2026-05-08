@@ -9,13 +9,35 @@ textarea {
 }
 
 #changelist-form .results {
-    overflow-x: scroll;
+    overflow-x: auto;
     width: 100%;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
 }
-#changelist-form .results::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+
+/* Desktop: flex layout with filter sidebar.
+   flex: 1 1 0% on content means it starts at 0 width and grows to fill
+   available space (total minus filter width). Because flex-basis is 0%
+   (not auto/content), the item cannot expand beyond available space
+   regardless of inner content width. This prevents the table from
+   pushing the content column into the filter column. */
+@media (min-width: 768px) {
+    .changelist-has-filter {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .changelist-has-filter .changelist-content {
+        flex: 1 1 0%;
+        min-width: 0;
+    }
+    .changelist-filter-panel {
+        flex: 0 0 200px;
+        width: 200px;
+        position: sticky;
+        top: 60px;
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
 }
 
 #result_list {
@@ -23,7 +45,7 @@ textarea {
 }
 
 /* Filter sidebar */
-.col-3 h5:first-child {
+.changelist-filter-panel h5 {
     font-size: 0.9rem;
     font-weight: bold;
     margin-bottom: 4px;
@@ -46,6 +68,11 @@ ul.nav-filter li a {
     text-decoration: none;
     font-size: 0.85rem;
     display: block;
+}
+ul.nav-filter li a:hover {
+    background-color: #d0e6f7;
+    border-radius: 3px;
+    color: #1a5a9a;
 }
 ul.nav-filter li.active {
     background-color: #3580CA;

@@ -164,8 +164,8 @@ $(document).ready(function() {
 {% block header %}{% endblock %}
 
 {% block contentwrapper %}
-<div class="row g-2">
-<div class="{% block contentclass %}{% if cl.has_filters %}col-12 col-md-9{% else %}col-12{% endif %}{% endblock %}">
+<div class="{% if cl.has_filters %}changelist-has-filter{% endif %}">
+<div class="changelist-content {% block contentclass %}col-12{% endblock %}">
   {% block pretitle %}{% endblock %}
   {% block content_title %}{{ block.super }}{% endblock %}
   {% block content %}
@@ -233,14 +233,14 @@ $(document).ready(function() {
 </div>
 {% block filters %}
 {% if cl.has_filters %}
-<div class="col-12 col-md-3">
+<aside class="changelist-filter-panel">
   <h5>Filter</h5>
   <ul class="nav flex-column nav-filter">
       {% for spec in cl.filter_specs %}
         {% admin_list_filter cl spec %}
       {% endfor %}
   </ul>
-</div>
+</aside>
 {% endif %}
 {% endblock %}
 </div>
