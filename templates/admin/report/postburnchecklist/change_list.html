@@ -20,7 +20,7 @@
 {% if current.is_approved %}
 {{ block.super }}
 {% else %}
-<div class="alert clearfix">
+<div class="alert alert-warning">
     <strong>Warning!</strong> In order to edit this section, the ePFP needs to be approved.
 </div>
 {% endif %}
