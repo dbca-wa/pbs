@@ -11,6 +11,10 @@ textarea {
 #changelist-form .results {
     overflow-x: auto;
     width: 100%;
+    scrollbar-width: none;
+}
+#changelist-form .results::-webkit-scrollbar {
+    display: none;
 }
 
 /* Freeze the first data column so it stays visible during horizontal scroll */
