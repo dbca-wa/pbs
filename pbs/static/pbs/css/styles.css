@@ -312,6 +312,8 @@ div.navbar-fixed-bottom {
 /* Sub-navigation for prescription-specific links */
 #subnav {
   background-color: #1a5fa8 !important;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 #subnav .nav-link {
