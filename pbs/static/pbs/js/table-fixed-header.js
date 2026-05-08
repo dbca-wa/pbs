@@ -1,7 +1,8 @@
 (function($) {
 
 $.fn.fixedHeader = function (options) {
- var navbarHeight = $('nav.navbar.fixed-top').outerHeight() || 40;
+ var $navbar = $('nav.navbar.fixed-top');
+ var navbarHeight = ($navbar.length ? $navbar[0].getBoundingClientRect().bottom : 0) || 40;
  var config = {
    topOffset: navbarHeight
  };
