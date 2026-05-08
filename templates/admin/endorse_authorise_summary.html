@@ -57,7 +57,7 @@
 </div>
 {% endif %}
 
-<ul id="report-tabs" class="nav nav-tabs">
+<ul id="report-tabs" class="nav nav-tabs align-items-center">
     <li class="nav-item">
         <a class="nav-link {% if report == "summary" %}active{% endif %}" href="{% url 'admin:endorse_authorise_summary' %}?report=summary">
             <i class="fa-solid fa-tag"></i>
@@ -76,24 +76,25 @@
             Ignitions
         </a>
     </li>
+    {% if report == "summary" or report == "approvals" %}
+    <li class="ms-3 d-flex align-items-center gap-2 filter-form pb-1">
+        <form class="d-flex align-items-center gap-2">
+            <label for="id_region" class="mb-0">Region</label>
+            {{ form.region }}
+            <label for="id_district" class="mb-0">District</label>
+            {{ form.district }}
+            <button type="submit" class="btn btn-primary btn-sm">Update</button>
+            {% if report == "approvals" %}
+                <input type="hidden" name="report" value="approvals">
+            {% endif %}
+        </form>
+    </li>
+    {% endif %}
 </ul>
 
-{% if report == "summary" or report == "approvals" %}
-<div class="d-flex align-items-center gap-2 mt-2 mb-3 filter-form">
-    <label for="id_region" class="mb-0">Region</label>
-    <form class="d-flex align-items-center gap-2 filter-form">
-        {{ form.region }}
-        <label for="id_district" class="mb-0">District</label>
-        {{ form.district }}
-        <button type="submit" class="btn btn-primary btn-sm">Update</button>
-        {% if report == "approvals" %}
-            <input type="hidden" name="report" value="approvals">
-        {% endif %}
-    </form>
-</div>
-{% else %}
-<div class="d-flex align-items-center gap-2 mt-2 mb-3 filter-form">
-    <form class="d-flex align-items-center gap-2 filter-form">
+{% if report == "ignitions" %}
+<div class="d-flex align-items-center gap-2 mt-2 mb-2 filter-form">
+    <form class="d-flex align-items-center gap-2">
         <label for="id_fromDate" class="mb-0 text-nowrap">From Date</label>
         <input type="text" id="id_fromDate" value="{{ fromDate|date:'d-m-Y' }}" name="fromDate" class="form-control form-control-sm"/>
         <label for="id_toDate" class="mb-0 text-nowrap">To Date</label>
