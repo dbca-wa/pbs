@@ -35,29 +35,8 @@
 }
 </style>
 
-{% if report == "summary" or report == "approvals" %}
-<div class="float-end ms-3 mb-2">
-  <table class="table table-compressed table-bordered table-striped">
-    <tbody>
-      <tr>
-        <th colspan="2">Legend</th>
-      </tr>
-      <tr>
-        <td>Required but not completed</td>
-        <td><i class="fa-solid fa-triangle-exclamation text-danger"></i></td>
-      </tr>
-      {% if report == "summary" %}
-      <tr>
-        <td>Required and completed</td>
-        <td><i class="fa-solid fa-check text-success"></i></td>
-      </tr>
-      {% endif %}
-    </tbody>
-  </table>
-</div>
-{% endif %}
-
-<ul id="report-tabs" class="nav nav-tabs align-items-center">
+<div class="d-flex align-items-end justify-content-between">
+<ul id="report-tabs" class="nav nav-tabs align-items-center mb-0">
     <li class="nav-item">
         <a class="nav-link {% if report == "summary" %}active{% endif %}" href="{% url 'admin:endorse_authorise_summary' %}?report=summary">
             <i class="fa-solid fa-tag"></i>
@@ -91,6 +70,28 @@
     </li>
     {% endif %}
 </ul>
+{% if report == "summary" or report == "approvals" %}
+<div>
+  <table class="table table-compressed table-bordered table-striped mb-0">
+    <tbody>
+      <tr>
+        <th colspan="2">Legend</th>
+      </tr>
+      <tr>
+        <td>Required but not completed</td>
+        <td><i class="fa-solid fa-triangle-exclamation text-danger"></i></td>
+      </tr>
+      {% if report == "summary" %}
+      <tr>
+        <td>Required and completed</td>
+        <td><i class="fa-solid fa-check text-success"></i></td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+</div>
 
 {% if report == "ignitions" %}
 <div class="d-flex align-items-center gap-2 mt-2 mb-2 filter-form">
