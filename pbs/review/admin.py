@@ -240,10 +240,21 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Override the redirect url after successful save of an existing PrescribedBurn
         """
-        if 'edit_fire' in request.META.get('HTTP_REFERER') or 'edit_active_burn' in request.META.get('HTTP_REFERER'):
-            url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.GET['date'])
-        elif 'edit_burn' in request.META.get('HTTP_REFERER'):
-            url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.GET['date'])
+        # Original logic kept for reference:
+        # if 'edit_fire' in request.META.get('HTTP_REFERER') or 'edit_active_burn' in request.META.get('HTTP_REFERER'):
+        #     url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.GET['date'])
+        # elif 'edit_burn' in request.META.get('HTTP_REFERER'):
+        #     url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.GET['date'])
+        # else:
+        #     url = reverse('admin:daily_burn_program')
+
+        referer = request.META.get('HTTP_REFERER', '')
+        report_date = request.GET.get('date') or request.POST.get('date') or obj.date
+
+        if 'edit_fire' in referer or 'edit_active_burn' in referer:
+            url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(report_date)
+        elif 'edit_burn' in referer:
+            url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(report_date)
         else:
             url = reverse('admin:daily_burn_program')
 
@@ -255,11 +266,23 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         """
         Override the redirect url after successful save of a new PrescribedBurn
         """
-        if 'form' in request.GET:
-            if 'add_fire' in request.GET['form'] or 'add_active_burn' in request.GET['form']:
-                url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.POST['date'])
-            if 'add_burn' in request.GET['form']:
-                url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.POST['date'])
+        # Original logic kept for reference:
+        # if 'form' in request.GET:
+        #     if 'add_fire' in request.GET['form'] or 'add_active_burn' in request.GET['form']:
+        #         url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(request.POST['date'])
+        #     if 'add_burn' in request.GET['form']:
+        #         url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(request.POST['date'])
+        # else:
+        #     url = reverse('admin:daily_burn_program')
+
+        form_type = request.GET.get('form', '')
+        report_date = request.POST.get('date') or obj.date
+
+        if form_type:
+            if 'add_fire' in form_type or 'add_active_burn' in form_type:
+                url = reverse('admin:daily_burn_program') + '?report=epfp_fireload&date={}'.format(report_date)
+            if 'add_burn' in form_type:
+                url = reverse('admin:daily_burn_program') + '?report=epfp_planned&date={}'.format(report_date)
         else:
             url = reverse('admin:daily_burn_program')
 
