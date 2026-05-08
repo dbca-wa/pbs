@@ -108,7 +108,7 @@ ul.nav-filter li.active a {
   background-color: #fff;
 }
 
-input {
+input:not([type="checkbox"]):not([type="radio"]) {
   width: 60px;
 }
 

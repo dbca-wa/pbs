@@ -183,6 +183,7 @@ ul#actionnav {
 
 .table tbody tr th.group-heading {
     background-color: #efefef;
+    text-align: left;
 }
 
 #state tbody tr.info > th,
