@@ -72,15 +72,15 @@
 
 {% block pretitle %}
 <ul id="car" class="nav nav-tabs">
-    <li class="nav-item"><a class="nav-link" href="{% url 'admin:risk_context_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Risk management context statement</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:risk_context_changelist' current.id %}"><i class="fa-solid fa-gavel"></i> Risk management context statement</a></li>
     <li class="nav-item"><a class="nav-link" href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="fa-solid fa-user"></i> Critical stakeholders</a></li>
-    <li class="nav-item"><a class="nav-link active" href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Actions</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-gavel"></i> Actions</a></li>
     <li class="nav-item"><a class="nav-link" href="{% url 'admin:risk_register_changelist' current.id %}"><i class="fa-solid fa-triangle-exclamation"></i> Risk register</a></li>
 </ul>
 <ul id="actionnav" class="nav nav-pills">
     <li class="nav-item"><a class="nav-link{% if not 'pre_burn' in request.GET and not 'day_of_burn' in request.GET and not 'post_burn' in request.GET %} active{% endif %}" href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-list-ol"></i>Plan actions</a></li>
     <li class="nav-item"><a class="nav-link{% if 'pre_burn' in request.GET %} active{% endif %}" href="?pre_burn=True"><i class="fa-solid fa-list-check"></i>Pre-burn actions</a></li>
-    <li class="nav-item"><a class="nav-link{% if 'day_of_burn' in request.GET %} active{% endif %}" href="?day_of_burn=True"><i class="fa-solid fa-scale-balanced"></i>Day of burn actions</a></li>
+    <li class="nav-item"><a class="nav-link{% if 'day_of_burn' in request.GET %} active{% endif %}" href="?day_of_burn=True"><i class="fa-solid fa-gavel"></i>Day of burn actions</a></li>
     <li class="nav-item"><a class="nav-link{% if 'post_burn' in request.GET %} active{% endif %}" href="?post_burn=True"><i class="fa-solid fa-triangle-exclamation"></i>Post-burn actions</a></li>
 </ul>
 {% endblock %}
