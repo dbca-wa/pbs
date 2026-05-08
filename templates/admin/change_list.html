@@ -165,7 +165,7 @@ $(document).ready(function() {
 
 {% block contentwrapper %}
 <div class="row g-2">
-<div class="{% block contentclass %}{% if cl.has_filters %}col-9{% else %}col-12{% endif %}{% endblock %}">
+<div class="{% block contentclass %}{% if cl.has_filters %}col-12 col-md-9{% else %}col-12{% endif %}{% endblock %}">
   {% block pretitle %}{% endblock %}
   {% block content_title %}{{ block.super }}{% endblock %}
   {% block content %}
@@ -233,7 +233,7 @@ $(document).ready(function() {
 </div>
 {% block filters %}
 {% if cl.has_filters %}
-<div class="col-3">
+<div class="col-12 col-md-3">
   <h5>Filter</h5>
   <ul class="nav flex-column nav-filter">
       {% for spec in cl.filter_specs %}
