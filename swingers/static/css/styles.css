@@ -642,13 +642,17 @@ ul.stat-list {
 
 /* django admin widget overrides */
 .selector-available h2, .selector-chosen h2 {
-  font-size: 15px;
+  font-size: 0.875rem;
   font-weight: bold;
   margin: 0;
   padding: 2px 5px 3px;
   text-align: left;
   line-height: normal;
   text-transform: none;
+}
+
+.selector select {
+  font-size: 0.875rem;
 }
 
 .selector .selector-filter label {

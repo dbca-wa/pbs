@@ -42,13 +42,12 @@
                 <div class="object-tools float-end">
                 {% block object-tools-items %}
                     <div class="btn-group">
-                        <a class="btn"
+                        <a class="btn btn-outline-secondary historylink"
                            href="{% if current %}
                                  {% url opts|admin_urlname:'history' original.pk|admin_urlquote current.pk|admin_urlquote %}
                                  {% else %}
                                  {% url opts|admin_urlname:'history' original.pk|admin_urlquote %}
-                                 {% endif %}"
-                           class="historylink">{% trans "History" %}</a>
+                                 {% endif %}">{% trans "History" %}</a>
                     </div>
                 {% endblock object-tools-items %}
                 </div>
