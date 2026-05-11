@@ -101,8 +101,8 @@
             }
           }
 
-          var collapseLink = '<a class="collapse" href="javascript:void(0);" title="Collapse"><i class="fa-solid fa-minus"></i> ';
-          var expandLink = '<a class="expand" href="javascript:void(0);" title="Expand"><i class="fa-solid fa-plus"></i> ';
+          var collapseLink = '<a class="group-collapse" href="javascript:void(0);" title="Collapse"><i class="fa-solid fa-minus"></i> ';
+          var expandLink = '<a class="group-expand" href="javascript:void(0);" title="Expand"><i class="fa-solid fa-plus"></i> ';
 
           var relevantCheckbox = $('<input type="checkbox" ' +
                                    'title="Is this section relevant?" />');
@@ -123,7 +123,7 @@
 
             if (allUnchecked) {
                 // collapse the group
-                $th.children("a.collapse").click();
+                $th.children("a.group-collapse").click();
                 // move this section to the end of the table
                 var $tbody = $tr.parent().parent();
                 $tr.appendTo($tbody);
@@ -150,16 +150,16 @@
             }
           });
 
-          var collapseAllLink = $('<a class="btn float-start btn-sm collapseAll" href="javascript:void(0);" title="Collapse all"><i class="fa-solid fa-minus"></i> Collapse all</a>');
-          var expandAllLink = $('<a class="btn float-start btn-sm expandAll" href="javascript:void(0);" title="Expand all"><i class="fa-solid fa-plus"></i> Expand all</a>');
-          $('div.fixed-bottom div.container'
-            ).append(collapseAllLink.clone().click(function() {
-              $('a.collapse').click();
-            })
-            ).append(expandAllLink.click(function() {
-              $('a.expand').click();
-            })
-          );
+          var collapseAllLink = $('<a class="btn btn-outline-dark btn-sm me-1 collapseAll" href="javascript:void(0);" title="Collapse all"><i class="fa-solid fa-minus"></i> Collapse all</a>');
+          var expandAllLink = $('<a class="btn btn-outline-dark btn-sm expandAll" href="javascript:void(0);" title="Expand all"><i class="fa-solid fa-plus"></i> Expand all</a>');
+          var buttonGroup = $('<div class="me-auto"></div>');
+          buttonGroup.append(collapseAllLink.clone().click(function() {
+              $('a.group-collapse').click();
+          }));
+          buttonGroup.append(expandAllLink.click(function() {
+              $('a.group-expand').click();
+          }));
+          $('div.fixed-bottom div.container').prepend(buttonGroup);
       }
   });
   </script>

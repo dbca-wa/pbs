@@ -145,6 +145,25 @@ $(document).ready(function() {
       }
   }, 100);
 });
+
+// Filter panel toggle: slideDown/Up on button click, close on outside click.
+$(document).ready(function() {
+    var $btn = $('#filter-toggle-btn');
+    var $panel = $('#filter-panel');
+    if ($btn.length && $panel.length) {
+        $btn.on('click', function(e) {
+            e.stopPropagation();
+            $panel.slideToggle(200);
+        });
+        $(document).on('click', function(e) {
+            if ($panel.is(':visible') &&
+                !$panel.is(e.target) &&
+                $panel.has(e.target).length === 0) {
+                $panel.slideUp(200);
+            }
+        });
+    }
+});
 </script>
 
 {% endblock %}
@@ -164,10 +183,30 @@ $(document).ready(function() {
 {% block header %}{% endblock %}
 
 {% block contentwrapper %}
-<div class="row">
-<div class="{% block contentclass %}{% if cl.has_filters %}col-9{% else %}col-12{% endif %}{% endblock %}">
+<div class="changelist-wrapper">
+<div class="{% block contentclass %}changelist-content{% endblock %}">
   {% block pretitle %}{% endblock %}
   {% block content_title %}{{ block.super }}{% endblock %}
+{% if cl.has_filters %}
+<div class="filter-toggle-wrapper">
+{% block filter-toggle %}
+<div class="text-end mb-1">
+  <button id="filter-toggle-btn" class="btn btn-sm btn-outline-secondary" type="button">
+    <i class="fa-solid fa-filter"></i> Filter
+  </button>
+</div>
+{% endblock %}
+{% block filters %}
+<div id="filter-panel" class="changelist-filter-panel">
+  <ul class="nav flex-column nav-filter">
+      {% for spec in cl.filter_specs %}
+        {% admin_list_filter cl spec %}
+      {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+</div>
+{% endif %}
   {% block content %}
   {% block object-tools %}
     {% if has_add_permission %}
@@ -213,11 +252,11 @@ $(document).ready(function() {
     {% block submit-line %}
     {% if editable %}
     <div class="navbar fixed-bottom bg-light border-top py-2">
-      <div class="container-fluid d-flex justify-content-end pe-4">
+      <div class="container d-flex justify-content-end">
             <input type="submit"
                    id="id_save_submit_button"
                    name="_save"
-                   class="btn btn-success"
+                   class="btn btn-success btn-sm"
                    value="{% trans 'Save' %}"/>
       </div>
         <script src="{% static 'js/view-port.js' %}"></script>
@@ -231,17 +270,5 @@ $(document).ready(function() {
   {% block post-pagination %}{% endblock %}
   {% endblock %}
 </div>
-{% block filters %}
-{% if cl.has_filters %}
-<div class="col-3">
-  <h5>Filter</h5>
-  <ul class="nav flex-column nav-filter">
-      {% for spec in cl.filter_specs %}
-        {% admin_list_filter cl spec %}
-      {% endfor %}
-  </ul>
-</div>
-{% endif %}
-{% endblock %}
 </div>
 {% endblock %}

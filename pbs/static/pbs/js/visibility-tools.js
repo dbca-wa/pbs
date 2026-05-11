@@ -10,14 +10,14 @@ var Vis =  (function visModule(window, document, $) {
     function _ensureToolsHidden(tools, toolsButton, store, visKey) {
         if (!tools.hasClass("d-none")) {
             tools.addClass("d-none");
-            toolsButton.text("Show Filter and Column tools");
+            toolsButton.text("Search and Column tools");
             this.setToolsVisibility(store, visKey, false);
         }
     };
     function _ensureToolsVisible(tools, toolsButton, store, visKey) {
         if (tools.hasClass("d-none")) {
             tools.removeClass("d-none");
-            toolsButton.text("Hide Filter and Column tools");
+            toolsButton.text("Search and Column tools");
             this.setToolsVisibility(store, visKey, true);
         }
     }

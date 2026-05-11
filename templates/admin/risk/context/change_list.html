@@ -21,9 +21,9 @@
 
 {% block pretitle %}
 <ul class="nav nav-tabs">
-    <li class="nav-item"><a class="nav-link active" href="{% url 'admin:risk_context_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Risk management context statement</a></li>
+    <li class="nav-item"><a class="nav-link active" href="{% url 'admin:risk_context_changelist' current.id %}"><i class="fa-solid fa-gavel"></i> Risk management context statement</a></li>
     <li class="nav-item"><a class="nav-link" href="{% url 'admin:stakeholder_criticalstakeholder_changelist' current.id %}"><i class="fa-solid fa-user"></i> Critical stakeholders</a></li>
-    <li class="nav-item"><a class="nav-link" href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-scale-balanced"></i> Actions</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin:risk_action_changelist' current.id %}"><i class="fa-solid fa-gavel"></i> Actions</a></li>
     <li class="nav-item"><a class="nav-link" href="{% url 'admin:risk_register_changelist' current.id %}"><i class="fa-solid fa-triangle-exclamation"></i> Risk Register</a></li>
 </ul>
 {% endblock %}
@@ -59,7 +59,7 @@ There are no relevant actions for this context statement.
 <p>This burn plan is consistent with <a class="btn btn-sm btn-info" href="https://dpaw.sharepoint.com/Key%20documents/Forms/fire%20policies.aspx" target="_blank"><b>Policy Statement No. 88</b></a></p>
 <p>Consider political, economic, social, technical, legal, environmental and other contextual factors including seasonal variations when creating this statement.</p>
 {% if not current.can_corporate_approve and not current.is_draft %}
-<div class="alert clearfix"><strong>Warning!</strong> In order to edit this section, you need to complete all information.</div>
+<div class="alert alert-warning"><strong>Warning!</strong> In order to edit this section, you need to complete all information.</div>
 {% endif %}
 {% endblock %}
 

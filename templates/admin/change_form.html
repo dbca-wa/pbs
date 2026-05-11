@@ -6,6 +6,18 @@
 <link rel="stylesheet" href="{% static "admin/css/widgets.css" %}">
 <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
 {{ media }}
+<style>
+.form-horizontal .vTextField,
+.form-horizontal input[type="text"],
+.form-horizontal input[type="number"],
+.form-horizontal input[type="date"],
+.form-horizontal select:not([multiple]) {
+    width: 20em;
+}
+.form-horizontal textarea {
+    width: 20em;
+}
+</style>
 {% endblock %}
 
 {% block coltype %}{% if ordered_objects %}colMS{% else %}colM{% endif %}{% endblock %}

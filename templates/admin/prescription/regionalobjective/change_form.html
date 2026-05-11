@@ -28,29 +28,19 @@
 
 
 {% block submit_buttons_top %}
-<div class="navbar fixed-bottom">
-  <div class="">
-    <div class="container">
-      <p class="float-end">
-        <input type="submit" value="Save" class="btn btn-primary btn-success" name="_save">
-        <a id="id_cancel_button" href="javascript: history.go(-1)" class="btn btn-danger">Cancel</a>
-
-      </p>
-    </div>
+<div class="navbar fixed-bottom bg-light border-top py-2">
+  <div class="container d-flex justify-content-end gap-2">
+        <input type="submit" value="Save" class="btn btn-success btn-sm" name="_save">
+        <a id="id_cancel_button" href="javascript: history.go(-1)" class="btn btn-secondary btn-sm">Cancel</a>
   </div>
 </div>
 {% endblock %}
 
 {% block submit_buttons_bottom %}
-<div class="navbar fixed-bottom">
-  <div class="">
-    <div class="container">
-      <p class="float-end">
-        <input type="submit" value="Save" class="btn btn-primary btn-success" name="_save">
-        <a id="id_cancel_button" href="javascript: history.go(-1)" class="btn btn-danger">Cancel</a>
-
-      </p>
-    </div>
+<div class="navbar fixed-bottom bg-light border-top py-2">
+  <div class="container d-flex justify-content-end gap-2">
+        <input type="submit" value="Save" class="btn btn-success btn-sm" name="_save">
+        <a id="id_cancel_button" href="javascript: history.go(-1)" class="btn btn-secondary btn-sm">Cancel</a>
   </div>
 </div>
 {% endblock %}

@@ -45,6 +45,18 @@ select, button{
     cursor: pointer;
 }
 
+.main-table td a {
+    text-decoration: none;
+}
+
+.nav-tabs .nav-link,
+.filter-form,
+.filter-form label,
+.main-table,
+.table {
+    font-size: 0.85rem;
+}
+
 </style>
 {% endblock %}
 
@@ -64,7 +76,7 @@ select, button{
 
 <div class="clearfix"></div>
 <div style="width: 50%; margin-left:25%; margin-right:25%;">
-        <table id="active-burn-table" class="table table-hover table-compressed" style="width:100%" border="2">
+        <table id="active-burn-table" class="table table-bordered table-hover table-compressed" style="width:100%">
         <thead>
             <tr>
                 <th nowrap id="name">Date: {{ date }}</th>
@@ -152,7 +164,7 @@ select, button{
 
     <li class="nav-item ms-auto">
         <div class="dropdown">
-          <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             Create PDF / Report
           </button>
           <ul class="dropdown-menu dropdown-menu-end">

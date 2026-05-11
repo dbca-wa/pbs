@@ -63,7 +63,7 @@
 <p>Please fill in any required endorsing roles for this ePFP.</p>
 {% with current.get_maximum_risk as maximum_risk %}
 {% if maximum_risk.final_risk_level == maximum_risk.LEVEL_MEDIUM %}
-<div class="alert">
+<div class="alert alert-warning">
 <h4>Level of Risk</h4>
 The maximum level of risk of the ePFP is {{ current.maximum_risk }} and requires that a District Manager endorses it.
 </div>
@@ -77,7 +77,7 @@ The maximum level of risk of the ePFP is {{ current.maximum_risk }} and requires
 {% endwith %}
 {% comment "FMS Branch Representative is not required to endorse a aerial burn anymore" %}
 {% if current.aircraft_burn %}
-<div class="alert">
+<div class="alert alert-warning">
 <h4>Aerial Burn</h4>
   As this is an aerial burn, a Fire Management Services Branch representative will be required to endorse this burn.
 </div>

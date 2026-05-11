@@ -137,8 +137,8 @@
     <div class="container">
       {% if current %}
       <ul class="navbar-nav">
-        <li class="nav-item"><a class="nav-link" href="{% url 'admin:prescription_prescription_detail' current.id %}"><b>{{ current.burn_id }}</b> - {{ current.name }} ({{ current.season }})</a></li>
-        <li class="nav-item"><a class="nav-link{% if request.path == sitemap %} top-header-active{% endif %}" href="{{ sitemap }}">Sitemap</a></li>
+        <li class="nav-item text-nowrap"><a class="nav-link" href="{% url 'admin:prescription_prescription_detail' current.id %}"><b>{{ current.burn_id }}</b> - {{ current.name }} ({{ current.season }})</a></li>
+        <li class="nav-item text-nowrap"><a class="nav-link{% if request.path == sitemap %} top-header-active{% endif %}" href="{{ sitemap }}">Sitemap</a></li>
       </ul>
       {% endif %}
       <div class="collapse navbar-collapse" id="first-nav">
@@ -157,8 +157,6 @@
         {% endif %}
         </a></li>
       {% endif %}
-      </ul>
-      <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
             {% trans 'Welcome,' %}
@@ -210,7 +208,7 @@
            <div class="d-none d-sm-block">
              <form action="{% url 'admin:prescription_prescription_changelist' %}" method="get" class="inline">
                <div class="search input">
-                 <input name="q" id="mod-search-searchword" maxlength="20" class="form-control" type="text" size="20" placeholder="Search burn ID or name..." />
+                 <input name="q" id="mod-search-searchword" maxlength="20" class="form-control form-control-sm ms-auto" type="text" style="width: 220px;" placeholder="Search burn ID or name..." />
                </div>
              </form>
            </div>
@@ -223,7 +221,7 @@
 {% if not user.is_anonymous %}
 {% block navigation %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-secondary" id="mainnav">
-  <div class="container-fluid">
+  <div class="container">
     <div class="d-lg-none">
       <form action="{% url 'admin:prescription_prescription_changelist' %}" method="get" class="d-inline">
         <div class="input-group">
@@ -251,7 +249,7 @@
 </nav>
 {% if current %}
 <nav class="navbar navbar-expand-lg navbar-dark" id="subnav">
-  <div class="container-fluid">
+  <div class="container">
     <div class="collapse navbar-collapse show">
       <ul class="navbar-nav flex-nowrap">
         <li class="nav-item{% if request.path == overview %} active{% endif %}"><a class="nav-link text-nowrap" href="{{ overview }}">ePFP overview</a></li>

@@ -9,6 +9,24 @@
     width: auto !important;
 }
 
+#sorted-table td a {
+    text-decoration: none;
+}
+
+#report-tabs {
+    flex: 1;
+}
+
+#report-tabs,
+#report-tabs .nav-link,
+.filter-form,
+.filter-form label,
+#sorted-table,
+#burns-table,
+.table-compressed {
+    font-size: 0.85rem;
+}
+
 .ui-datepicker {
     width: 216px;
     height: auto;
@@ -21,29 +39,8 @@
 }
 </style>
 
-{% if report == "summary" or report == "approvals" %}
-<div class="float-end ms-3 mb-2">
-  <table class="table table-compressed table-bordered table-striped">
-    <tbody>
-      <tr>
-        <th colspan="2">Legend</th>
-      </tr>
-      <tr>
-        <td>Required but not completed</td>
-        <td><i class="fa-solid fa-triangle-exclamation text-danger"></i></td>
-      </tr>
-      {% if report == "summary" %}
-      <tr>
-        <td>Required and completed</td>
-        <td><i class="fa-solid fa-check text-success"></i></td>
-      </tr>
-      {% endif %}
-    </tbody>
-  </table>
-</div>
-{% endif %}
-
-<ul id="report-tabs" class="nav nav-tabs">
+<div class="d-flex align-items-end justify-content-between">
+<ul id="report-tabs" class="nav nav-tabs align-items-center mb-0">
     <li class="nav-item">
         <a class="nav-link {% if report == "summary" %}active{% endif %}" href="{% url 'admin:endorse_authorise_summary' %}?report=summary">
             <i class="fa-solid fa-tag"></i>
@@ -62,24 +59,47 @@
             Ignitions
         </a>
     </li>
+    {% if report == "summary" or report == "approvals" %}
+    <li class="ms-3 d-flex align-items-center gap-2 filter-form pb-1">
+        <form class="d-flex align-items-center gap-2">
+            <label for="id_region" class="mb-0">Region</label>
+            {{ form.region }}
+            <label for="id_district" class="mb-0">District</label>
+            {{ form.district }}
+            <button type="submit" class="btn btn-primary btn-sm">Update</button>
+            {% if report == "approvals" %}
+                <input type="hidden" name="report" value="approvals">
+            {% endif %}
+        </form>
+    </li>
+    {% endif %}
 </ul>
-
 {% if report == "summary" or report == "approvals" %}
-<div class="d-flex align-items-center gap-2 mt-2 mb-3 filter-form">
-    <label for="id_region" class="mb-0">Region</label>
-    <form class="d-flex align-items-center gap-2 filter-form">
-        {{ form.region }}
-        <label for="id_district" class="mb-0">District</label>
-        {{ form.district }}
-        <button type="submit" class="btn btn-primary btn-sm">Update</button>
-        {% if report == "approvals" %}
-            <input type="hidden" name="report" value="approvals">
-        {% endif %}
-    </form>
+<div>
+  <table class="table table-compressed table-bordered table-striped mb-0">
+    <tbody>
+      <tr>
+        <th colspan="2">Legend</th>
+      </tr>
+      <tr>
+        <td>Required but not completed</td>
+        <td><i class="fa-solid fa-triangle-exclamation text-danger"></i></td>
+      </tr>
+      {% if report == "summary" %}
+      <tr>
+        <td>Required and completed</td>
+        <td><i class="fa-solid fa-check text-success"></i></td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
 </div>
-{% else %}
-<div class="d-flex align-items-center gap-2 mt-2 mb-3 filter-form">
-    <form class="d-flex align-items-center gap-2 filter-form">
+{% endif %}
+</div>
+
+{% if report == "ignitions" %}
+<div class="d-flex align-items-center gap-2 mt-2 mb-2 filter-form">
+    <form class="d-flex align-items-center gap-2">
         <label for="id_fromDate" class="mb-0 text-nowrap">From Date</label>
         <input type="text" id="id_fromDate" value="{{ fromDate|date:'d-m-Y' }}" name="fromDate" class="form-control form-control-sm"/>
         <label for="id_toDate" class="mb-0 text-nowrap">To Date</label>

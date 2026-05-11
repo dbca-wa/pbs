@@ -9,20 +9,66 @@ textarea {
 }
 
 #changelist-form .results {
-    overflow-x: scroll;
+    overflow-x: auto;
     width: 100%;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none;
 }
 #changelist-form .results::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
+}
+
+/* Freeze the first data column so it stays visible during horizontal scroll */
+#result_list thead th:first-child,
+#result_list tbody td:first-child {
+    position: sticky;
+    left: 0;
+    background: inherit;
+    z-index: 1;
+}
+
+/* Changelist wrapper: always full width, relative so the filter panel
+   can overlay on top of the table using absolute positioning. */
+.changelist-wrapper {
+    position: relative;
+}
+
+/* Content column: always full width */
+.changelist-content {
+    width: 100%;
+}
+
+/* filter-toggle-wrapper: anchor for the absolute-positioned panel. */
+.filter-toggle-wrapper {
+    position: relative;
+}
+
+/* Filter overlay panel: absolutely positioned below the toggle button,
+   overlays on top of the table. slideDown/Up animates from top: 100%
+   of the wrapper (= directly below the button). */
+.changelist-filter-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 200;
+    width: 220px;
+    overflow-y: visible;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    padding: 0.5rem 0.75rem;
 }
 
 #result_list {
     font-size: 0.85rem;
 }
 
-/* Filter sidebar */
+/* Filter panel heading */
+.changelist-filter-panel > .nav-filter-title {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
 ul.nav-filter li.nav-header {
     font-weight: bold;
     padding: 8px 0 2px 0;
@@ -37,11 +83,23 @@ ul.nav-filter li.nav-header:first-child {
     margin-top: 0;
 }
 ul.nav-filter li a {
-    padding: 2px 0;
+    padding: 2px 5px;
     text-decoration: none;
+    font-size: 0.85rem;
+    display: block;
+}
+ul.nav-filter li a:hover {
+    background-color: #d0e6f7;
+    border-radius: 3px;
+    color: #1a5a9a;
+}
+ul.nav-filter li.active {
+    background-color: #3580CA;
+    border-radius: 3px;
 }
 ul.nav-filter li.active a {
     font-weight: bold;
+    color: #fff;
 }
 
 /* Fixed header wrapper - positioned dynamically by table-fixed-header.js */
@@ -50,7 +108,7 @@ ul.nav-filter li.active a {
   background-color: #fff;
 }
 
-input {
+input:not([type="checkbox"]):not([type="radio"]) {
   width: 60px;
 }
 

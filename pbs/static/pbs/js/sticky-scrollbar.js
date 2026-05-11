@@ -10,11 +10,15 @@
         var $table = $results.find('table');
         if ($table.length === 0) return;
 
-        // Proxy div: a thin fixed bar that mimics the scrollable width
+        // Proxy div: a thin fixed bar that mimics the scrollable width.
+        // Positioned above any fixed-bottom bar (e.g. Save / Collapse all).
+        var $fixedBottom = $('div.fixed-bottom');
+        var bottomOffset = $fixedBottom.length ? $fixedBottom.outerHeight() : 0;
+
         var $proxy = $('<div class="sticky-hscroll-proxy"><div></div></div>');
         $proxy.css({
             position: 'fixed',
-            bottom: '0',
+            bottom: bottomOffset,
             overflowX: 'scroll',
             overflowY: 'hidden',
             zIndex: 1019,
@@ -42,23 +46,18 @@
         });
 
         function update() {
-            var tableWidth = $table.outerWidth(true);
-            var containerWidth = $results.outerWidth();
-            var offset = $results.offset();
+            var el = $results[0];
+            var rect = el.getBoundingClientRect();
+            var overflows = el.scrollWidth > el.clientWidth;
 
-            $proxy.css({
-                left: offset.left,
-                width: containerWidth,
-            });
-            $proxy.find('div').css({ width: tableWidth });
-
-            // Only show proxy bar when table is wider than its container
-            $proxy.toggle(tableWidth > containerWidth);
+            $proxy.css({ left: rect.left, width: rect.width });
+            $proxy.find('div').css({ width: el.scrollWidth });
+            $proxy.toggle(overflows);
         }
 
         update();
-        $(window).on('resize', update);
-        // Re-check after any dynamic content changes
-        setTimeout(update, 500);
+        $(window).on('resize load', update);
+        // Re-check after dynamic content changes (e.g. inline rows added)
+        new MutationObserver(update).observe($results[0], { childList: true, subtree: true });
     });
 })(jQuery);

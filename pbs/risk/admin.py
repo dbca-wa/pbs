@@ -654,13 +654,13 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
             url = reverse('admin:risk_action_add',
                           args=(self.prescription.pk,),
                           current_app=self.admin_site.name)
-            return mark_safe(('<a class="btn btn-mini btn-success" href="%s?risk=%s">'
+            return mark_safe(('<a class="btn btn-sm btn-success py-0 px-1" href="%s?risk=%s">'
                     'Add</a>') % (url, obj.risk.pk))
         else:
             url = reverse('admin:risk_action_delete',
                           args=(obj.pk, self.prescription.pk),
                           current_app=self.admin_site.name)
-            return mark_safe(('<a class="btn btn-mini btn-danger" href="%s">'
+            return mark_safe(('<a class="btn btn-sm btn-danger py-0 px-1" href="%s">'
                     'Remove</a>') % url)
     add_action.short_description = "Multiple?"
     add_action.allow_tags = True

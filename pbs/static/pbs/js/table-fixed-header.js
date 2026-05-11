@@ -1,7 +1,8 @@
 (function($) {
 
 $.fn.fixedHeader = function (options) {
- var navbarHeight = $('nav.navbar.fixed-top').outerHeight() || 40;
+ var $navbar = $('nav.navbar.fixed-top');
+ var navbarHeight = ($navbar.length ? $navbar[0].getBoundingClientRect().bottom : 0) || 40;
  var config = {
    topOffset: navbarHeight
  };
@@ -31,6 +32,14 @@ $.fn.fixedHeader = function (options) {
   // Clone the full table into the wrapper so column widths are respected
   var $cloneTable = $('<table></table>');
   $cloneTable.attr('class', o.attr('class'));
+  // Explicitly copy font styles from the original table so the cloned header
+  // renders at exactly the same size and prevents column width mismatches.
+  $cloneTable.css({
+    fontSize: o.css('fontSize'),
+    fontFamily: o.css('fontFamily'),
+    borderCollapse: o.css('borderCollapse'),
+    tableLayout: o.css('tableLayout')
+  });
   var $cloneThead = $head.clone().removeClass('header').addClass('header-copy');
   $cloneTable.append($cloneThead);
   $wrapper.append($cloneTable);

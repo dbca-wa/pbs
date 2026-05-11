@@ -87,6 +87,10 @@ a.selector-chooseall {
     display: none !important;
 }
 
+body h1 {
+    font-weight: bold;
+}
+
 body h2 {
     font-weight: 500;
 }
@@ -179,6 +183,7 @@ ul#actionnav {
 
 .table tbody tr th.group-heading {
     background-color: #efefef;
+    text-align: left;
 }
 
 #state tbody tr.info > th,
@@ -307,6 +312,8 @@ div.navbar-fixed-bottom {
 /* Sub-navigation for prescription-specific links */
 #subnav {
   background-color: #1a5fa8 !important;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 #subnav .nav-link {
@@ -344,6 +351,34 @@ div.navbar-fixed-bottom {
   margin: 0;
 }
 
+/* Align navbar containers and page content with .page width,
+   preventing Bootstrap's 1400px breakpoint from causing layout jumps */
+#mainnav > .container,
+#subnav > .container,
+.navbar.fixed-bottom > .container {
+  max-width: 980px;
+}
+
+.page-container > .container {
+  max-width: 100%;
+}
+
+@media (min-width: 1200px) {
+  #mainnav > .container,
+  #subnav > .container,
+  .navbar.fixed-bottom > .container {
+    max-width: 1210px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+  #mainnav > .container,
+  #subnav > .container,
+  .navbar.fixed-bottom > .container {
+    max-width: 764px;
+  }
+}
+
 .navbar .nav li.dropdown > .dropdown-toggle .caret,
 .navbar .nav li.dropdown > .dropdown-toggle .caret,
 .navbar .nav li.dropdown > a:hover .caret,
@@ -367,9 +402,17 @@ div.navbar-fixed-bottom {
   margin-top: 0;
 }
 
+/* Bootstrap 2 legacy */
 .nav-tabs > .active > a, .nav-tabs > .active > a:hover {
     background-color: #eeeeee;
     color: #000000;
+}
+
+/* Bootstrap 5 page-level tabs: active tab grey */
+.nav-tabs .nav-link.active {
+    background-color: #eeeeee;
+    color: #000000;
+    border-color: #dee2e6;
 }
 
 
@@ -382,6 +425,13 @@ div.freetext {
     border-width:1px;
     border-color:#ddd;
     white-space:pre;
+}
+
+/* Restore breadcrumb background (removed in Bootstrap 5) */
+.breadcrumb {
+    background-color: #f0f2f4;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
 }
 
 /* Remove underline from breadcrumb links */
