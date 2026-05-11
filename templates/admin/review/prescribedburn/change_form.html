@@ -214,7 +214,10 @@ $(function() {
                 $("#id_tenures").val(response['tenures']);
 
                 $( "#id_prescription_name").remove()
-                $( "<span id='id_prescription_name'>  " + response['prescription_name'] + "</span>" ).insertAfter( "#id_prescription" );
+                if (!$("#id_prescription").parent().hasClass("d-flex")) {
+                    $("#id_prescription").wrap('<div class="d-flex align-items-center gap-2"></div>');
+                }
+                $( "<span id='id_prescription_name'>" + response['prescription_name'] + "</span>" ).insertAfter( "#id_prescription" );
                 $("#id_planned_area").attr("max", response['prescription_area'])
 
                 $("#id_latitude").val(response['latitude']);
