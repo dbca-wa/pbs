@@ -42,7 +42,7 @@
                 <div class="object-tools float-end">
                 {% block object-tools-items %}
                     <div class="btn-group">
-                        <a class="btn btn-outline-secondary historylink"
+                        <a class="btn btn-sm btn-outline-secondary historylink"
                            href="{% if current %}
                                  {% url opts|admin_urlname:'history' original.pk|admin_urlquote current.pk|admin_urlquote %}
                                  {% else %}
