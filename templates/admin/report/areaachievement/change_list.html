@@ -115,7 +115,18 @@
 {% endblock %}
 
 {% block extra-forms-bottom %}
-<div class="float-end">
-{{ ignition_completed_date_form.as_p }}
+<style>
+  #changelist-form .ignition-completed-wrap p.date {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+  }
+</style>
+<div class="d-flex justify-content-end mt-3 mb-2">
+  <div class="text-end ignition-completed-wrap">
+    <label class="fw-semibold d-block mb-1" for="{{ ignition_completed_date_form.ignition_completed_date.id_for_label }}">Ignition Completed:</label>
+    {{ ignition_completed_date_form.ignition_completed_date }}
+  </div>
 </div>
 {% endblock %}
