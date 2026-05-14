@@ -362,7 +362,7 @@ def pdflatex(prescription,template="pfp",downloadname=None,embed=True,headers=Tr
         logger.info(err_msg)
         return result
 
-def download_pdf(request, prescription):
+def download_pdf_orig(request, prescription):
     logger = logging.getLogger('pdf_debugging')
     logger.info('157: download_pdf called')
     template = request.GET.get("template", "pfp")
@@ -432,5 +432,76 @@ def download_pdf(request, prescription):
             error_response.write(pdfresult.errormessage)
 
             return error_response
+
+
+def download_pdf(request, prescription):
+    logger = logging.getLogger('pdf_debugging_private_media')
+    logger.info('download_pdf_private_media called')
+    template = request.GET.get("template", "pfp")
+    embed = False if request.GET.get("embed", "true").lower() == "false" else True
+    title = request.GET.get("title", "Prescribed Fire Plan"),
+    headers = False if request.GET.get("headers", "true").lower() == "false" else True
+    baseurl = request.build_absolute_uri("/")[:-1]
+    filename = template + ".pdf"
+    now = timezone.localtime(timezone.now())
+    timestamp = now.isoformat().rsplit(".")[0].replace(":", "")
+    downloadname = "{0}_{1}_{2}_{3}".format(
+        prescription.season.replace('/', '-'),
+        prescription.burn_id,
+        timestamp,
+        filename,
+    ).replace(' ', '_')
+
+    with pdflatex(
+        prescription,
+        template=template,
+        downloadname=downloadname,
+        embed=embed,
+        headers=headers,
+        title=title,
+        baseurl=baseurl,
+    ) as pdfresult:
+        if pdfresult.succeed:
+            if pdfresult.filesize / (1024 * 1024) >= 10:
+                token = '_token_10'
+            else:
+                token = '_token'
+
+            logger.info('Filesize: {}'.format(pdfresult.humanize_filesize))
+            relative_dir = os.path.join('pdf', prescription.burn_id, now.strftime('%Y%m%d'))
+            private_dir = os.path.join(settings.PRIVATE_MEDIA_ROOT, relative_dir)
+            if not os.path.exists(private_dir):
+                os.makedirs(private_dir)
+
+            private_file_path = os.path.join(private_dir, downloadname)
+            shutil.copy2(pdfresult.pdf_file, private_file_path)
+            file_url = '{0}/private-media/{1}/{2}'.format(
+                baseurl,
+                relative_dir.replace(os.sep, '/'),
+                downloadname,
+            )
+
+            logger.info('Sending email notification to user of private-media download URL')
+            subject = 'Prescribed Burn System: file {}'.format(downloadname)
+            email_from = settings.FEX_MAIL
+            message = 'Prescribed Burn System: file {} can be downloaded at:\n\t{}\nFile size: {}'.format(
+                downloadname,
+                file_url,
+                pdfresult.filesize,
+            )
+            send_mail(subject, message, email_from, [request.user.email])
+
+            url = request.META.get('HTTP_REFERER')
+            logger.info("__________________________ END _____________________________")
+            resp = HttpResponseRedirect(url)
+            resp.set_cookie('fileDownloadToken', token)
+            resp.set_cookie('fileUrl', file_url)
+            return resp
+
+        error_response = HttpResponse(content_type='text/html')
+        errortxt = downloadname.replace(".pdf", ".errors.txt.html")
+        error_response['Content-Disposition'] = '{0}; filename="{1}"'.format("inline", errortxt)
+        error_response.write(pdfresult.errormessage)
+        return error_response
 
 

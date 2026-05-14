@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import include
 from django.urls import re_path, path
 from django.contrib import admin
@@ -42,6 +43,7 @@ from pbs.document.models import Document
 from pbs.sites import site
 from pbs.forms import PbsPasswordResetForm
 from pbs.views import sso_logout
+from django.views.static import serve
 
 from tastypie.api import Api
 from pbs.review.api import PrescribedBurnResource
@@ -71,6 +73,7 @@ urlpatterns = urlpatterns + [
     re_path(r'^password_reset/$', PasswordResetView.as_view(form_class=PbsPasswordResetForm), name='password_reset'),
     re_path(r'^chaining/', include('smart_selects.urls')),
     re_path(r'^select2/', include("django_select2.urls")),
+    re_path(r'^private-media/(?P<path>.*)$', serve, {'document_root': settings.PRIVATE_MEDIA_ROOT}),
     re_path(r'^documents/(?P<pk>\d+)/download$', document_download, name='document_download'),
     re_path(r'^favicon\.ico$', favicon_view, name='favicon_view'),
     re_path(r'^api/', include(v1_api.urls)),
