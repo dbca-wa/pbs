@@ -33,6 +33,7 @@ logs/
 # Static files dirs
 /static/
 /media/
+/private-media/
 staticfiles/
 
 # everything with local in it
