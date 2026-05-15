@@ -435,7 +435,7 @@ def download_pdf_orig(request, prescription):
 
 
 def download_pdf(request, prescription):
-    logger = logging.getLogger('pdf_debugging_private_media')
+    logger = logging.getLogger('pdf_debugging')
     logger.info('download_pdf_private_media called')
     template = request.GET.get("template", "pfp")
     embed = False if request.GET.get("embed", "true").lower() == "false" else True
