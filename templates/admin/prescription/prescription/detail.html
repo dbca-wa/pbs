@@ -223,7 +223,7 @@ ul.nav-list li.disabled > a:hover {
              class="{% if current.has_corporate_approval %}
                         text-success
                     {% elif current.planning_status == current.PLANNING_SUBMITTED and not perms.prescription.can_corporate_approve %}
-                        muted
+                        text-muted
                     {% endif %}"
              href="{% if not current.has_corporate_approval and perms.prescription.can_corporate_approve or current.planning_status == current.PLANNING_DRAFT %}
                         {% url 'admin:prescription_prescription_corporate_approve' current.pk %}
@@ -248,7 +248,7 @@ ul.nav-list li.disabled > a:hover {
     <li>
         <a
         {% if not current.can_select_endorsing_roles %}
-            class="muted"
+            class="text-muted"
         {% endif %}
         id="endorsing-roles"
         href="{% if current.can_select_endorsing_roles %}
@@ -264,7 +264,7 @@ ul.nav-list li.disabled > a:hover {
     {% else %}
         <a id="endorse"
         class="{% if not current.can_endorse %}
-                    muted
+                    text-muted
                 {% elif current.is_endorsed %}
                     text-success
                 {% endif %}"
@@ -293,10 +293,10 @@ ul.nav-list li.disabled > a:hover {
     <li>
     {% if current.can_epfp_approve and not current.is_closed %}{% include "admin/prescription/prescription/modals/submit_for_epfp_approval_btn.html" %}
     {% else %}<a id="approve" href="javascript:void(0)"
-      {% if current.get_maximum_risk.final_risk_level == current.get_maximum_risk.LEVEL_VERY_HIGH %}class="muted"><i class="fa-solid fa-minus"></i> This burn can not be approved
+      {% if current.get_maximum_risk.final_risk_level == current.get_maximum_risk.LEVEL_VERY_HIGH %}class="text-muted"><i class="fa-solid fa-minus"></i> This burn can not be approved
       {% elif current.is_approved %}class="text-success"><i class="fa-solid fa-check"></i> Approved
       {% elif current.is_closed %}<i class="fa-solid fa-check"></i> Approved
-      {% else  %}class="muted"><i class="fa-solid fa-minus"></i> Submit for approval
+      {% else  %}class="text-muted"><i class="fa-solid fa-minus"></i> Submit for approval
       {% endif %}</a>
     {% endif %}
     </li>
