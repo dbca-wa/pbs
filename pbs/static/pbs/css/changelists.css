@@ -183,3 +183,11 @@ select[id$='ignition_type'] {
     border: 1px solid #ccc !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
 }
+
+/* Reduce DateTimeShortcuts calendar/clock icon size to match compact row height. */
+.datetimeshortcuts .date-icon,
+.datetimeshortcuts .clock-icon {
+    height: 16px;
+    width: 16px;
+    background-size: 16px auto;
+}

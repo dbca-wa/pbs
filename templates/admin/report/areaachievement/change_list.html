@@ -7,6 +7,25 @@
 
   <style type="text/css">
     .choices { min-width: 180px; }
+    /* Match original Select2 tag appearance: light gray background, dark text */
+    #result_list .choices__list--multiple .choices__item {
+      background-color: #e4e4e4;
+      border-color: #aaa;
+      color: #333;
+      font-weight: normal;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+    #result_list .choices__list--multiple .choices__item.is-highlighted {
+      background-color: #d0d0d0;
+      border-color: #999;
+      color: #333;
+    }
+    #result_list .choices__button {
+      border-left-color: #aaa;
+      filter: invert(1) brightness(0);
+    }
   </style>
   <script>
   function initIgnitionTypesSelect(container) {
@@ -22,9 +41,9 @@
       new Choices(el, {
         removeItemButton: true,
         searchEnabled: true,
-        placeholder: true,
-        placeholderValue: '---------',
-        shouldSort: false
+        placeholder: false,
+        shouldSort: false,
+        itemSelectText: ''
       });
     });
   }
