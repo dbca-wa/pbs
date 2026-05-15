@@ -6,9 +6,29 @@
 {{ block.super }}
 
   <style type="text/css">
-    #s2id_id_form-0-ignition_types { width: 40px; }
+    .choices { min-width: 180px; }
   </style>
   <script>
+  function initIgnitionTypesSelect(container) {
+    var els = (container === document)
+      ? document.querySelectorAll('select.ignition-types-select')
+      : container.querySelectorAll('select.ignition-types-select');
+    els.forEach(function(el) {
+      // Skip the empty template row (contains __prefix__ in its name/id)
+      if (el.name && el.name.indexOf('__prefix__') !== -1) return;
+      // Skip if already initialized by Choices.js
+      if (el.dataset.choicesInitialized) return;
+      el.dataset.choicesInitialized = 'true';
+      new Choices(el, {
+        removeItemButton: true,
+        searchEnabled: true,
+        placeholder: true,
+        placeholderValue: '---------',
+        shouldSort: false
+      });
+    });
+  }
+
   {% if not current.is_closed and current.is_approved or perms.prescription.can_admin %}
   (function($) {
     $(function() {
@@ -20,6 +40,14 @@
     });
   })(django.jQuery);
   {% endif %}
+
+  document.addEventListener('formset:added', function(event) {
+    initIgnitionTypesSelect(event.target);
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    initIgnitionTypesSelect(document);
+  });
     var planned_edged = {{ current.perimeter }};
     var planned_burnt_area = {{ current.area }};
     $(function() {
@@ -88,8 +116,6 @@
     });
 
   </script>
-  {{form.media}} 
-  {{ form.media.js }}
 {% endblock %}
 {% endif %}
 
