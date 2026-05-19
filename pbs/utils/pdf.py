@@ -402,7 +402,10 @@ def download_pdf(request, prescription):
                 email_from = settings.FEX_MAIL
                 message = 'Prescribed Burn System: file {} can be downloaded at:\n\t{}\nFile size: {}\nNo. of times file can be downloaded: {}'.format(
                    downloadname, file_url, pdfresult.filesize, settings.SEND_DOWNLOAD_LIMIT)
-                send_mail(subject, message, email_from, [request.user.email])
+                try:
+                    send_mail(subject, message, email_from, [request.user.email])
+                except Exception as e:
+                    logger.warning('Email notification could not be sent: {}'.format(e))
                 url = request.META.get('HTTP_REFERER')  # redirect back to the current URL
                 logger.info("__________________________ END _____________________________")
                 resp = HttpResponseRedirect(url)
