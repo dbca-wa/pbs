@@ -49,6 +49,7 @@ No context statements have been defined.
 {% filter_by_tag_name current.document_set "context map" as context_maps %}
 \subsection{Context Map}
 {% if context_maps %}
+{% if embed %}
 All context maps associated with the burn have been inserted on the following pages.
 \clearpage
 {% for document in context_maps %}
@@ -56,6 +57,10 @@ All context maps associated with the burn have been inserted on the following pa
     {% include "latex/pdf.tex" with topsummary=True %}
   {% endif %}
 {% endfor %}
+{% else %}
+Context maps not embedded.
+\clearpage
+{% endif %}
 {% else %}
 No Document Uploaded
 {% endif %}

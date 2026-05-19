@@ -2,11 +2,13 @@
 \phantomsection
 \addcontentsline{toc}{section}{Section B12 - Operational Map}
 %\fancyfoot[L]{ Section B12\newline\textbf{Section B12 last modified}\textit{ {{ docs.tag_operations_map.modified|default:"" }}}\quad\textbf{PDF Created On}\textit{ {{ timestamp }} } }
+{% if embed %}
 {% for document in docs.tag_operations_map %}
   {% if not document.is_zipped %}
     {% include "latex/pdf.tex" with section="Section B12 - Operational Map" %}
   {% endif %}
 {% endfor %}
+{% endif %}
 {% else %}
 \section{Section B12 - Operational Map}
   {% if current.day_state.operation_maps %}

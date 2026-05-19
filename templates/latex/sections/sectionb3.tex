@@ -37,6 +37,7 @@ All traffic control diagrams associated with the burn have been inserted on the 
 \end{landscape}
 
 {% if prescription.ways.standard_traffic_diagrams or custom_traffic_diagrams %}
+{% if embed %}
 
 {% for document in prescription.ways.standard_traffic_diagrams %}
   {% if document %}
@@ -50,6 +51,7 @@ All traffic control diagrams associated with the burn have been inserted on the 
   {% endif %}
 {% endfor %}
 \clearpage
+{% endif %}
 {% endif %}
 
 \begin{landscape}
@@ -83,7 +85,7 @@ All diversion maps associated with the burn have been inserted on the following 
 {% endif %}
 \end{landscape}
 
-{% if diversion_maps %}
+{% if diversion_maps and embed %}
 {% for document in diversion_maps %}
   {% if document %}
     {% include "latex/pdf.tex" %}
