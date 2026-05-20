@@ -2,13 +2,11 @@
 \phantomsection
 \addcontentsline{toc}{section}{Section B13 - Aerial Burning Map}
 %\fancyfoot[L]{ Section B13\newline\textbf{Section B13 last modified}\textit{ {{ docs.tag_aerial_burn_map.modified|default:"" }}}\quad\textbf{PDF Created On}\textit{ {{ timestamp }} } }
-{% if embed %}
 {% for document in docs.tag_aerial_burn_map %}
   {% if not document.is_zipped %}
     {% include "latex/pdf.tex" with section="Section B13 - Aerial Burning Map" %}
   {% endif %}
 {% endfor %}
-{% endif %}
 {% else %}
   \section{Section B13 - Aerial Burning Map}
   {% if current.day_state.aerial_maps %}
