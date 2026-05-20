@@ -6,9 +6,50 @@
 {{ block.super }}
 
   <style type="text/css">
-    #s2id_id_form-0-ignition_types { width: 40px; }
+    .choices { min-width: 180px; }
+    #result_list td input.vDateField { min-width: 100px; }
+    #result_list td p { margin: 0; }
+    /* Match original Select2 tag appearance: light gray background, dark text */
+    #result_list .choices__list--multiple .choices__item {
+      background-color: #e4e4e4;
+      border-color: #aaa;
+      color: #333;
+      font-weight: normal;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+    #result_list .choices__list--multiple .choices__item.is-highlighted {
+      background-color: #d0d0d0;
+      border-color: #999;
+      color: #333;
+    }
+    #result_list .choices__button {
+      border-left-color: #aaa;
+      filter: invert(1) brightness(0);
+    }
   </style>
   <script>
+  function initIgnitionTypesSelect(container) {
+    var els = (container === document)
+      ? document.querySelectorAll('select.ignition-types-select')
+      : container.querySelectorAll('select.ignition-types-select');
+    els.forEach(function(el) {
+      // Skip the empty template row (contains __prefix__ in its name/id)
+      if (el.name && el.name.indexOf('__prefix__') !== -1) return;
+      // Skip if already initialized by Choices.js
+      if (el.dataset.choicesInitialized) return;
+      el.dataset.choicesInitialized = 'true';
+      new Choices(el, {
+        removeItemButton: true,
+        searchEnabled: true,
+        placeholder: false,
+        shouldSort: false,
+        itemSelectText: ''
+      });
+    });
+  }
+
   {% if not current.is_closed and current.is_approved or perms.prescription.can_admin %}
   (function($) {
     $(function() {
@@ -20,6 +61,14 @@
     });
   })(django.jQuery);
   {% endif %}
+
+  document.addEventListener('formset:added', function(event) {
+    initIgnitionTypesSelect(event.target);
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    initIgnitionTypesSelect(document);
+  });
     var planned_edged = {{ current.perimeter }};
     var planned_burnt_area = {{ current.area }};
     $(function() {
@@ -88,8 +137,6 @@
     });
 
   </script>
-  {{form.media}} 
-  {{ form.media.js }}
 {% endblock %}
 {% endif %}
 
@@ -115,7 +162,18 @@
 {% endblock %}
 
 {% block extra-forms-bottom %}
-<div class="float-end">
-{{ ignition_completed_date_form.as_p }}
+<style>
+  #changelist-form .ignition-completed-wrap p.date {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+  }
+</style>
+<div class="d-flex justify-content-end mt-3 mb-2">
+  <div class="text-end ignition-completed-wrap">
+    <label class="fw-semibold d-block mb-1" for="{{ ignition_completed_date_form.ignition_completed_date.id_for_label }}">Ignition Completed:</label>
+    {{ ignition_completed_date_form.ignition_completed_date }}
+  </div>
 </div>
 {% endblock %}

@@ -448,3 +448,7 @@ GIT_COMMIT_DATE = os.popen(f"cd {BASE_DIR}; git log -1 --format=%cd").read()
 # As it causes a permission exception when using azure network drives
 FILE_UPLOAD_PERMISSIONS = None
 PRESCRIPTION_ARCHIVE_USE_QUEUE = env('PRESCRIPTION_ARCHIVE_USE_QUEUE', True)
+
+# The area achievement changelist can have many inline rows, each with multiple
+# fields, so the default limit of 1000 needs to be raised.
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000

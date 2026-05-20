@@ -109,7 +109,7 @@ ul.nav-filter li.active a {
 }
 
 input:not([type="checkbox"]):not([type="radio"]) {
-  width: 60px;
+  width: 80px;
 }
 
 input.vForeignKeyRawIdAdminField,
@@ -182,4 +182,12 @@ select[id$='ignition_type'] {
     color: #333 !important;
     border: 1px solid #ccc !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Reduce DateTimeShortcuts calendar/clock icon size to match compact row height. */
+.datetimeshortcuts .date-icon,
+.datetimeshortcuts .clock-icon {
+    height: 16px;
+    width: 16px;
+    background-size: 16px auto;
 }

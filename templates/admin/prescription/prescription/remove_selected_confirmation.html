@@ -22,8 +22,8 @@
     {% endfor %}
     <input type="hidden" name="action" value="{{ action }}" />
     <input type="hidden" name="post" value="yes" />
-    <input type="submit" class="btn" value="{% trans "Yes, I'm sure" %}" />
-    <a id="id_cancel_button" href="javascript: history.go(-1)" class="btn btn-danger">Cancel</a>
+    <input type="submit" class="btn btn-danger" value="{% trans "Yes, I'm sure" %}" />
+    <a id="id_cancel_button" href="javascript: history.go(-1)" class="btn btn-secondary">Cancel</a>
     </div>
     </form>
 {% endblock %}
