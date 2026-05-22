@@ -1,4 +1,5 @@
 #from django.db import models
+
 from swingers import models
 from datetime import datetime, date, timedelta
 from django.contrib.auth.models import User
@@ -769,6 +770,19 @@ class BurnProgramLink(models.Model):
 			create or replace view review_v_lastdaysburns as select * from review_f_lastdaysburns();
 
                         ''')
+
+
+class Layer(models.Model):
+
+    name = models.CharField(max_length=128, unique=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(null=True, blank=True)
+    catalogue_entry_id = models.IntegerField(unique=True)
+
+    def __str__(self):
+        return self.name
+
 
 import reversion
 reversion.register(PrescribedBurn)
