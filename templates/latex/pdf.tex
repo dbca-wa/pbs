@@ -1,4 +1,5 @@
 {% load prescription_tags %}
+{% if document.exists %}
 {
 \pdfminorversion=7
 \typeout{Including PDF:{{ document.document.path }} with dimensions {{document.dimensions.width}} {{document.dimensions.height}} }
@@ -38,3 +39,9 @@ pagecommand={
     }
     ]{% templatetag openbrace %}{{ document.document.path|safe }}}
 }
+{% else %}
+\typeout{WARNING: Skipping missing file: {{ document.document.path }}}
+\begin{center}
+  \textcolor{red}{\textbf{[Document not available: {{ document.filename }}]}}
+\end{center}
+{% endif %}
