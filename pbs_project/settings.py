@@ -448,3 +448,6 @@ GIT_COMMIT_DATE = os.popen(f"cd {BASE_DIR}; git log -1 --format=%cd").read()
 # As it causes a permission exception when using azure network drives
 FILE_UPLOAD_PERMISSIONS = None
 PRESCRIPTION_ARCHIVE_USE_QUEUE = env('PRESCRIPTION_ARCHIVE_USE_QUEUE', True)
+KB_USER = env('KB_USER', None)
+KB_PASSWORD = env('KB_PASSWORD', None)
+BPP_FILE_DOWNLOAD_PATH = env('BPP_FILE_DOWNLOAD_PATH', '/mnt/fmsb/master_burn_planning_bpp_pbs')
