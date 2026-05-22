@@ -311,6 +311,7 @@ ul.nav-list li.disabled > a:hover {
 <div id="dialog-confirm"></div>
 
 <script>
+$(document).ready(function() {
 
 {% if current.has_corporate_approval or current.planning_status == current.PLANNING_SUBMITTED and not perms.prescription.can_corporate_approve %}
 $('a#corporate-approval').popover({
@@ -322,7 +323,7 @@ $('a#corporate-approval').popover({
     {% elif current.planning_status == current.PLANNING_SUBMITTED and not perms.prescription.can_corporate_approve %} \
     You need to be an ePFP Application Administrator to apply corporate approval to an ePFP. \
     {% endif %}',
-    'html': 'true'
+    'html': true
 });
 {% endif %}
 $('a#endorsing-roles').popover({
@@ -337,7 +338,7 @@ $('a#endorsing-roles').popover({
         <li><a href="{{ sectiona6 }}"><i class="fa-solid fa-triangle-exclamation"></i> Complete Risk Register</a></li> \
         {% endif %} \
     </ul>',
-    'html': 'true'
+    'html': true
 });
 $('a#endorse').popover({
     'placement': 'left',
@@ -355,7 +356,7 @@ $('a#endorse').popover({
         <li>Endorse this ePFP</li> \
         {% endif %} \
     </ul>',
-    'html': 'true'
+    'html': true
 });
 $('a#approve').popover({
     'placement': 'left',
@@ -370,12 +371,13 @@ $('a#approve').popover({
     {% else %} \
     Please ensure the ePFP is endorsed before trying to submit it for approval. \
     {% endif %}',
-    'html': 'true'
+    'html': true
 });
 
 var FILESIZE = 10.;
 $('.file-download-1').on('click', function(e) {
-  var ID = e.target.id
+  e.preventDefault();
+  var ID = $(this).attr('id');
   var size = {{ current.uploaded_documents_total_size }}
   if (ID=="id-down-2" && size > FILESIZE) // size in MB
     fnOpenNormalDialog(ID, size);
@@ -411,7 +413,12 @@ function wait_for_cookie(id, origHtml, origCol, size) {
       $(id).html(origHtml).css('color', origCol);
       stop_waiting();
       var fileUrl = $.cookie('fileUrl');
-      var msg = "<strong>{{ current.burn_id }}</strong> &#x2010; Create PDF Document: <a href='" + fileUrl + "'>Download Complete</a>.<br>You will receive an email notification.";
+      var msg;
+      if (fileUrl) {
+        msg = "<strong>{{ current.burn_id }}</strong> &#x2010; Create PDF Document: <a href='" + fileUrl + "' target='_blank'>Download Complete</a>.<br>You will receive an email notification.";
+      } else {
+        msg = "<strong>{{ current.burn_id }}</strong> &#x2010; Create PDF Document: Download Complete.";
+      }
       if (cookieValue == token2) //(size > FILESIZE)
         msg = msg + "<br><br>File Size = " + size
       growl(msg, 'success'); // a warning message to indicate large file size
@@ -432,18 +439,8 @@ function stop_waiting() {
 }
 
 function growl(msg, type) {
-  $.growl(msg, {
-    type: type,
-    animate: {
-      enter: 'animated bounceIn',
-      exit: 'animated bounceOut'
-    },
-    offset: {
-      x: 100,
-      y: 20
-    },
-    delay: 10000,
-  });
+  toastr.options = { timeOut: 30000, extendedTimeOut: 5000, closeButton: true };
+  toastr[type](msg);
 }
 
 function download_pdf(url){
@@ -494,6 +491,6 @@ function callback(value) {
     }
 }
 
-
+}); // $(document).ready
 </script>
 {% endblock %}

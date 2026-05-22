@@ -1,7 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
 #from select2.fields import ModelMultipleChoiceField
-from django_select2.forms import Select2MultipleWidget
 from pbs.report.models import (SummaryCompletionState, BurnImplementationState,
                                BurnClosureState, AreaAchievement, IgnitionType,
                                PostBurnChecklist)
@@ -55,7 +54,7 @@ class AreaAchievementForm(Bootstrap5FormMixin, forms.ModelForm):
 
     #ignition_types = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
     ignition_types = forms.ModelMultipleChoiceField(queryset=IgnitionType.objects.all(),
-                                                    widget=Select2MultipleWidget(attrs={'class': 'select2-field'}),
+                                                    widget=forms.SelectMultiple(attrs={'class': 'ignition-types-select'}),
                                                     label="Ignition Types",
                                                     )
     # ignition_types = forms.ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), widget=FilteredSelectMultiple("Ignition Types", is_stacked=False))
@@ -70,7 +69,6 @@ class AreaAchievementForm(Bootstrap5FormMixin, forms.ModelForm):
         #self.fields['ignition_types'] = ModelMultipleChoiceField(queryset=IgnitionType.objects.all(), model=IgnitionType, name="ignition_types")
         # if(self.instance and self.instance.id):
         #     self.fields['ignition_types'].initial= self.instance.ignition_types.all()
-        self.fields['ignition_types'].widget.attrs.update({'style': 'width: 400px; height: 150 px;'})
 
     def clean(self):
         """

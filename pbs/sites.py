@@ -91,8 +91,9 @@ class UserAdmin(AuthUserAdmin):
     actions = None
     form = UserForm
     fieldsets = (
-        (None, {'fields': ('email', ('first_name', 'last_name'),
+        (None, {'fields': ('email', 'first_name', 'last_name',
                            'is_active', 'groups')}),
+
     )
     list_filter = ("is_active", "groups")
 

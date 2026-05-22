@@ -451,3 +451,7 @@ PRESCRIPTION_ARCHIVE_USE_QUEUE = env('PRESCRIPTION_ARCHIVE_USE_QUEUE', True)
 KB_USER = env('KB_USER', None)
 KB_PASSWORD = env('KB_PASSWORD', None)
 BPP_FILE_DOWNLOAD_PATH = env('BPP_FILE_DOWNLOAD_PATH', '/mnt/fmsb/master_burn_planning_bpp_pbs')
+
+# The area achievement changelist can have many inline rows, each with multiple
+# fields, so the default limit of 1000 needs to be raised.
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000

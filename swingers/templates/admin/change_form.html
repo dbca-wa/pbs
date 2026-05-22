@@ -32,7 +32,7 @@
 <div class="object-tools pull-right">
   {% block object-tools-items %}
   <div class="btn-group">
-    <a class="btn" href="{% url opts|admin_urlname:'history' original.pk|admin_urlquote %}" class="historylink">{% trans "History" %}</a>
+    <a class="btn btn-sm btn-outline-secondary historylink" href="{% url opts|admin_urlname:'history' original.pk|admin_urlquote %}">{% trans "History" %}</a>
   </div>
   {% endblock %}
 </div>

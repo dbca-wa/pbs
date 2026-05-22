@@ -88,17 +88,8 @@ $(function() {
   $('.btn').click(function() {
     var text = $(this).attr('value');
     //$.growl("<strong>{{ current.burn_id }}</strong> &#x2010; PDF Document has been queued:  <strong> <a href='{{pdf_view}}' target='_blank'>'" + text + "'</a></strong>", {
-    $.growl("<strong>{{ current.burn_id }}</strong> &#x2010; PDF Document has been queued", {
-      type: "success",
-      animate: {
-        enter: 'animated bounceIn',
-        exit: 'animated bounceOut'
-      },
-      offset: {
-        x: 100,
-        y: 20
-      }
-    });
+    toastr.options = { timeOut: 10000, extendedTimeOut: 5000, closeButton: true };
+    toastr.success("<strong>{{ current.burn_id }}</strong> &#x2010; PDF Document has been queued");
   });
   {% if not can_edit %}
     $('select').prop('disabled', true);
