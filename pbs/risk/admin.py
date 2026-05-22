@@ -563,7 +563,7 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
             list_display += ("pre_burn_completed", "pre_burn_completer")
         elif request.GET.get('day_of_burn', False):
             # Day of burn actions
-            list_display = ("__str__", "details", "day_of_burn_responsible",
+            list_display = ("relevant", "__str__", "details", "day_of_burn_responsible",
                             "day_of_burn_include", "day_of_burn_situation",
                             "day_of_burn_mission", "day_of_burn_execution",
                             "day_of_burn_administration", "day_of_burn_command",
@@ -605,7 +605,7 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
             list_editable += ("pre_burn_completed", "pre_burn_completer")
         elif request.GET.get('day_of_burn', False):
             # Day of burn actions
-            list_editable = ("day_of_burn_include", "day_of_burn_situation",
+            list_editable = ("relevant", "day_of_burn_include", "day_of_burn_situation",
                              "day_of_burn_mission", "day_of_burn_execution",
                              "day_of_burn_administration",
                              "day_of_burn_command", "day_of_burn_safety",
@@ -638,11 +638,14 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
 
     def get_list_filter(self, request):
         """
-        If we are on the plan actions page, allow filtering on relevance and
-        risk category. Otherwise, disallow filtering.
+        If we are on the plan actions page or day of burn actions page, allow
+        filtering on relevance. Plan actions also allows filtering by category.
+        Otherwise, disallow filtering.
         """
-        actions = ['pre_burn', 'day_of_burn', 'post_burn']
+        if request.GET.get('day_of_burn', False):
+            return ('relevant',)
 
+        actions = ['pre_burn', 'day_of_burn', 'post_burn']
         if not any([request.GET.get(action, False) for action in actions]):
             return ('relevant', 'risk__category')
 
