@@ -415,7 +415,7 @@ function wait_for_cookie(id, origHtml, origCol, size) {
       var fileUrl = $.cookie('fileUrl');
       var msg;
       if (fileUrl) {
-        msg = "<strong>{{ current.burn_id }}</strong> &#x2010; Create PDF Document: <a href='" + fileUrl + "'>Download Complete</a>.<br>You will receive an email notification.";
+        msg = "<strong>{{ current.burn_id }}</strong> &#x2010; Create PDF Document: <a href='" + fileUrl + "' target='_blank'>Download Complete</a>.<br>You will receive an email notification.";
       } else {
         msg = "<strong>{{ current.burn_id }}</strong> &#x2010; Create PDF Document: Download Complete.";
       }
