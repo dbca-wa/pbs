@@ -42,6 +42,6 @@ pagecommand={
 {% else %}
 \typeout{WARNING: Skipping missing file: {{ document.document.path }}}
 \begin{center}
-  \textcolor{red}{\textbf{[Document not available: {{ document.filename }}]}}
+  \textcolor{red}{\textbf{[Document not available: {{ document.filename|texify|safe }}]}}
 \end{center}
 {% endif %}
