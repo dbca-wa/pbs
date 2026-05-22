@@ -31,11 +31,11 @@ DDO to submit program through RDO who then notifies FMSB State Duty Officer \& F
     {{ burn.min_smc }} & 
     {{ burn.max_fdi }} & 
     {{ burn.sdi_per_day }} &
-    {{ burn.flight_seq }} &
-    {{ burn.aircraft_rego }} &
+    {{ burn.flight_seq|texify|safe }} &
+    {{ burn.aircraft_rego|texify|safe }} &
     {{ burn.arrival_time }} &
-    {{ burn.program }} &
-    {{ burn.approval }} \\
+    {{ burn.program|texify|safe }} &
+    {{ burn.approval|texify|safe }} \\
 \hline
 {% empty %}
 \multicolumn{6}{|X|}{No Aircraft Burns Planned for Today} \\

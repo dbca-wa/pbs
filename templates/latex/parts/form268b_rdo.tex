@@ -27,7 +27,7 @@
     {% if pb.status == 1 %}Yes{% elif pb.status == 3 %}Monitored{% else %}No{% endif %} &
     {% if pb.further_ignitions_req %}Yes{% else %}No{% endif %} & 
     {{ pb.area_str }} & 
-    {{ pb.tenures_str }} & 
+    {{ pb.tenures_str|texify|safe }} & 
     \hline
 {% endif %}
 {% empty %}
@@ -50,8 +50,8 @@
     {{ pb.name|texify|safe }} & 
     {% if pb.status == 1 %}Yes{% elif pb.status == 3 %}Monitored{% else %}No{% endif %} &
     {{ pb.area_str }} & 
-    {{ pb.tenures_str }} & 
-    {{ pb.external_assist_str }}\\
+    {{ pb.tenures_str|texify|safe }} & 
+    {{ pb.external_assist_str|texify|safe }}\\
     \hline
 {% endif %}
 {% empty %}
