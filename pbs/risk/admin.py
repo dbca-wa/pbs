@@ -558,12 +558,12 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
 
         if request.GET.get('pre_burn', False):
             # Pre-burn actions
-            list_display = ("__str__", "details", "pre_burn_resolved",
+            list_display = ("action_name", "details", "pre_burn_resolved",
                             "pre_burn_explanation")
             list_display += ("pre_burn_completed", "pre_burn_completer")
         elif request.GET.get('day_of_burn', False):
             # Day of burn actions
-            list_display = ("relevant", "__str__", "details", "day_of_burn_responsible",
+            list_display = ("relevant", "action_name", "details", "day_of_burn_responsible",
                             "day_of_burn_include", "day_of_burn_situation",
                             "day_of_burn_mission", "day_of_burn_execution",
                             "day_of_burn_administration", "day_of_burn_command",
@@ -572,12 +572,12 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                 list_display += ("day_of_burn_completed", "day_of_burn_completer")
         elif request.GET.get('post_burn', False):
             # Post burn actions
-            list_display = ("__str__", "details")
+            list_display = ("action_name", "details")
             if current.is_approved:
                 list_display += ("post_burn_completed", "post_burn_completer")
         else:
             # We are on the plan actions page if this falls through.
-            list_display = ("relevant", "__str__", "details",
+            list_display = ("relevant", "action_name", "details",
                             "pre_burn", "day_of_burn", "post_burn",
                             "context_statement", "add_action")
             #if current.is_draft:
@@ -648,6 +648,11 @@ class ActionAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
         actions = ['pre_burn', 'day_of_burn', 'post_burn']
         if not any([request.GET.get(action, False) for action in actions]):
             return ('relevant', 'risk__category')
+
+    def action_name(self, obj):
+        return str(obj)
+    action_name.short_description = 'Action'
+    action_name.admin_order_field = 'risk__name'
 
     def risk_category(self, obj):
         return obj.risk.category
