@@ -62,8 +62,8 @@ class Command(BaseCommand):
         timeout = getattr(settings, "REQUEST_TIMEOUT", 60)
         auth = None
         if not no_kb_auth:
-            kb_user = getattr(settings, "KB_USER", "")
-            kb_password = getattr(settings, "KB_PASSWORD", "")
+            kb_user = (getattr(settings, "KB_USER", "") or "").strip()
+            kb_password = (getattr(settings, "KB_PASSWORD", "") or "").strip()
             if not kb_user or not kb_password:
                 raise CommandError("KB_USER and KB_PASSWORD must be set in settings, or use --no-kb-auth.")
             auth = (kb_user, kb_password)
