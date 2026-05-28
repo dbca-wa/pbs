@@ -17,6 +17,7 @@ class Command(BaseCommand):
     help = "Download updated KB layers and update local layer timestamps."
 
     API_BASE_URL = "https://kaartdijin-boodja.dbca.wa.gov.au/api/catalogue/layers/submissions2/"
+    DOWNLOAD_URL_TEMPLATE = "https://kaartdijin-boodja.dbca.wa.gov.au/api/catalogue/layers/submissions/{submission_id}/file/"
 
     def add_arguments(self, parser_obj):
         parser_obj.add_argument(
@@ -30,23 +31,6 @@ class Command(BaseCommand):
             help="Show what would be updated without downloading or saving.",
         )
         parser_obj.add_argument(
-            "--details-base-url",
-            default="https://kaartdijin-boodja.dbca.wa.gov.au/catalogue/entries/{catalogue_entry_id}/details/",
-            help=(
-                "Base details URL. Can include {catalogue_entry_id}. "
-                "Default: https://kaartdijin-boodja.dbca.wa.gov.au/catalogue/entries/{catalogue_entry_id}/details/"
-            ),
-        )
-        parser_obj.add_argument(
-            "--query-param",
-            action="append",
-            default=[],
-            help=(
-                "Extra query param to append to the download URL. "
-                "Repeat as needed, format key=value."
-            ),
-        )
-        parser_obj.add_argument(
             "--no-kb-auth",
             action="store_true",
             help="Do not use KB_USER/KB_PASSWORD for KB API and download requests.",
@@ -54,8 +38,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         download_dir = options["download_dir"]
-        details_base_url = options["details_base_url"]
-        query_params = options["query_param"]
         dry_run = options["dry_run"]
         no_kb_auth = options["no_kb_auth"]
 
@@ -117,12 +99,7 @@ class Command(BaseCommand):
                 )
                 continue
 
-            details_url = details_base_url.format(catalogue_entry_id=layer.catalogue_entry_id)
-            download_url = self._build_download_url(
-                details_url=details_url,
-                submission_id=submission_id,
-                extra_params=query_params,
-            )
+            download_url = self._build_download_url(submission_id)
 
             source_file = submission.get("file") or "submission"
             output_filename = os.path.basename(source_file)
@@ -188,17 +165,8 @@ class Command(BaseCommand):
 
         return rows[0]
 
-    def _build_download_url(self, details_url, submission_id, extra_params):
-        params = {"submission_id": submission_id}
-
-        for raw_item in extra_params:
-            if "=" not in raw_item:
-                raise CommandError("Invalid --query-param '{}'. Expected format key=value.".format(raw_item))
-            key, value = raw_item.split("=", 1)
-            params[key] = value
-
-        separator = "&" if "?" in details_url else "?"
-        return "{}{}{}".format(details_url, separator, urlencode(params))
+    def _build_download_url(self, submission_id):
+        return self.DOWNLOAD_URL_TEMPLATE.format(submission_id=submission_id)
 
     def _parse_submitted_at(self, submitted_at_raw):
         try:
@@ -235,6 +203,7 @@ class Command(BaseCommand):
 
     def _download_file(self, url, output_path, timeout, auth):
         try:
+            self.stderr.write("download url '{}' ".format(url))
             response = requests.get(url, timeout=timeout, verify=False, stream=True, auth=auth)
             response.raise_for_status()
 
