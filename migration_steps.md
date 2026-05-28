@@ -163,6 +163,10 @@ stakeholder
   python pbs/scripts/create_bpp_an_statewide_albers_layer.py
   
   ```
+## Step 8: Add following environment variables with the appropriate value.
+  ```
+  KB_USER=
+  KB_PASSWORD=
 
 
 
