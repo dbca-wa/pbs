@@ -8,6 +8,8 @@ import os
 import re
 import time
 import webbrowser
+import hashlib
+from datetime import timedelta
 
 from django.utils import timezone
 from django.conf import settings
@@ -16,7 +18,12 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib import messages
 
+from pbs.models import FileDownloadHash
+
 logger = logging.getLogger('pdf')
+
+
+DOWNLOAD_LINK_EXPIRE_DAYS = settings.DOWNLOAD_LINK_EXPIRE_DAYS
 
 
 LATEX_FILE_COMMAND_RE = re.compile(r'\\(?:includegraphics|includepdf)\b')
@@ -132,6 +139,30 @@ def copy_pdflatex_artifacts(source_dir, burn_id, downloadname, logfilename):
         os.makedirs(log_dir)
     shutil.copytree(source_dir, log_dir, dirs_exist_ok=True)
     return os.path.join(log_dir, logfilename)
+
+
+def create_private_download_token(private_file_path, request_user_id, burn_id, now):
+    expires_at = now + timedelta(days=DOWNLOAD_LINK_EXPIRE_DAYS)
+    token_input = '{0}|{1}|{2}|{3}|{4}'.format(
+        private_file_path,
+        request_user_id,
+        burn_id,
+        expires_at.isoformat(),
+        settings.SECRET_KEY,
+    )
+    token = hashlib.sha256(token_input.encode('utf-8')).hexdigest()
+
+    FileDownloadHash.objects.update_or_create(
+        token=token,
+        defaults={
+            'file_path': private_file_path,
+            'download_name': os.path.basename(private_file_path),
+            'burn_id': burn_id,
+            'requested_by_id': request_user_id,
+            'expires_at': expires_at,
+        },
+    )
+    return token, expires_at
 
 class PdflatexResult(object):
     def __init__(self,err_msg=None,template_file=None,pdf_file=None,log_file=None,directory=None,required_files=None,missing_files=None):
@@ -478,19 +509,22 @@ def download_pdf(request, prescription):
 
             private_file_path = os.path.join(private_dir, downloadname)
             shutil.copy2(pdfresult.pdf_file, private_file_path)
-            file_url = '{0}/private-media/{1}/{2}'.format(
-                baseurl,
-                relative_dir.replace(os.sep, '/'),
-                downloadname,
+            token, expires_at = create_private_download_token(
+                private_file_path=private_file_path,
+                request_user_id=request.user.id,
+                burn_id=prescription.burn_id,
+                now=now,
             )
+            file_url = '{0}/private-media/download/{1}'.format(baseurl, token)
 
             logger.info('Sending email notification to user of private-media download URL')
             subject = 'Prescribed Burn System: file {}'.format(downloadname)
             email_from = settings.FEX_MAIL
-            message = 'Prescribed Burn System: file {} can be downloaded at:\n\t{}\nFile size: {}'.format(
+            message = 'Prescribed Burn System: file {} can be downloaded at:\n\t{}\nFile size: {}\nThis link expires on: {}'.format(
                 downloadname,
                 file_url,
                 pdfresult.filesize,
+                expires_at.strftime('%Y-%m-%d %H:%M:%S %Z'),
             )
             send_mail(subject, message, email_from, [request.user.email])
 

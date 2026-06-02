@@ -18,6 +18,7 @@ FEX_MAIL = env('FEX_MAIL', 'pbs@dpaw.wa.gov.au')  # Do not update this without a
 FEX_SVR_HTTP = env('FEX_SVR_HTTP', 'https://fex.dpaw.wa.gov.au')
 SEND_URL = env('SEND_URL', 'https://send.dbca.wa.gov.au')
 SEND_DOWNLOAD_LIMIT = env('SEND_DOWNLOAD_LIMIT', 1)  # No. of times that files may be downloaded.
+DOWNLOAD_LINK_EXPIRE_DAYS = env('DOWNLOAD_LINK_EXPIRE_DAYS', 7)
 PDF_TO_FEXSRV = env('PDF_TO_FEXSRV', True)
 DAY_ROLLOVER_HOUR = int(env('DAY_ROLLOVER_HOUR', 17))
 KMI_DOWNLOAD_URL = env('KMI_DOWNLOAD_URL', required=True)
