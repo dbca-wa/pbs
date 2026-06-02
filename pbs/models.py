@@ -25,6 +25,28 @@ class Profile(models.Model):
         return self.user.email.lower().endswith(settings.FPC_EMAIL_EXT)
 
 
+class FileDownloadHash(models.Model):
+    token = models.CharField(max_length=64, primary_key=True)
+    file_path = models.TextField()
+    download_name = models.CharField(max_length=255, blank=True, default='')
+    burn_id = models.CharField(max_length=64, blank=True, default='')
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='file_download_hash',
+    )
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.token
+
+
 def user_post_save(sender, instance, created, **kwargs):
     """Create a user profile when a new user account is created"""
     if (created and
