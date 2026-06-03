@@ -16,8 +16,9 @@ from pbs.review.models import Layer
 class Command(BaseCommand):
     help = "Download updated KB layers and update local layer timestamps."
 
-    API_BASE_URL = "https://kaartdijin-boodja.dbca.wa.gov.au/api/catalogue/layers/submissions2/"
-    DOWNLOAD_URL_TEMPLATE = "https://kaartdijin-boodja.dbca.wa.gov.au/api/catalogue/layers/submissions/{submission_id}/file/"
+    KB_BASE_URL = (getattr(settings, "KB_URL", "") or "").strip().rstrip("/")
+    API_BASE_URL = "{}/api/catalogue/layers/submissions2/".format(KB_BASE_URL)
+    DOWNLOAD_URL_TEMPLATE = "{}/api/catalogue/layers/submissions/{{submission_id}}/file/".format(KB_BASE_URL)
 
     def add_arguments(self, parser_obj):
         parser_obj.add_argument(
@@ -37,6 +38,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        if not self.KB_BASE_URL:
+            raise CommandError("KB_URL must be set in settings.")
+
         download_dir = options["download_dir"]
         dry_run = options["dry_run"]
         no_kb_auth = options["no_kb_auth"]
