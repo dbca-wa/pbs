@@ -234,7 +234,9 @@ def items_for_result(cl, result, form):
                 boolean = getattr(attr, 'boolean', False)
                 if boolean:
                     allow_tags = True
-                result_repr = display_for_value(value, boolean)
+                # Django 5 signature is display_for_value(value, empty_value_display, boolean=False).
+                # Passing `boolean` as the second arg causes empty values to render as False.
+                result_repr = display_for_value(value, EMPTY_CHANGELIST_VALUE, boolean)
                 # Strip HTML tags in the resulting text, except if the
                 # function has an "allow_tags" attribute set to True.
                 if allow_tags:
