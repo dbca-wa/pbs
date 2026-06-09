@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 from datetime import datetime
 from urllib.parse import urlencode
 
@@ -128,8 +129,9 @@ class Command(BaseCommand):
             try:
                 self._download_file(download_url, output_path, timeout, auth)
                 if output_path.lower().endswith(".7z"):
-                    self._extract_7z_file(output_path, download_dir)
-                    self.stdout.write("Extraction complete for '{}': {}".format(layer.name, download_dir))
+                    extracted_output_base = os.path.join(download_dir, "BPP_Statewide")
+                    extracted_path = self._extract_7z_file(output_path, extracted_output_base)
+                    self.stdout.write("Extraction complete for '{}': {}".format(layer.name, extracted_path))
 
                 Layer.objects.filter(pk=layer.pk).update(modified_at=submitted_at)
 
@@ -220,7 +222,7 @@ class Command(BaseCommand):
         except Exception as exc:
             raise CommandError("Failed to download file from '{}': {}".format(url, exc))
 
-    def _extract_7z_file(self, archive_path, destination_dir):
+    def _extract_7z_file(self, archive_path, extracted_output_base):
         seven_zip_bin = shutil.which("7z") or shutil.which("7za")
         if not seven_zip_bin:
             raise CommandError(
@@ -228,7 +230,9 @@ class Command(BaseCommand):
                 "Install p7zip and run the command again."
             )
 
-        cmd = [seven_zip_bin, "x", "-y", "-o{}".format(destination_dir), archive_path]
+        destination_dir = os.path.dirname(extracted_output_base) or "."
+        extract_dir = tempfile.mkdtemp(prefix="updatelayers_extract_", dir=destination_dir)
+        cmd = [seven_zip_bin, "x", "-y", "-o{}".format(extract_dir), archive_path]
         try:
             subprocess.run(cmd, check=True, capture_output=True, text=True)
         except subprocess.CalledProcessError as exc:
@@ -236,3 +240,32 @@ class Command(BaseCommand):
             stdout = (exc.stdout or "").strip()
             details = stderr or stdout or str(exc)
             raise CommandError("Failed to extract archive '{}': {}".format(archive_path, details))
+
+        try:
+            extracted_items = [
+                os.path.join(extract_dir, name)
+                for name in os.listdir(extract_dir)
+            ]
+            if not extracted_items:
+                raise CommandError("Archive '{}' did not contain any files.".format(archive_path))
+            if len(extracted_items) > 1:
+                raise CommandError(
+                    "Archive '{}' contains multiple top-level items; cannot safely rename to a single path."
+                    .format(archive_path)
+                )
+
+            source_path = extracted_items[0]
+            source_name = os.path.basename(source_path)
+            source_ext = os.path.splitext(source_name)[1]
+            final_path = "{}{}".format(extracted_output_base, source_ext)
+
+            if os.path.exists(final_path):
+                if os.path.isdir(final_path):
+                    shutil.rmtree(final_path)
+                else:
+                    os.remove(final_path)
+
+            shutil.move(source_path, final_path)
+            return final_path
+        finally:
+            shutil.rmtree(extract_dir, ignore_errors=True)
