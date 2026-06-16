@@ -99,11 +99,12 @@ def support_email(subject, msg, exception=None, msg_type='Warning'):
         env = os.getcwd().split('/')[-1].split('.')[0].split('-')[1].upper() # PROD/UAT/DEV etc
     except:
         env = ''
-
+    email_instance=settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+    systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
     subject = 'PBS {}: {} ({})'.format(msg_type, subject, env)
     body = '<p>Subject: {}</p><br><br>{}<br><br>{}'.format(subject, msg, exception)
 
-    message = EmailMessage(subject=subject, body=body, from_email=settings.FROM_EMAIL, to=settings.SUPPORT_EMAIL)
+    message = EmailMessage(subject=subject, body=body, from_email=settings.FROM_EMAIL, to=settings.SUPPORT_EMAIL,  headers={'System-Environment': email_instance, 'ITSystem-ID': systemid +"-"+email_instance})
     message.content_subtype = 'html'
     message.send()
 
