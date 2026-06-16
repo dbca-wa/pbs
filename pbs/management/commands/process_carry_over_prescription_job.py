@@ -3,7 +3,7 @@
 import logging
 
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
@@ -142,7 +142,21 @@ def _send_requester_email(job, prescription, succeeded, local_time, error=None):
         )
 
     try:
-        send_mail(subject, message, email_from, [recipient], fail_silently=False)
+        email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+        systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+        headers = {
+            'System-Environment': email_instance,
+            'ITSystem-ID': systemid + '-' + email_instance,
+        }
+        # send_mail(subject, message, email_from, [recipient], fail_silently=False)
+        email = EmailMessage(
+            subject=subject,
+            body=message,
+            from_email=email_from,
+            to=[recipient],
+            headers=headers,
+        )
+        email.send(fail_silently=False)
     except Exception:
         logger.exception(
             'Failed to send carry-over completion email to %s for prescription %s',

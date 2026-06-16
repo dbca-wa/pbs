@@ -15,7 +15,7 @@ import os
 import shutil
 
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
@@ -125,7 +125,21 @@ def _fail_archive_prescription_job(job, prescription, now, exc):
             'Dedupe key: {4}\n'
             'Error: {5}'
         ).format(prescription, local_time, job.id, job.job_type, job.dedupe_key, job.error_message)
-        send_mail(title, message, email_from, settings.NOTIFICATION_EMAIL.split(','), fail_silently=True)
+        email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+        systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+        headers = {
+            'System-Environment': email_instance,
+            'ITSystem-ID': systemid + '-' + email_instance,
+        }
+        # send_mail(title, message, email_from, settings.NOTIFICATION_EMAIL.split(','), fail_silently=True)
+        email = EmailMessage(
+            subject=title,
+            body=message,
+            from_email=email_from,
+            to=settings.NOTIFICATION_EMAIL.split(','),
+            headers=headers,
+        )
+        email.send(fail_silently=True)
     else:
         logger.warning('ENV NOTIFICATION_EMAIL is not set. Unable to send notification email.')
 
@@ -185,7 +199,21 @@ def _send_requester_email(job, prescription, succeeded, local_time, error=None):
         )
 
     try:
-        send_mail(subject, message, email_from, [recipient], fail_silently=False)
+        email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+        systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+        headers = {
+            'System-Environment': email_instance,
+            'ITSystem-ID': systemid + '-' + email_instance,
+        }
+        # send_mail(subject, message, email_from, [recipient], fail_silently=False)
+        email = EmailMessage(
+            subject=subject,
+            body=message,
+            from_email=email_from,
+            to=[recipient],
+            headers=headers,
+        )
+        email.send(fail_silently=False)
     except Exception:
         logger.exception(
             'Failed to send archive completion email to %s for prescription %s',

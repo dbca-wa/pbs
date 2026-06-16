@@ -62,7 +62,8 @@ from pbs.utils.widgets import CheckboxSelectMultiple
 
 from pbs import mutex, SemaphoreException
 from pbs.filters import BooleanFieldListFilter,CrossTenureApprovedListFilter,IntChoicesFieldListFilter,RelatedFieldListFilter,StringValuesFieldListFilter
-from django.core.mail import send_mail
+# from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 
 from pbs.prescription import fund_allocation
 from django.contrib.auth.models import User

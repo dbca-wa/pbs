@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.http import HttpResponse,HttpResponseRedirect
 from django.template.loader import render_to_string
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.contrib import messages
 
 from pbs.models import FileDownloadHash
@@ -434,7 +434,21 @@ def download_pdf_orig(request, prescription):
                 message = 'Prescribed Burn System: file {} can be downloaded at:\n\t{}\nFile size: {}\nNo. of times file can be downloaded: {}'.format(
                    downloadname, file_url, pdfresult.filesize, settings.SEND_DOWNLOAD_LIMIT)
                 try:
-                    send_mail(subject, message, email_from, [request.user.email])
+                    email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+                    systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+                    headers = {
+                        'System-Environment': email_instance,
+                        'ITSystem-ID': systemid + '-' + email_instance,
+                    }
+                    # send_mail(subject, message, email_from, [request.user.email])
+                    email = EmailMessage(
+                        subject=subject,
+                        body=message,
+                        from_email=email_from,
+                        to=[request.user.email],
+                        headers=headers,
+                    )
+                    email.send()
                 except Exception as e:
                     logger.warning('Email notification could not be sent: {}'.format(e))
                 url = request.META.get('HTTP_REFERER')  # redirect back to the current URL
@@ -526,7 +540,21 @@ def download_pdf(request, prescription):
                 pdfresult.filesize,
                 expires_at.strftime('%Y-%m-%d %H:%M:%S %Z'),
             )
-            send_mail(subject, message, email_from, [request.user.email])
+            email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+            systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+            headers = {
+                'System-Environment': email_instance,
+                'ITSystem-ID': systemid + '-' + email_instance,
+            }
+            # send_mail(subject, message, email_from, [request.user.email])
+            email = EmailMessage(
+                subject=subject,
+                body=message,
+                from_email=email_from,
+                to=[request.user.email],
+                headers=headers,
+            )
+            email.send()
 
             url = request.META.get('HTTP_REFERER')
             logger.info("__________________________ END _____________________________")
