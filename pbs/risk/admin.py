@@ -404,14 +404,14 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
         if editable:
             output += '''<a  onclick="return showAddAnotherPopup(this);"
                 class="add-another" href="{0}?contingency={1}&_popup=1">
-                <i class="icon-plus"></i> Add an action</a>'''.format(url, obj.pk)
+                <i class="fa-solid fa-plus"></i> Add an action</a>'''.format(url, obj.pk)
         # Include a distinctive class name in the "Add" link in order to conditionally
         # remove the stupid thing depending on the user's group membership.
         # We do this because we don't get access to the request object in this method.
         else:
             output += '''<a  onclick="return showAddAnotherPopup(this);"
                 class="add-another d-none adminonly" href="{0}?contingency={1}&_popup=1">
-                <i class="icon-plus"></i> Add an action</a>'''.format(url, obj.pk)
+                <i class="fa-solid fa-plus"></i> Add an action</a>'''.format(url, obj.pk)
         return mark_safe(output)
     display_actions.short_description = "Actions"
     display_actions.allow_tags = True
@@ -441,14 +441,14 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
                 reverse('admin:risk_contingency_changelist', args=[str(obj.prescription.pk)]))
             if editable:
                 output += '<tr><td><a href="{}">{}</a></td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(
-                    change_link, notification.name, notification.organisation,
-                    notification.location, notification.contact_number,
+                    change_link, notification.name, notification.organisation or '',
+                    notification.location or '', notification.contact_number or '',
                     delete_link)
             else:
                 delete_link = delete_link.replace('class="', 'class="d-none adminonly ')
                 output += '<tr><td><a class="d-none adminonly" href="{}">(Edit) </a>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>'.format(
-                    change_link, notification.name, notification.organisation,
-                    notification.location, notification.contact_number,
+                    change_link, notification.name, notification.organisation or '',
+                    notification.location or '', notification.contact_number or '',
                     delete_link)
         output += '</tbody></table>'
         url = reverse('admin:risk_contingencynotification_add',
@@ -457,14 +457,14 @@ class ContingencyAdmin(SavePrescriptionMixin, PrescriptionMixin, BaseAdmin):
         if editable:
             output += '''<a onclick="return showAddAnotherPopup(this);"
                 class="add-another" href="{0}?contingency={1}&_popup=1">
-                <i class="icon-plus"></i> Add a notification</a>'''.format(url, obj.pk)
+                <i class="fa-solid fa-plus"></i> Add a notification</a>'''.format(url, obj.pk)
         # Include a distinctive class name in the "Add" link in order to conditionally
         # remove the stupid thing depending on the user's group membership.
         # We do this because we don't get access to the request object in this method.
         else:
             output += '''<a onclick="return showAddAnotherPopup(this);"
                 class="add-another d-none adminonly" href="{0}?contingency={1}&_popup=1">
-                <i class="icon-plus"></i> Add a notification</a>'''.format(url, obj.pk)
+                <i class="fa-solid fa-plus"></i> Add a notification</a>'''.format(url, obj.pk)
         return mark_safe(output)
     display_notifications.short_description = 'Notifications'
     display_notifications.allow_tags = True
