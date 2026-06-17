@@ -22,6 +22,10 @@ a, a:hover, a:active {
   color: #006470;
 }
 
+a.add-another:hover {
+  text-decoration: underline;
+}
+
 .page {
   width: 980px;
   margin: auto;
