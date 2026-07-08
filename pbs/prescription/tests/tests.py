@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from decimal import Decimal
 from unittest.mock import Mock, patch
 
+from django.contrib.admin.utils import flatten_fieldsets
 from django.contrib.auth.models import Group, User, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core import mail
@@ -458,6 +459,19 @@ class PrescriptionAdminTests(BasePbsTestCase):
 
         self.assertTrue(prescription.check_archive_status(request))
 
+    def test_prescription_admin_locks_all_fields_when_archive_in_progress(self):
+        prescription = self.make('Prescription', archive_in_progress=True)
+        user = User.objects.create(username='archive-lock-user-2')
+        request = self._mocked_authenticated_request('/admin/', user)
+        admin = PrescriptionAdmin(Prescription, site)
+
+        readonly_fields = admin.get_readonly_fields(request, prescription)
+
+        self.assertEqual(
+            list(readonly_fields),
+            flatten_fieldsets(admin.get_fieldsets(request, prescription))
+        )
+
     def test_summary_view_locks_archive_in_progress_prescription(self):
         user = User.objects.get(username='admin')
         self.client.force_login(user)
@@ -477,6 +491,30 @@ class PrescriptionAdminTests(BasePbsTestCase):
 
         response = self.client.post(
             reverse('admin:prescription_prescription_summary', args=[str(prescription.id)]),
+            {}
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_pre_summary_post_is_forbidden_while_archive_in_progress(self):
+        user = User.objects.get(username='admin')
+        self.client.force_login(user)
+        prescription = self.make('Prescription', archive_in_progress=True)
+
+        response = self.client.post(
+            reverse('admin:prescription_prescription_pre_summary', args=[str(prescription.id)]),
+            {}
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_approval_post_is_forbidden_while_archive_in_progress(self):
+        user = User.objects.get(username='admin')
+        self.client.force_login(user)
+        prescription = self.make('Prescription', archive_in_progress=True)
+
+        response = self.client.post(
+            reverse('admin:prescription_prescription_approve', args=[str(prescription.id)]),
             {}
         )
 

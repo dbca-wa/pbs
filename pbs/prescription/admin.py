@@ -568,6 +568,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         # NOTE: Data Admins can edit all fields at any status.
         if request.user.has_perm('prescription.can_admin'):
             return (None,)
+        elif obj and hasattr(obj, 'check_archive_status') and not obj.check_archive_status(request):
+            return flatten_fieldsets(self.get_fieldsets(request, obj))
         elif obj and obj.planning_status != obj.PLANNING_DRAFT:
             return ('name', 'description', 'burn_id', 'financial_year', 'planned_season',
                     'last_year', 'last_season', 'last_season_unknown',
@@ -1015,11 +1017,14 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         """
         obj = self.get_object(request, unquote(object_id))
         title = self._approve_title(obj)
+        can_edit = obj.check_archive_status(request)
 
         AdminAddApprovalForm = self._approve_approval_form(request)
 
         form = AdminAddApprovalForm(initial={'prescription': obj})
         if request.method == 'POST':
+            if not can_edit:
+                raise PermissionDenied
             url = reverse('admin:prescription_prescription_detail',
                           args=[str(obj.id)])
             if obj.approval_status == obj.APPROVAL_DRAFT and obj.can_approve:
@@ -1086,6 +1091,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'form': admin_form,
             'media': media,
             'errors': None,
+            'can_edit': can_edit,
         }
         return TemplateResponse(request, "admin/prescription/prescription/"
                                 "approval.html", context,
@@ -1247,6 +1253,7 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
         A custom view to display section A1 of an ePFP.
         """
         obj = self.get_object(request, unquote(object_id))
+        can_edit = obj.check_archive_status(request)
         AdminPrescriptionSummaryForm = self.get_form(request, obj)
 
         funding_choices = FundingAllocation._meta.get_field('allocation').choices
@@ -1278,6 +1285,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             {'prescription': obj.pk, 'allocation': k, 'proportion': v} for k, v in initial_choices_dict.items()]
 
         if request.method == "POST":
+            if not can_edit:
+                raise PermissionDenied
             data = request.POST
             form = AdminPrescriptionSummaryForm(data=data, instance=obj)
             formset_data = fund_allocation.harvest(data)
@@ -1327,7 +1336,8 @@ class PrescriptionAdmin(DetailAdmin, BaseAdmin):
             'max_risk': obj.get_maximum_risk,
             'max_complexity': obj.get_maximum_complexity,
             'purposes': [p.name for p in obj.purposes.all()],
-            'current_app': self.admin_site.name
+            'current_app': self.admin_site.name,
+            'can_edit': can_edit,
         }
         return TemplateResponse(request, self.pre_summary_template,
                                 context)
@@ -1705,6 +1715,21 @@ class PrescriptionMixin(object):
         if prescription is None:
             raise Http404(_('prescription object with primary key %(key)r '
                             'does not exist.') % {'key': prescription_id})
+
+        if (prescription and hasattr(prescription, 'check_archive_status')
+                and not prescription.check_archive_status(request)):
+            # self.message_user(
+            #     request,
+            #     "Archive PDF generation is in progress for this Prescription. "
+            #     "Editing is temporarily locked until the job finishes.",
+            #     level=messages.WARNING,
+            # )
+            opts = self.model._meta
+            return HttpResponseRedirect(reverse(
+                'admin:%s_%s_changelist' % (opts.app_label, opts.model_name),
+                args=[quote(prescription.pk)],
+                current_app=self.admin_site.name,
+            ))
 
         context = {
             'current': prescription
