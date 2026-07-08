@@ -39,7 +39,7 @@
 <div class="row">
 <div class="col-12">
 <h1>Summary &amp; Approval</h1>
-{% if current.is_draft or perms.prescription.can_admin %}
+{% if can_edit and current.is_draft or can_edit and perms.prescription.can_admin %}
 <div id="id_pageerrors"><span id="id__all__"></span></div>
 <form action="" method="post">{% csrf_token %}
 <table class="table table-bordered table-striped table-condensed">
