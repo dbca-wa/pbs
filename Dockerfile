@@ -1,7 +1,11 @@
-# Prepare the base environment.
-# FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu_2510_base_python AS builder_base_pbs
+ARG IMAGE_TAG
+ARG IMAGE_NAME
 FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu_2604_base_python AS builder_base_pbs
-
+ARG IMAGE_TAG
+ARG IMAGE_NAME
+RUN echo "Building version: $IMAGE_TAG for $IMAGE_NAME"
+ENV CONTAINER_IMAGE_TAG=${IMAGE_TAG}
+ENV CONTAINER_IMAGE_NAME=${IMAGE_NAME}
 MAINTAINER asi@dbca.wa.gov.au
 ENV DEBIAN_FRONTEND=noninteractive
 ENV SECRET_KEY="ThisisNotRealKey"
@@ -13,6 +17,8 @@ ENV KMI_DOWNLOAD_URL="https://localhost/"
 ENV CSV_DOWNLOAD_URL="https://localhost/"
 ENV SHP_DOWNLOAD_URL="https://localhost/"
 ENV DATABASE_URL="sqlite://memory"
+ENV VIRTUAL_ENV=/app/venv
+ENV PATH=$VIRTUAL_ENV/bin:$PATH
 
 RUN apt-get update
 RUN apt-get upgrade -y
@@ -38,8 +44,7 @@ RUN rm -rf /tmp/*
 FROM builder_base_pbs as python_libs_pbs
 WORKDIR /app
 USER oim
-RUN virtualenv /app/venv
-ENV PATH=/app/venv/bin:$PATH
+RUN python -m venv $VIRTUAL_ENV
 RUN git config --global --add safe.directory /app
 
 COPY requirements.txt ./
