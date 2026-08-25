@@ -63,12 +63,12 @@ def create_or_update_priority_justification():
         modifier=admin,
         created=now,
         modified=now,
-        criteria='',
+        criteria=' - Facilitation and Protection of Aboriginal Interests\n    - Promotion of cultural land management and practices (Cultural Ecological Knowledge)\n    - Caring for Country\n    - Supporting customary activities\n    - Maintaining cultural knowledge systems\n - Protection or management of cultural and heritage sites and values\n    - Caring for songlines, sacred sites, ceremonial grounds, and places of historical importance\n    - Regenerate culturally significant species\n - Aboriginal led or co-designed\n - Supporting and strengthening cultural knowledge transfer and connection to Country\n - Joint and Co-operative Management arrangements   \n - Heal Country',
     )
 
     print('Purpose exists: {}'.format(purpose.name))
     print(
-        'PriorityJustification created: id={}, purpose={}, prescription={}, order={}, creator={}, created={}, modified={}'.format(
+        'PriorityJustification created: id={}, purpose={}, prescription={}, order={}, creator={}, created={}, modified={}, criteria={}'.format(
             priority_justification.id,
             priority_justification.purpose.name,
             priority_justification.prescription,
@@ -76,6 +76,7 @@ def create_or_update_priority_justification():
             priority_justification.creator.username,
             priority_justification.created,
             priority_justification.modified,
+            priority_justification.criteria,
         )
     )
 
