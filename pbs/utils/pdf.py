@@ -511,9 +511,9 @@ def download_pdf(request, prescription):
     ) as pdfresult:
         if pdfresult.succeed:
             if pdfresult.filesize / (1024 * 1024) >= 10:
-                token = '_token_10'
+                completion_token = '_token_10'
             else:
-                token = '_token'
+                completion_token = '_token'
 
             logger.info('Filesize: {}'.format(pdfresult.humanize_filesize))
             relative_dir = os.path.join('pdf', prescription.burn_id, now.strftime('%Y%m%d'))
@@ -523,13 +523,13 @@ def download_pdf(request, prescription):
 
             private_file_path = os.path.join(private_dir, downloadname)
             shutil.copy2(pdfresult.pdf_file, private_file_path)
-            token, expires_at = create_private_download_token(
+            download_token, expires_at = create_private_download_token(
                 private_file_path=private_file_path,
                 request_user_id=request.user.id,
                 burn_id=prescription.burn_id,
                 now=now,
             )
-            file_url = '{0}/private-media/download/{1}'.format(baseurl, token)
+            file_url = '{0}/private-media/download/{1}'.format(baseurl, download_token)
 
             logger.info('Sending email notification to user of private-media download URL')
             subject = 'Prescribed Burn System: file {}'.format(downloadname)
@@ -559,7 +559,7 @@ def download_pdf(request, prescription):
             url = request.META.get('HTTP_REFERER')
             logger.info("__________________________ END _____________________________")
             resp = HttpResponseRedirect(url)
-            resp.set_cookie('fileDownloadToken', token)
+            resp.set_cookie('fileDownloadToken', completion_token)
             resp.set_cookie('fileUrl', file_url)
             return resp
 

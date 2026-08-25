@@ -375,9 +375,13 @@ $('a#approve').popover({
 });
 
 var FILESIZE = 10.;
+var activeDownloads = {};
 $('.file-download-1').on('click', function(e) {
   e.preventDefault();
   var ID = $(this).attr('id');
+   if (activeDownloads[ID]) {
+    return;
+  }
   var size = {{ current.uploaded_documents_total_size }}
   if (ID=="id-down-2" && size > FILESIZE) // size in MB
     fnOpenNormalDialog(ID, size);
@@ -387,6 +391,11 @@ $('.file-download-1').on('click', function(e) {
 
 var myVar
 function download(ID, size) {
+
+  if (activeDownloads[ID]) {
+    return;
+  }
+  activeDownloads[ID] = true;
 
   var id = '#' + ID;
   var origUrl = $(id).attr('url');
@@ -407,9 +416,11 @@ function download(ID, size) {
 function wait_for_cookie(id, origHtml, origCol, size) {
     var token = '_token';
     var token2 = '_token_10';
+    var idValue = id.replace('#', '');
 
     var cookieValue = $.cookie('fileDownloadToken');
     if (cookieValue == token || cookieValue == token2) {
+      activeDownloads[idValue] = false;
       $(id).html(origHtml).css('color', origCol);
       stop_waiting();
       var fileUrl = $.cookie('fileUrl');
@@ -451,6 +462,10 @@ function download_pdf(url){
   }).done(function(data) {
     console.log('data: ' + data);
   }).fail(function(msg) {
+    $('.file-download-1').each(function() {
+      activeDownloads[$(this).attr('id')] = false;
+    });
+    stop_waiting();
     console.log('Fail msg: ' + msg)
   });
 }
