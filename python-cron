@@ -2,6 +2,7 @@
 */2 * * * * cd /app && run-one python manage.py process_job_queue >> logs/job_queue.log 2>&1
 15 7 * * *     cd /app && python manage.py updatelayers >> logs/updatelayers.log 2>&1
 15 8 * * *     cd /app && python manage.py cleanup_download_links >> logs/cleanup_download_links.log 2>&1
+0 */1 * * * run-one python manage_ds.py clearsessions >> logs/clearsessions.log 2>&1
 
 # Log Rotate
 1 0 * * *  /bin/log_rotate.sh  >> /app/logs/log_rotate.log 2>&1
