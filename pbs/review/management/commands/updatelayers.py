@@ -153,6 +153,7 @@ class Command(BaseCommand):
     def _build_shortened_api_url(self, catalogue_entry_id):
         query = {
             "catalogue_entry_id": catalogue_entry_id,
+            "columns[0][data]": "id",
             "order[0][column]": 0,
             "order[0][dir]": "desc",
             "start": 0,
