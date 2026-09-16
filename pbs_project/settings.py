@@ -457,3 +457,11 @@ BPP_FILE_DOWNLOAD_PATH = env('BPP_FILE_DOWNLOAD_PATH', '/mnt/fmsb/master_burn_pl
 # The area achievement changelist can have many inline rows, each with multiple
 # fields, so the default limit of 1000 needs to be raised.
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
+
+GDAL_LIBRARY_PATH = os.environ.get(
+    "GDAL_LIBRARY_PATH",
+)
+GEOS_LIBRARY_PATH = os.environ.get(
+    "GEOS_LIBRARY_PATH",
+)
+
