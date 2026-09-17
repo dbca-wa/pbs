@@ -25,7 +25,7 @@ RUN apt-get upgrade -y
 RUN apt-get install -yq libsasl2-dev 
 RUN apt-get install -y fex-utils imagemagick poppler-utils
 # RUN apt-get install -y libldap2-dev libssl-dev build-essential p7zip-full
-RUN apt-get install -y libldap2-dev libssl-dev p7zip-full
+RUN apt-get install -y libldap2-dev libssl-dev p7zip-full libffi-dev libyaml-dev
 RUN apt-get install -y latexmk texlive-lang-english texlive-latex-recommended texlive-base texlive-latex-base texlive-fonts-recommended texlive-latex-extra
 #texlive-full
 # RUN apt-get install --no-install-recommends -y texlive-bibtex-extra texlive-binaries texlive-extra-utils texlive-fonts-extra texlive-formats-extra texlive-humanities texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-luatex texlive-metapost texlive-pictures texlive-plain-generic texlive-pstricks texlive-publishers texlive-science texlive-xetex
