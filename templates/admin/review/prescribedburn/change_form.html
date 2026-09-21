@@ -139,8 +139,10 @@ $(function() {
         }
     });
 */
-    
-    $("#id_prescription").prop('disabled', true);
+    //$("#id_prescription").prop('disabled', true);
+    if (!$("#id_prescription").val()) {
+        $("#id_prescription").prop('disabled', true);
+    }
     // next section required for page refresh following validation error on page
     /*
     var region_selected = $("#id_region :selected").text();
