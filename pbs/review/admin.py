@@ -1113,7 +1113,7 @@ class PrescribedBurnAdmin(DetailAdmin, BaseAdmin):
         context = {
             'deletable_objects': objects,
             'non_deletable_objects': non_deletable_objects,
-            'current': objects[0] if objects else None,
+            #'current': objects[0] if objects else None,
         }
         template = 'admin/review/prescribedburn/delete_selected_confirmation.html'
         return TemplateResponse(request, template, context) #, current_app=self.admin_site.name)
