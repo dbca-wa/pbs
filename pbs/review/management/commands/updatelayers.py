@@ -3,6 +3,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import zipfile
 from datetime import datetime
 from urllib.parse import urlencode
 
@@ -119,19 +120,35 @@ class Command(BaseCommand):
                     "Would download '{}' from {} and set modified_at={}"
                     .format(layer.name, download_url, submitted_at.isoformat())
                 )
-                if output_path.lower().endswith(".7z"):
+                lower_output_path = output_path.lower()
+                if lower_output_path.endswith(".7z") or lower_output_path.endswith(".zip"):
                     self.stdout.write(
-                        "Dry-run: downloaded 7z archive for '{}' would be extracted to '{}'"
+                        "Dry-run: downloaded archive for '{}' would be extracted to '{}'"
                         .format(layer.name, download_dir)
+                    )
+                else:
+                    self.stdout.write(
+                        "Dry-run: downloaded file for '{}' would not be extracted (unhandled extension)"
+                        .format(layer.name)
                     )
                 continue
 
             try:
                 self._download_file(download_url, output_path, timeout, auth)
-                if output_path.lower().endswith(".7z"):
-                    extracted_output_base = os.path.join(download_dir, "BPP_Statewide")
+
+                lower_output_path = output_path.lower()
+                extracted_output_base = os.path.join(download_dir, "BPP_Statewide")
+                if lower_output_path.endswith(".7z"):
                     extracted_path = self._extract_7z_file(output_path, extracted_output_base)
                     self.stdout.write("Extraction complete for '{}': {}".format(layer.name, extracted_path))
+                elif lower_output_path.endswith(".zip"):
+                    extracted_path = self._extract_zip_file(output_path, extracted_output_base)
+                    self.stdout.write("Extraction complete for '{}': {}".format(layer.name, extracted_path))
+                else:
+                    self.stdout.write(
+                        "Layer '{}' was downloaded to '{}' but not extracted (unhandled extension '{}')"
+                        .format(layer.name, output_path, os.path.splitext(output_path)[1])
+                    )
 
                 Layer.objects.filter(pk=layer.pk).update(modified_at=submitted_at)
 
@@ -242,6 +259,21 @@ class Command(BaseCommand):
             details = stderr or stdout or str(exc)
             raise CommandError("Failed to extract archive '{}': {}".format(archive_path, details))
 
+        return self._finalize_extracted_dir(archive_path, extract_dir, extracted_output_base)
+
+    def _extract_zip_file(self, archive_path, extracted_output_base):
+        destination_dir = os.path.dirname(extracted_output_base) or "."
+        extract_dir = tempfile.mkdtemp(prefix="updatelayers_extract_", dir=destination_dir)
+        try:
+            with zipfile.ZipFile(archive_path) as zip_file:
+                zip_file.extractall(extract_dir)
+        except zipfile.BadZipFile as exc:
+            shutil.rmtree(extract_dir, ignore_errors=True)
+            raise CommandError("Failed to extract archive '{}': {}".format(archive_path, exc))
+
+        return self._finalize_extracted_dir(archive_path, extract_dir, extracted_output_base)
+
+    def _finalize_extracted_dir(self, archive_path, extract_dir, extracted_output_base):
         try:
             extracted_items = [
                 os.path.join(extract_dir, name)
