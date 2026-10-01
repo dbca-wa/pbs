@@ -515,10 +515,10 @@ class FundingAllocationForm(Bootstrap5FormMixin, forms.ModelForm):
     Interim form for the Prescription pre_summary form.
     """
 
-    def save(self):
+    def save(self, commit=True):
         # import ipdb; ipdb.set_trace()
         # _boom = 1 / 0
-        return super(FundingAllocationForm, self).save()
+        return super(FundingAllocationForm, self).save(commit=commit)
 
     def is_valid(self):
         # import ipdb; ipdb.set_trace()
@@ -563,8 +563,8 @@ class FundingAllocationInlineFormSet(forms.models.BaseInlineFormSet):
             msg = "Total proportion allocated must be 100%;  currently {:5.2f}%".format(total)
             raise ValidationError(msg, code="cross-form")
 
-    def save(self):
+    def save(self, commit=True):
         for form in self.forms:
-            form.save()
-        super(FundingAllocationInlineFormSet, self).save()
+            form.save(commit=commit)
+        super(FundingAllocationInlineFormSet, self).save(commit=commit)
         

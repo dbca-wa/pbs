@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.core.mail import EmailMessage
 from django.utils import timezone
 
 from pbs.review.models import Layer
@@ -67,11 +68,15 @@ class Command(BaseCommand):
         updated_count = 0
         skipped_count = 0
         unchanged_count = 0
+        errors = []
+        not_extracted = []
 
         for layer in layers:
             if not layer.catalogue_entry_id:
                 skipped_count += 1
-                self.stderr.write("Skipping layer '{}' with no catalogue_entry_id".format(layer.name))
+                message = "Skipping layer '{}' with no catalogue_entry_id".format(layer.name)
+                errors.append(message)
+                self.stderr.write(message)
                 continue
 
             api_url = self._build_shortened_api_url(layer.catalogue_entry_id)
@@ -79,23 +84,32 @@ class Command(BaseCommand):
             try:
                 submission = self._get_latest_submission(api_url, timeout, auth)
             except Exception as exc:
-                raise CommandError("Failed to check latest submission for layer '{}': {}".format(layer.name, exc))
+                skipped_count += 1
+                errors.append("Failed to check latest submission for layer '{}': {}".format(layer.name, exc))
+                continue
 
             submission_id = submission.get("id")
             if not submission_id:
                 skipped_count += 1
-                self.stderr.write("Skipping layer '{}' because submission id is missing.".format(layer.name))
+                message = "Skipping layer '{}' because submission id is missing.".format(layer.name)
+                errors.append(message)
+                self.stderr.write(message)
                 continue
 
             submitted_at_raw = submission.get("submitted_at")
             if not submitted_at_raw:
                 skipped_count += 1
-                self.stderr.write(
-                    "Skipping layer '{}' because latest submission has no submitted_at.".format(layer.name)
-                )
+                message = "Skipping layer '{}' because latest submission has no submitted_at.".format(layer.name)
+                errors.append(message)
+                self.stderr.write(message)
                 continue
 
-            submitted_at = self._parse_submitted_at(submitted_at_raw)
+            try:
+                submitted_at = self._parse_submitted_at(submitted_at_raw)
+            except CommandError as exc:
+                skipped_count += 1
+                errors.append("Failed to parse latest submission date for layer '{}': {}".format(layer.name, exc))
+                continue
 
             if layer.modified_at and submitted_at <= layer.modified_at:
                 unchanged_count += 1
@@ -127,6 +141,11 @@ class Command(BaseCommand):
                         .format(layer.name, download_dir)
                     )
                 else:
+                    not_extracted.append(
+                        "{}: unhandled file extension '{}'".format(
+                            layer.name, os.path.splitext(output_path)[1] or "(none)"
+                        )
+                    )
                     self.stdout.write(
                         "Dry-run: downloaded file for '{}' would not be extracted (unhandled extension)"
                         .format(layer.name)
@@ -145,6 +164,11 @@ class Command(BaseCommand):
                     extracted_path = self._extract_zip_file(output_path, extracted_output_base)
                     self.stdout.write("Extraction complete for '{}': {}".format(layer.name, extracted_path))
                 else:
+                    not_extracted.append(
+                        "{}: unhandled file extension '{}'".format(
+                            layer.name, os.path.splitext(output_path)[1] or "(none)"
+                        )
+                    )
                     self.stdout.write(
                         "Layer '{}' was downloaded to '{}' but not extracted (unhandled extension '{}')"
                         .format(layer.name, output_path, os.path.splitext(output_path)[1])
@@ -158,14 +182,44 @@ class Command(BaseCommand):
                     .format(layer.name, output_path, submitted_at.isoformat())
                 )
             except Exception as exc:
-                raise CommandError(
-                    "Failed to update layer '{}': {}".format(layer.name, exc)
-                )
+                errors.append("Failed to update layer '{}': {}".format(layer.name, exc))
+                not_extracted.append("{}: extraction did not complete".format(layer.name))
+                self.stderr.write(errors[-1])
 
         self.stdout.write(
             "Layer update complete: {} updated, {} unchanged, {} skipped."
             .format(updated_count, unchanged_count, skipped_count)
         )
+        if not dry_run and (errors or not_extracted):
+            self._send_summary_email(errors, not_extracted, updated_count, unchanged_count, skipped_count)
+
+    def _send_summary_email(self, errors, not_extracted, updated_count, unchanged_count, skipped_count):
+        recipients = (getattr(settings, "ERROR_NOTIFICATION_EMAIL", "") or "").strip()
+        if not recipients:
+            self.stderr.write("ERROR_NOTIFICATION_EMAIL is not set; layer update summary email was not sent.")
+            return
+
+        body = [
+            "Layer update complete: {} updated, {} unchanged, {} skipped.".format(
+                updated_count, unchanged_count, skipped_count
+            ),
+            "",
+            "Errors:",
+        ]
+        body.extend("- {}".format(error) for error in errors) if errors else body.append("None")
+        body.extend(["", "Files not extracted:"])
+        body.extend("- {}".format(item) for item in not_extracted) if not_extracted else body.append("None")
+
+        email = EmailMessage(
+            subject="PBS - Layer Update Summary - {}".format(timezone.localdate().isoformat()),
+            body="\n".join(body),
+            from_email=settings.FEX_MAIL,
+            to=[address.strip() for address in recipients.split(",") if address.strip()],
+        )
+        try:
+            email.send()
+        except Exception as exc:
+            self.stderr.write("Failed to send layer update summary email: {}".format(exc))
 
     def _build_shortened_api_url(self, catalogue_entry_id):
         query = {
