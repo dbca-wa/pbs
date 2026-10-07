@@ -56,7 +56,9 @@ class LocationWidget(widgets.MultiWidget):
 
 
     def render(self, name, value, attrs=None, renderer=None):
-        value = self.decompress(value)
+        if not isinstance(value, (list, tuple)):
+            value = self.decompress(value)
+        value = list(value) + [None] * (len(self.widgets) - len(value))
         widgets_html = [w.render(f"{name}_{i}", value[i], attrs, renderer) for i, w in enumerate(self.widgets)]
         return mark_safe(
             '<div class="d-flex align-items-center gap-1">'
