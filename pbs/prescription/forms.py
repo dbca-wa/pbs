@@ -546,6 +546,19 @@ class FundingAllocationInlineFormSet(forms.models.BaseInlineFormSet):
         # Note. This queryset code is duplicated in PrescriptionAdmin.pre_summary
         self.queryset = FundingAllocation.objects.filter(prescription=self.prescription)
 
+    # def _construct_form(self, i, **kwargs):
+    #     # A stale page (e.g. re-saving without a reload, or browser back) posts
+    #     # blank ids for allocations that already exist. Reuse the existing row
+    #     # for the same program instead of failing the unique check.
+    #     if self.is_bound and i >= self.initial_form_count() and 'instance' not in kwargs:
+    #         allocation = self.data.get('%s-allocation' % self.add_prefix(i))
+    #         if allocation and str(allocation).isdigit():
+    #             existing = FundingAllocation.objects.filter(
+    #                 prescription=self.prescription, allocation=int(allocation)).first()
+    #             if existing:
+    #                 kwargs['instance'] = existing
+    #     return super(FundingAllocationInlineFormSet, self)._construct_form(i, **kwargs)
+
     def clean(self):
         # import ipdb; ipdb.set_trace()
         super(FundingAllocationInlineFormSet, self).clean()
