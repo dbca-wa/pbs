@@ -1,6 +1,6 @@
 ARG IMAGE_TAG
 ARG IMAGE_NAME
-FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu_2604_base_python AS builder_base_pbs
+FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu_2604_base_python_latex AS builder_base_pbs
 ARG IMAGE_TAG
 ARG IMAGE_NAME
 RUN echo "Building version: $IMAGE_TAG for $IMAGE_NAME"
@@ -26,7 +26,7 @@ RUN apt-get install -yq libsasl2-dev
 RUN apt-get install -y fex-utils imagemagick poppler-utils
 # RUN apt-get install -y libldap2-dev libssl-dev build-essential p7zip-full
 RUN apt-get install -y libldap2-dev libssl-dev p7zip-full libffi-dev libyaml-dev
-RUN apt-get install -y latexmk texlive-lang-english texlive-latex-recommended texlive-base texlive-latex-base texlive-fonts-recommended texlive-latex-extra
+# RUN apt-get install -y latexmk texlive-lang-english texlive-latex-recommended texlive-base texlive-latex-base texlive-fonts-recommended texlive-latex-extra
 #texlive-full
 # RUN apt-get install --no-install-recommends -y texlive-bibtex-extra texlive-binaries texlive-extra-utils texlive-fonts-extra texlive-formats-extra texlive-humanities texlive-latex-base texlive-latex-extra texlive-latex-recommended texlive-luatex texlive-metapost texlive-pictures texlive-plain-generic texlive-pstricks texlive-publishers texlive-science texlive-xetex
 RUN apt-get install --no-install-recommends -y run-one
@@ -45,17 +45,17 @@ RUN rm -rf /tmp/*
 FROM builder_base_pbs as python_libs_pbs
 WORKDIR /app
 USER oim
-RUN git clone https://github.com/rbenv/rbenv.git /app/.rbenv && \
-    export PATH="/app/.rbenv/bin:$PATH" && \
-    eval "$(rbenv init -)" && \
-    mkdir /app/.rbenv/plugins/ && \
-    git clone https://github.com/rbenv/ruby-build.git /app/.rbenv/plugins/ruby-build && \
-    rbenv install -l && \
-    rbenv install $(rbenv install --list | grep -E '^4\.' | tail -1) && \
-    rbenv global $(rbenv install --list | grep -E '^4\.' | tail -1) && \
-    gem install json -v 2.19.9 --no-document && \
-    rm -rf /tmp/ruby-build.*
-RUN rm -f /app/.rbenv/versions/4.0.7/lib/ruby/gems/4.0.0/specifications/default/json-2.18.0.gemspec
+# RUN git clone https://github.com/rbenv/rbenv.git /app/.rbenv && \
+#     export PATH="/app/.rbenv/bin:$PATH" && \
+#     eval "$(rbenv init -)" && \
+#     mkdir /app/.rbenv/plugins/ && \
+#     git clone https://github.com/rbenv/ruby-build.git /app/.rbenv/plugins/ruby-build && \
+#     rbenv install -l && \
+#     rbenv install $(rbenv install --list | grep -E '^4\.' | tail -1) && \
+#     rbenv global $(rbenv install --list | grep -E '^4\.' | tail -1) && \
+#     gem install json -v 2.19.9 --no-document && \
+#     rm -rf /tmp/ruby-build.*
+# RUN rm -f /app/.rbenv/versions/4.0.7/lib/ruby/gems/4.0.0/specifications/default/json-2.18.0.gemspec
 
 RUN python -m venv $VIRTUAL_ENV
 RUN git config --global --add safe.directory /app
@@ -84,7 +84,7 @@ RUN python /app/manage.py collectstatic --noinput
 
 # Cleanup 
 USER root
-RUN apt remove ruby -y 
+# RUN apt remove ruby -y 
 RUN wget https://raw.githubusercontent.com/dbca-wa/wagov_utils/refs/heads/main/wagov_utils/bin/package_cleanup_2604.sh -O /tmp/package_cleanup_2604.sh
 RUN chmod 755 /tmp/package_cleanup_2604.sh
 RUN /tmp/package_cleanup_2604.sh
