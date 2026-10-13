@@ -11,14 +11,22 @@
 {% endblock %}
 
 {% block content %}
+<form action="" method="post">{% csrf_token %}
+<div>
+    <div class="form-group">
+        <label for="{{ form.financial_year.id_for_label }}" style="font-weight: normal; font-size: 0.9em; color: inherit;">{{ form.financial_year.label }}</label>
+        {{ form.financial_year }}
+        <div class="help-block" style="font-size: 0.9em; color: inherit;">{{ form.financial_year.help_text }}</div>
+        {% if form.financial_year.errors %}
+        <div class="text-danger">{{ form.financial_year.errors }}</div>
+        {% endif %}
+    </div>
 <p>The following Prescribed Fire Plan(s) will be rescheduled for burning in another season:</p>
 <ul>
 {% for obj in queryset %}
   <li><a href="{% url 'admin:prescription_prescription_detail' obj.id %}">{{ obj.burn_id }} ({{ obj.get_planned_season_display }} {{ obj.financial_year }})</a></li>
 {% endfor %}
 </ul>
-<form action="" method="post">{% csrf_token %}
-<div>
 {% for obj in queryset %}
     <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
     {% endfor %}

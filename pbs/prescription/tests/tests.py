@@ -535,7 +535,10 @@ class CarryOverBurnsTests(BasePbsTestCase):
         user = User.objects.get(username='admin')
         prescription = self.make('Prescription', financial_year='2025/2026')
 
-        request = self.factory.post('/admin/prescription/prescription/', {'post': 'yes'})
+        request = self.factory.post('/admin/prescription/prescription/', {
+            'post': 'yes',
+            'financial_year': '2026/2027',
+        })
         request.user = user
 
         modeladmin = Mock()
@@ -547,9 +550,11 @@ class CarryOverBurnsTests(BasePbsTestCase):
 
         self.assertEqual(response.status_code, 302)
         archive_mock.assert_called_once()
+        self.assertEqual(archive_mock.call_args.args[2], '2026/2027')
         apply_changes_mock.assert_called_once_with(
             prescription,
             modeladmin.admin_site,
+            financial_year='2026/2027',
             request=request,
             user=request.user,
         )
@@ -561,7 +566,10 @@ class CarryOverBurnsTests(BasePbsTestCase):
         user = User.objects.get(username='admin')
         prescription = self.make('Prescription', financial_year='2025/2026')
 
-        request = self.factory.post('/admin/prescription/prescription/', {'post': 'yes'})
+        request = self.factory.post('/admin/prescription/prescription/', {
+            'post': 'yes',
+            'financial_year': '2026/2027',
+        })
         request.user = user
 
         modeladmin = Mock()
@@ -578,6 +586,7 @@ class CarryOverBurnsTests(BasePbsTestCase):
         self.assertEqual(job.job_type, JobQueue.TYPE_CARRY_OVER_PRESCRIPTION)
         self.assertEqual(job.requested_by, user)
         self.assertTrue(job.payload['archive_name'].startswith('{0}_pre_carry_over_'.format(prescription.burn_id)))
+        self.assertEqual(job.payload['financial_year'], '2026/2027')
         self.assertFalse(prescription.carried_over)
         self.assertTrue(prescription.archive_in_progress)
         on_commit_mock.assert_called()
@@ -608,7 +617,10 @@ class CarryOverBurnsTests(BasePbsTestCase):
             prescription=prescription,
             requested_by=user,
             dedupe_key='carry-over-{0}'.format(prescription.pk),
-            payload={'archive_name': 'test-archive-name'},
+            payload={
+                'archive_name': 'test-archive-name',
+                'financial_year': '2026/2027',
+            },
             status=JobQueue.STATUS_PROCESSING,
         )
 
@@ -617,14 +629,16 @@ class CarryOverBurnsTests(BasePbsTestCase):
         prescription.refresh_from_db()
         job.refresh_from_db()
 
-        archive_mock.assert_called_once_with(prescription, 'test-archive-name')
+        archive_mock.assert_called_once_with(
+            prescription, 'test-archive-name', '2026/2027'
+        )
         create_approvals_pdf_mock.assert_called_once()
         update_permissions_mock.assert_called_once()
         self.assertEqual(job.status, JobQueue.STATUS_SUCCEEDED)
         self.assertTrue(prescription.carried_over)
         self.assertEqual(prescription.planning_status, prescription.PLANNING_DRAFT)
         self.assertIsNone(prescription.prescribing_officer)
-        self.assertEqual(prescription.financial_year, '')
+        self.assertEqual(prescription.financial_year, '2026/2027')
         self.assertFalse(prescription.archive_in_progress)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to, [user.email])
