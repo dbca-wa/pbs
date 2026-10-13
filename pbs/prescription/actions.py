@@ -1,7 +1,8 @@
 import os
 import shutil
 
-from django.core.exceptions import PermissionDenied
+from django import forms
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.admin import helpers
@@ -31,13 +32,36 @@ import logging
 logger = logging.getLogger('pbs')
 
 
+class CarryOverFinancialYearForm(forms.Form):
+    financial_year = forms.CharField(
+        label=_("New Financial year"),
+        help_text=_("This will be the new financial year for the following Prescribed Fire Plans. "
+                    "Use the format YYYY/YYYY, for example 2026/2027."),
+        max_length=10,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'style': 'width: 200px; max-width: 100%;',
+        }),
+    )
+
+    def clean_financial_year(self):
+        financial_year = self.cleaned_data['financial_year'].strip()
+        prescription = Prescription(financial_year=financial_year)
+        try:
+            prescription.clean_financial_year()
+        except ValidationError as exc:
+            raise ValidationError(exc.messages)
+        return financial_year
+
+
 def _carry_over_archive_name(prescription, now=None):
     local_now = timezone.localtime(now or timezone.now())
     timestamp = local_now.strftime("%Y-%m-%dT%H%M%S")
     return "{0}_pre_carry_over_{1}".format(prescription.burn_id, timestamp)
 
 
-def _archive_prescription_for_carry_over(prescription, archive_name):
+def _archive_prescription_for_carry_over(prescription, archive_name, financial_year):
     with pdflatex(
         prescription,
         template="pfp",
@@ -50,7 +74,8 @@ def _archive_prescription_for_carry_over(prescription, archive_name):
             directory = os.path.join(
                 settings.MEDIA_ROOT,
                 'snapshots',
-                prescription.financial_year.replace("/", "-"),
+                # prescription.financial_year.replace("/", "-"),
+                financial_year.replace("/", "-"),
                 prescription.burn_id
             )
             if not os.path.exists(directory):
@@ -68,13 +93,16 @@ def _archive_prescription_for_carry_over(prescription, archive_name):
         raise Exception(pdfresult.errormessage)
 
 
-def _apply_carry_over_changes(prescription, admin_site, request=None, user=None):
+def _apply_carry_over_changes(
+    prescription, admin_site, financial_year, request=None, user=None
+):
     prescription.clear_approvals()
     prescription.carried_over = True
     prescription.planning_status = prescription.PLANNING_DRAFT
     prescription.planning_status_modified = timezone.now()
     prescription.prescribing_officer = None
-    prescription.financial_year = ''
+    # prescription.financial_year = ''
+    prescription.financial_year = financial_year
     # Skip the status-change archive signal: the pre-carry-over archive created
     # by this workflow is the authoritative snapshot for this action.
     prescription._updating_pdf_status = True
@@ -83,7 +111,7 @@ def _apply_carry_over_changes(prescription, admin_site, request=None, user=None)
     _create_approvals_pdf(prescription, request=request, user=user)
 
 
-def _enqueue_carry_over_prescription(prescription, requested_by):
+def _enqueue_carry_over_prescription(prescription, requested_by, financial_year):
     archive_name = _carry_over_archive_name(prescription)
 
     def _enqueue():
@@ -95,6 +123,7 @@ def _enqueue_carry_over_prescription(prescription, requested_by):
                 'requested_by': requested_by,
                 'payload': {
                     'archive_name': archive_name,
+                    'financial_year': financial_year,
                 },
                 'status': JobQueue.STATUS_QUEUED,
             }
@@ -276,13 +305,19 @@ def carry_over_burns(modeladmin, request, queryset):
         url = reverse('admin:prescription_prescription_changelist')
         return HttpResponseRedirect(url)
 
+    carry_over_form = CarryOverFinancialYearForm(
+        request.POST if request.POST.get('post') else None
+    )
+
     # The user confirmed they want to carry over the selected burns.
-    if request.POST.get('post'):
+    if request.POST.get('post') and carry_over_form.is_valid():
+        financial_year = carry_over_form.cleaned_data['financial_year']
         if getattr(settings, 'PRESCRIPTION_ARCHIVE_USE_QUEUE', False):
             for prescription in queryset:
                 _enqueue_carry_over_prescription(
                     prescription=prescription,
                     requested_by=request.user,
+                    financial_year=financial_year,
                 )
 
             modeladmin.message_user(
@@ -343,10 +378,13 @@ def carry_over_burns(modeladmin, request, queryset):
             #     "endorsement", assign_perm)
             # _create_approvals_pdf(prescription, request)
             archive_name = _carry_over_archive_name(prescription)
-            _archive_prescription_for_carry_over(prescription, archive_name)
+            _archive_prescription_for_carry_over(
+                prescription, archive_name, financial_year
+            )
             _apply_carry_over_changes(
                 prescription,
                 modeladmin.admin_site,
+                financial_year=financial_year,
                 request=request,
                 user=request.user,
             )
@@ -368,7 +406,8 @@ def carry_over_burns(modeladmin, request, queryset):
         "opts": opts,
         "app_label": app_label,
         'action_checkbox_name': helpers.ACTION_CHECKBOX_NAME,
-        "current_app": modeladmin.admin_site.name
+        "current_app": modeladmin.admin_site.name,
+        'form': carry_over_form,
     }
 
     # return TemplateResponse(
@@ -527,5 +566,3 @@ def archive_documents(modeladmin, request, queryset):
         context, current_app=app_label)
 
 archive_documents.short_description = gettext_lazy("Archive documents")
-
-

@@ -28,12 +28,18 @@ def handle_carry_over_prescription_job(job, stdout=None):
 
     archive_completed = False
     now = timezone.now()
+    financial_year = (job.payload or {}).get(
+        'financial_year', prescription.financial_year
+    )
     try:
-        _archive_prescription_for_carry_over(prescription, archive_name)
+        _archive_prescription_for_carry_over(
+            prescription, archive_name, financial_year
+        )
         archive_completed = True
         _apply_carry_over_changes(
             prescription,
             admin_site=site,
+            financial_year=financial_year,
             user=job.requested_by,
         )
 
