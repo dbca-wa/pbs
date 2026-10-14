@@ -1,5 +1,5 @@
 # Prepare the base environment.
-FROM dbcawa/pbs:pbs_django_5_bs_latest as builder_base_pbsdev
+FROM ghcr.io/dbca-wa/docker_app_dev:pbs_dev_latest as builder_base_pbsdev
 USER root
 RUN apt-get update
 RUN apt-get install --no-install-recommends -y patch
