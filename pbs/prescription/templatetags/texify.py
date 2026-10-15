@@ -56,6 +56,7 @@ def texify(value):
     """
     Escapes special LaTeX characters.
     """
+    value = value.strip()
     for k, v in REPLACEMENTS.items():
         value = value.replace(k, v)
     return mark_safe(value)
