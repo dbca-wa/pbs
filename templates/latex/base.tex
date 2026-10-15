@@ -32,6 +32,12 @@
 \usepackage{longtable}[=v4.13]
 \usepackage{tabularx}
 \usepackage{tabu}
+% tabu leaves \CT@arc@ undefined on current LaTeX, which breaks later tables
+\makeatletter
+\AddToHook{env/longtable/before}{\providecommand\CT@arc@{}}
+\AddToHook{env/tabular/before}{\providecommand\CT@arc@{}}
+\AddToHook{env/tabularx/before}{\providecommand\CT@arc@{}}
+\makeatother
 \setlength{\tabulinesep}{1.5mm}
 \usepackage{enumerate}
 \usepackage{enumitem}

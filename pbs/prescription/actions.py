@@ -85,11 +85,15 @@ def _archive_prescription_for_carry_over(prescription, archive_name, financial_y
             shutil.copyfile(source_file, os.path.join(directory, "{}.pdf".format(archive_name)))
             os.remove(source_file)
             Prescription.objects.filter(pk=prescription.pk).update(archive_successful=True)
+            # Keep the in-memory instance in sync, otherwise a later save()
+            # overwrites the DB value with the stale one.
+            prescription.archive_successful = True
             return
 
         title = 'PDF production failed when attempting to archive Prescription at Carry over burn function: {}'.format(prescription)
         logger.warning(title)
         Prescription.objects.filter(pk=prescription.pk).update(archive_successful=False)
+        prescription.archive_successful = False
         raise Exception(pdfresult.errormessage)
 
 
