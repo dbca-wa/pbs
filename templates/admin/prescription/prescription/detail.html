@@ -425,7 +425,9 @@ function wait_for_cookie(id, origHtml, origCol, size) {
       stop_waiting();
       var fileUrl = $.cookie('fileUrl');
       var msg;
-      if (fileUrl) {
+      if ($.cookie('fileQueued')) {
+        msg = "<strong>{{ current.burn_id }}</strong> &#x2010; Create PDF Document: Request queued.<br>You will receive an email with the download link when it is ready.";
+      } else if (fileUrl) {
         msg = "<strong>{{ current.burn_id }}</strong> &#x2010; Create PDF Document: <a href='" + fileUrl + "' target='_blank'>Download Complete</a>.<br>You will receive an email notification.";
       } else {
         msg = "<strong>{{ current.burn_id }}</strong> &#x2010; Create PDF Document: Download Complete.";
@@ -443,6 +445,9 @@ function clear_cookie() {
 
   $.cookie('fileUrl', null, { path: '/' }); //clears this cookie value
   $.removeCookie('fileUrl'); //clears this cookie value
+
+  $.cookie('fileQueued', null, { path: '/' });
+  $.removeCookie('fileQueued');
 }
 
 function stop_waiting() {

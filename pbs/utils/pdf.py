@@ -482,7 +482,231 @@ def download_pdf_orig(request, prescription):
             return error_response
 
 
+def download_pdf_latest(request, prescription):
+    logger = logging.getLogger('pdf_debugging')
+    logger.info('download_pdf_private_media called')
+    template = request.GET.get("template", "pfp")
+    embed = False if request.GET.get("embed", "true").lower() == "false" else True
+    title = request.GET.get("title", "Prescribed Fire Plan"),
+    headers = False if request.GET.get("headers", "true").lower() == "false" else True
+    baseurl = request.build_absolute_uri("/")[:-1]
+    filename = template + ".pdf"
+    now = timezone.localtime(timezone.now())
+    timestamp = now.isoformat().rsplit(".")[0].replace(":", "")
+    downloadname = "{0}_{1}_{2}_{3}".format(
+        prescription.season.replace('/', '-'),
+        prescription.burn_id,
+        timestamp,
+        filename,
+    ).replace(' ', '_')
+
+    with pdflatex(
+        prescription,
+        template=template,
+        downloadname=downloadname,
+        embed=embed,
+        headers=headers,
+        title=title,
+        baseurl=baseurl,
+    ) as pdfresult:
+        if pdfresult.succeed:
+            if pdfresult.filesize / (1024 * 1024) >= 10:
+                completion_token = '_token_10'
+            else:
+                completion_token = '_token'
+
+            logger.info('Filesize: {}'.format(pdfresult.humanize_filesize))
+            relative_dir = os.path.join('pdf', prescription.burn_id, now.strftime('%Y%m%d'))
+            private_dir = os.path.join(settings.PRIVATE_MEDIA_ROOT, relative_dir)
+            if not os.path.exists(private_dir):
+                os.makedirs(private_dir)
+
+            private_file_path = os.path.join(private_dir, downloadname)
+            shutil.copy2(pdfresult.pdf_file, private_file_path)
+            download_token, expires_at = create_private_download_token(
+                private_file_path=private_file_path,
+                request_user_id=request.user.id,
+                burn_id=prescription.burn_id,
+                now=now,
+            )
+            file_url = '{0}/private-media/download/{1}'.format(baseurl, download_token)
+
+            logger.info('Sending email notification to user of private-media download URL')
+            subject = 'Prescribed Burn System: file {}'.format(downloadname)
+            email_from = settings.FEX_MAIL
+            message = 'Prescribed Burn System: file {} can be downloaded at:\n\t{}\nFile size: {}\nThis link expires on: {}'.format(
+                downloadname,
+                file_url,
+                pdfresult.filesize,
+                expires_at.strftime('%Y-%m-%d %H:%M:%S %Z'),
+            )
+            email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+            systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+            headers = {
+                'System-Environment': email_instance,
+                'ITSystem-ID': systemid + '-' + email_instance,
+            }
+            # send_mail(subject, message, email_from, [request.user.email])
+            email = EmailMessage(
+                subject=subject,
+                body=message,
+                from_email=email_from,
+                to=[request.user.email],
+                headers=headers,
+            )
+            email.send()
+
+            url = request.META.get('HTTP_REFERER')
+            logger.info("__________________________ END _____________________________")
+            resp = HttpResponseRedirect(url)
+            resp.set_cookie('fileDownloadToken', completion_token)
+            resp.set_cookie('fileUrl', file_url)
+            return resp
+
+        error_response = HttpResponse(content_type='text/html')
+        errortxt = downloadname.replace(".pdf", ".errors.txt.html")
+        error_response['Content-Disposition'] = '{0}; filename="{1}"'.format("inline", errortxt)
+        error_response.write(pdfresult.errormessage)
+        return error_response
+
+def _build_download_name(prescription, template, now):
+    timestamp = now.isoformat().rsplit(".")[0].replace(":", "")
+    return "{0}_{1}_{2}_{3}".format(
+        prescription.season.replace('/', '-'),
+        prescription.burn_id,
+        timestamp,
+        template + ".pdf",
+    ).replace(' ', '_')
+
+
+def enqueue_download_pdf(request, prescription):
+    """Queue a 'Download with/without attachment' PDF job; the worker emails the link."""
+    from django.db import transaction
+    from pbs.prescription.models import JobQueue
+
+    template = request.GET.get("template", "pfp")
+    embed = False if request.GET.get("embed", "true").lower() == "false" else True
+    headers = False if request.GET.get("headers", "true").lower() == "false" else True
+    title = request.GET.get("title", "Prescribed Fire Plan")
+    baseurl = request.build_absolute_uri("/")[:-1]
+    now = timezone.localtime(timezone.now())
+    downloadname = _build_download_name(prescription, template, now)
+    dedupe_key = 'download_pdf:{0}:{1}:{2}'.format(
+        prescription.burn_id, request.user.id, downloadname)
+
+    def _enqueue():
+        JobQueue.objects.get_or_create(
+            dedupe_key=dedupe_key,
+            defaults={
+                'job_type': JobQueue.TYPE_DOWNLOAD_PDF,
+                'prescription': prescription,
+                'requested_by': request.user,
+                'payload': {
+                    'template': template,
+                    'embed': embed,
+                    'headers': headers,
+                    'title': title,
+                    'baseurl': baseurl,
+                    'downloadname': downloadname,
+                    'requested_at': now.isoformat(),
+                },
+                'status': JobQueue.STATUS_QUEUED,
+            }
+        )
+
+    transaction.on_commit(_enqueue)
+    logger.info('Queued download_pdf job %s', dedupe_key)
+
+    resp = HttpResponseRedirect(request.META.get('HTTP_REFERER') or '/')
+    resp.set_cookie('fileDownloadToken', '_token')
+    resp.set_cookie('fileQueued', '1')
+    return resp
+
+
+def _send_download_email(user, subject, message):
+    email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+    systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+    headers = {
+        'System-Environment': email_instance,
+        'ITSystem-ID': systemid + '-' + email_instance,
+    }
+    EmailMessage(
+        subject=subject,
+        body=message,
+        from_email=settings.FEX_MAIL,
+        to=[user.email],
+        headers=headers,
+    ).send()
+
+
+def process_download_pdf_job(job):
+    """Generate the PDF for a queued download job and email the download link.
+
+    Mirrors the logic in download_pdf. Returns (succeeded, error_message).
+    """
+    logger = logging.getLogger('pdf_debugging')
+    prescription = job.prescription
+    user = job.requested_by
+    payload = job.payload or {}
+    template = payload.get('template', 'pfp')
+    baseurl = payload['baseurl']
+    downloadname = payload['downloadname']
+    now = timezone.localtime(timezone.now())
+
+    with pdflatex(
+        prescription,
+        template=template,
+        downloadname=downloadname,
+        embed=payload.get('embed', True),
+        headers=payload.get('headers', True),
+        title=payload.get('title', 'Prescribed Fire Plan'),
+        baseurl=baseurl,
+    ) as pdfresult:
+        if not pdfresult.succeed:
+            if user and user.email:
+                _send_download_email(
+                    user,
+                    'Prescribed Burn System: file {} FAILED'.format(downloadname),
+                    'Prescribed Burn System: file {} could not be created.\n\n{}'.format(
+                        downloadname, pdfresult.errormessage),
+                )
+            return False, pdfresult.errormessage
+
+        logger.info('Filesize: {}'.format(pdfresult.humanize_filesize))
+        relative_dir = os.path.join('pdf', prescription.burn_id, now.strftime('%Y%m%d'))
+        private_dir = os.path.join(settings.PRIVATE_MEDIA_ROOT, relative_dir)
+        if not os.path.exists(private_dir):
+            os.makedirs(private_dir)
+
+        private_file_path = os.path.join(private_dir, downloadname)
+        shutil.copy2(pdfresult.pdf_file, private_file_path)
+        download_token, expires_at = create_private_download_token(
+            private_file_path=private_file_path,
+            request_user_id=user.id if user else None,
+            burn_id=prescription.burn_id,
+            now=now,
+        )
+        file_url = '{0}/private-media/download/{1}'.format(baseurl, download_token)
+
+        if user and user.email:
+            logger.info('Sending email notification to user of private-media download URL')
+            _send_download_email(
+                user,
+                'Prescribed Burn System: file {}'.format(downloadname),
+                'Prescribed Burn System: file {} can be downloaded at:\n\t{}\nFile size: {}\nThis link expires on: {}'.format(
+                    downloadname,
+                    file_url,
+                    pdfresult.filesize,
+                    expires_at.strftime('%Y-%m-%d %H:%M:%S %Z'),
+                ),
+            )
+        return True, None
+
+
 def download_pdf(request, prescription):
+    if request.GET.get('download', '').lower() == 'true':
+        return enqueue_download_pdf(request, prescription)
+
     logger = logging.getLogger('pdf_debugging')
     logger.info('download_pdf_private_media called')
     template = request.GET.get("template", "pfp")
