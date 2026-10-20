@@ -43,6 +43,7 @@ class JobQueue(models.Model):
 
     TYPE_ARCHIVE_PRESCRIPTION = 'archive_prescription'
     TYPE_CARRY_OVER_PRESCRIPTION = 'carry_over_prescription'
+    TYPE_DOWNLOAD_PDF = 'download_pdf'
 
     STATUS_QUEUED = 'queued'
     STATUS_PROCESSING = 'processing'

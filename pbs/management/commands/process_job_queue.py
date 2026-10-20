@@ -7,6 +7,7 @@ from django.utils import timezone
 from pbs.prescription.models import JobQueue
 from pbs.management.commands.process_archive_prescription_job import handle_archive_prescription_job
 from pbs.management.commands.process_carry_over_prescription_job import handle_carry_over_prescription_job
+from pbs.management.commands.process_download_pdf_job import handle_download_pdf_job
 
 logger = logging.getLogger('job_queue_processing')
 
@@ -89,6 +90,7 @@ class Command(BaseCommand):
         handlers = {
             JobQueue.TYPE_ARCHIVE_PRESCRIPTION: self._process_archive_prescription,
             JobQueue.TYPE_CARRY_OVER_PRESCRIPTION: self._process_carry_over_prescription,
+            JobQueue.TYPE_DOWNLOAD_PDF: self._process_download_pdf,
         }
         handler = handlers.get(job.job_type)
         if not handler:
@@ -121,6 +123,10 @@ class Command(BaseCommand):
     def _process_carry_over_prescription(self, job):
         """Delegate to the carry_over_prescription handler module."""
         handle_carry_over_prescription_job(job, stdout=self.stdout)
+
+    def _process_download_pdf(self, job):
+        """Delegate to the download_pdf handler module."""
+        handle_download_pdf_job(job, stdout=self.stdout)
 
     def _fail_job(self, job, error_message):
         """Mark a generic job as failed when it cannot be dispatched or validated."""
