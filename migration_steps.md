@@ -168,5 +168,10 @@ stakeholder
   KB_USER=
   KB_PASSWORD=
 
+  ```
+## Step 9: Add storage for Private media
+  ```
+Add mount point on PVC storage of the deployment for Mount point=/app/private-media point Sub path in Volume= private-media 
+
 
 
