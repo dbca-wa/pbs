@@ -522,7 +522,7 @@ def download_pdf_latest(request, prescription):
                 os.makedirs(private_dir)
 
             private_file_path = os.path.join(private_dir, downloadname)
-            shutil.copy2(pdfresult.pdf_file, private_file_path)
+            shutil.copyfile(pdfresult.pdf_file, private_file_path)
             download_token, expires_at = create_private_download_token(
                 private_file_path=private_file_path,
                 request_user_id=request.user.id,
@@ -679,7 +679,7 @@ def process_download_pdf_job(job):
             os.makedirs(private_dir)
 
         private_file_path = os.path.join(private_dir, downloadname)
-        shutil.copy2(pdfresult.pdf_file, private_file_path)
+        shutil.copyfile(pdfresult.pdf_file, private_file_path)
         download_token, expires_at = create_private_download_token(
             private_file_path=private_file_path,
             request_user_id=user.id if user else None,
@@ -746,7 +746,7 @@ def download_pdf(request, prescription):
                 os.makedirs(private_dir)
 
             private_file_path = os.path.join(private_dir, downloadname)
-            shutil.copy2(pdfresult.pdf_file, private_file_path)
+            shutil.copyfile(pdfresult.pdf_file, private_file_path)
             download_token, expires_at = create_private_download_token(
                 private_file_path=private_file_path,
                 request_user_id=request.user.id,
