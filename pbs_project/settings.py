@@ -14,6 +14,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 POSTGIS_VERSION = (2, 4)
 
 SECRET_KEY = env('SECRET_KEY', required=True)
+SESSION_COOKIE_SECURE = env('SESSION_COOKIE_SECURE', True)
+SESSION_COOKIE_HTTPONLY = env('SESSION_COOKIE_HTTPONLY', True)
 FEX_MAIL = env('FEX_MAIL', 'pbs@dpaw.wa.gov.au')  # Do not update this without also updating fex.id
 FEX_SVR_HTTP = env('FEX_SVR_HTTP', 'https://fex.dpaw.wa.gov.au')
 SEND_URL = env('SEND_URL', 'https://send.dbca.wa.gov.au')
