@@ -116,6 +116,7 @@ INSTALLED_APPS = (
 # )
 
 MIDDLEWARE = (
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -123,12 +124,12 @@ MIDDLEWARE = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'pbs.middleware.CurrentUserMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',    
     'whitenoise.middleware.WhiteNoiseMiddleware',
     # 'pbs.middleware.SSOLoginMiddleware',
     'pbs.middleware.PBSV2SSOLoginMiddleware',
     'pbs.middleware.PrescriptionCheckMiddleware',
+    'pbs.middleware.CacheControl',
     'reversion.middleware.RevisionMiddleware',
 )
 # TEMPLATE_CONTEXT_PROCESSORS = (
@@ -444,6 +445,8 @@ CSRF_TRUSTED_ORIGINS_STRING = decouple.config("CSRF_TRUSTED_ORIGINS", default='[
 CSRF_TRUSTED_ORIGINS = json.loads(str(CSRF_TRUSTED_ORIGINS_STRING))
 GIT_COMMIT_HASH = os.popen(f"cd {BASE_DIR}; git log -1 --format=%H").read()
 GIT_COMMIT_DATE = os.popen(f"cd {BASE_DIR}; git log -1 --format=%cd").read()
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
 
 # This is needed so that the chmod is not called in django/core/files/storage.py
