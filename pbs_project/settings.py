@@ -129,6 +129,7 @@ MIDDLEWARE = (
     # 'pbs.middleware.SSOLoginMiddleware',
     'pbs.middleware.PBSV2SSOLoginMiddleware',
     'pbs.middleware.PrescriptionCheckMiddleware',
+    'pbs.middleware.CacheControl',
     'reversion.middleware.RevisionMiddleware',
 )
 # TEMPLATE_CONTEXT_PROCESSORS = (
