@@ -459,6 +459,7 @@ KB_USER = env('KB_USER', None)
 KB_PASSWORD = env('KB_PASSWORD', None)
 BPP_FILE_DOWNLOAD_PATH = env('BPP_FILE_DOWNLOAD_PATH', '/mnt/fmsb/master_burn_planning_bpp_pbs')
 ERROR_NOTIFICATION_EMAIL = env('ERROR_NOTIFICATION_EMAIL', 'pbs@dpaw.wa.gov.au')
+CSRF_COOKIE_SECURE  = env('CSRF_COOKIE_SECURE', True)
 
 # The area achievement changelist can have many inline rows, each with multiple
 # fields, so the default limit of 1000 needs to be raised.
