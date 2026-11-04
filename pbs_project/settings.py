@@ -353,6 +353,12 @@ LOGGING = {
            'class': 'logging.FileHandler',
            'filename': os.path.join(BASE_DIR, 'logs', 'pbs.log'),
        },
+        'burn_links_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'burn_links.log'),
+            'formatter': 'console',
+        },
         'job_queue_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
@@ -376,6 +382,11 @@ LOGGING = {
             'handlers': ['file', 'pdf_debugging'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'burn_links': {
+            'handlers': ['burn_links_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
         },
         'job_queue_processing': {
             'handlers': ['job_queue_file'],
