@@ -18,6 +18,7 @@ from django.contrib.gis.db.models import MultiPolygonField as DjangoMultiPolygon
 
 import logging
 logger = logging.getLogger('pbs')
+burn_link_logger = logging.getLogger('burn_links')
 
 def current_finyear():
     return datetime.now().year if datetime.now().month>6 else datetime.now().year-1
@@ -636,7 +637,15 @@ class BurnProgramLink(models.Model):
             settings.ANNUAL_INDIC_PROGRAM_PATH, settings.SHP_LAYER, '-nln', 'review_annualindicativeburnprogram', '-nlt', 'PROMOTE_TO_MULTI', '-t_srs', 'EPSG:4326', '-lco', 'GEOMETRY_NAME=wkb_geometry'])
         for p in AnnualIndicativeBurnProgram.objects.all():
             try:
-                for prescription in Prescription.objects.filter(burn_id=p.burnid, financial_year=p.fin_yr.replace("/", "/20")):
+                # Financial year filter disabled: match on burn_id only, and only when exactly one prescription matches
+                # for prescription in Prescription.objects.filter(burn_id=p.burnid, financial_year=p.fin_yr.replace("/", "/20")):
+                prescriptions = list(Prescription.objects.filter(burn_id=p.burnid))
+                if len(prescriptions) != 1:
+                    burn_link_logger.warning('SKIPPED geometry update for burn_id {} (fin_yr {}): expected exactly 1 prescription with this burn_id but found {} ({})'.format(
+                        p.burnid, p.fin_yr, len(prescriptions),
+                        ', '.join('id={} financial_year={}'.format(x.id, x.financial_year) for x in prescriptions) or 'none'))
+                    continue
+                for prescription in prescriptions:
                     if cls.objects.filter(prescription=prescription).exists():
                         obj = cls.objects.get(prescription=prescription)
                     else:
@@ -648,8 +657,11 @@ class BurnProgramLink(models.Model):
                     obj.perim_km = p.perim_km
                     obj.trtd_area = p.trtd_area if p.trtd_area and isinstance(p.trtd_area, float) else 0.0
                     obj.save()
+                    burn_link_logger.info('Updated BurnProgramLink geometry for prescription id={} burn_id={} financial_year={}'.format(
+                        prescription.id, prescription.burn_id, prescription.financial_year))
             except:
-                logger.error('ERROR: Assigning AnnulaIndicativeBurnProgram \n{}'.format(sys.exc_info()))
+                # logger.error('ERROR: Assigning AnnulaIndicativeBurnProgram \n{}'.format(sys.exc_info()))
+                burn_link_logger.error('ERROR: Assigning AnnulaIndicativeBurnProgram \n{}'.format(sys.exc_info()))
 
 
         from django.db import connection
