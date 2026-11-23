@@ -48,10 +48,15 @@ MAX_LOCK_TIME = env('MAX_LOCK_TIME', 240)
 DEBUG = env('DEBUG', False)
 TEMPLATE_DEBUG = DEBUG
 INTERNAL_IPS = ['127.0.0.1', '::1']
-if not DEBUG:
-    ALLOWED_HOSTS = env('ALLOWED_DOMAINS', [])
-else:
+# if not DEBUG:
+#     ALLOWED_HOSTS = env('ALLOWED_DOMAINS', [])
+# else:
+#     ALLOWED_HOSTS = ['*']
+
+if DEBUG:
     ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = env('ALLOWED_HOSTS', [])
 
 # Application definition
 INSTALLED_APPS = (
