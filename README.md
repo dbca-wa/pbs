@@ -31,6 +31,13 @@ cp /var/www/pbs/.env . (or create .env file) - [This project uses `django-confy`
 	PASS_SSO='SSO_passwd'
 	ENV_TYPE="dev"
 
+Outgoing emails use `TemplateEmailBase` and are logged to `logs/email.log`,
+including subjects and recipient addresses. Set `EMAIL_DELIVERY=off` to disable
+delivery; it defaults to `on`. The existing `PRODUCTION_EMAIL` and
+`NON_PROD_EMAIL` settings still control SMTP recipient routing, so logged
+recipients may differ from the actual SMTP recipients in non-production. The email
+helper supplies `System-Environment` but does not preserve `ITSystem-ID`.
+
 # Manual Django module fix
 vi /home/patrickm/projects/pbs/venv/local/lib/python2.7/site-packages/django/contrib/gis/geos/libgeos.py (version issue in Django - requires manual fix)
 change line:

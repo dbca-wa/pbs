@@ -10,9 +10,10 @@ from urllib.parse import urlencode
 import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-from django.core.mail import EmailMessage
+# from django.core.mail import EmailMessage
 from django.utils import timezone
 
+from pbs.email import PlainTextEmail
 from pbs.review.models import Layer
 
 
@@ -210,14 +211,20 @@ class Command(BaseCommand):
         body.extend(["", "Files not extracted:"])
         body.extend("- {}".format(item) for item in not_extracted) if not_extracted else body.append("None")
 
-        email = EmailMessage(
-            subject="PBS - Layer Update Summary - {}".format(timezone.localdate().isoformat()),
-            body="\n".join(body),
-            from_email=settings.FEX_MAIL,
-            to=[address.strip() for address in recipients.split(",") if address.strip()],
-        )
+        # email = EmailMessage(
+        #     subject="PBS - Layer Update Summary - {}".format(timezone.localdate().isoformat()),
+        #     body="\n".join(body),
+        #     from_email=settings.FEX_MAIL,
+        #     to=[address.strip() for address in recipients.split(",") if address.strip()],
+        # )
         try:
-            email.send()
+            # email.send()
+            PlainTextEmail(
+                subject="PBS - Layer Update Summary - {}".format(timezone.localdate().isoformat()),
+            ).send(
+                [address.strip() for address in recipients.split(",") if address.strip()],
+                from_address=settings.FEX_MAIL, context={'body': "\n".join(body)},
+            )
         except Exception as exc:
             self.stderr.write("Failed to send layer update summary email: {}".format(exc))
 

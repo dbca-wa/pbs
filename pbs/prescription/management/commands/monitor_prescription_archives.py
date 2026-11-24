@@ -26,11 +26,12 @@ import re
 from smtplib import SMTPException
 
 from django.conf import settings
-from django.core.mail import EmailMessage
+# from django.core.mail import EmailMessage
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.utils.formats import localize
 
+from pbs.email import PlainTextEmail
 from pbs.prescription.models import Prescription
 
 logger = logging.getLogger("pbs")
@@ -143,9 +144,13 @@ class Command(BaseCommand):
 
         try:
             with open(issues_csv.name, "r") as file:
-                mail = EmailMessage(subject=subject, body=body, from_email=settings.FEX_MAIL, to=settings.NOTIFICATION_EMAIL.split(","))
-                mail.attach(file.name, file.read(), "text/csv")
-                mail.send()
+                # mail = EmailMessage(subject=subject, body=body, from_email=settings.FEX_MAIL, to=settings.NOTIFICATION_EMAIL.split(","))
+                # mail.attach(file.name, file.read(), "text/csv")
+                # mail.send()
+                PlainTextEmail(subject=subject).send(
+                    settings.NOTIFICATION_EMAIL.split(","), from_address=settings.FEX_MAIL,
+                    context={'body': body}, attachments=[(file.name, file.read(), "text/csv")],
+                )
         except (SMTPException, IOError) as e:
             logger.exception("Failed to send Prescription Archive Monitoring Notification Email: \n{}".format(e))
             # If email sending fails then write the data to the log instead

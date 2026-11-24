@@ -3,10 +3,11 @@
 import logging
 
 from django.conf import settings
-from django.core.mail import EmailMessage
+# from django.core.mail import EmailMessage
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+from pbs.email import PlainTextEmail
 from pbs.prescription.actions import _apply_carry_over_changes, _archive_prescription_for_carry_over
 from pbs.prescription.models import JobQueue, Prescription
 from pbs.sites import site
@@ -148,21 +149,24 @@ def _send_requester_email(job, prescription, succeeded, local_time, error=None):
         )
 
     try:
-        email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
-        systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
-        headers = {
-            'System-Environment': email_instance,
-            'ITSystem-ID': systemid + '-' + email_instance,
-        }
+        # email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+        # systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+        # headers = {
+        #     'System-Environment': email_instance,
+        #     'ITSystem-ID': systemid + '-' + email_instance,
+        # }
         # send_mail(subject, message, email_from, [recipient], fail_silently=False)
-        email = EmailMessage(
-            subject=subject,
-            body=message,
-            from_email=email_from,
-            to=[recipient],
-            headers=headers,
+        # email = EmailMessage(
+        #     subject=subject,
+        #     body=message,
+        #     from_email=email_from,
+        #     to=[recipient],
+        #     headers=headers,
+        # )
+        # email.send(fail_silently=False)
+        PlainTextEmail(subject=subject).send(
+            [recipient], from_address=email_from, context={'body': message},
         )
-        email.send(fail_silently=False)
     except Exception:
         logger.exception(
             'Failed to send carry-over completion email to %s for prescription %s',
