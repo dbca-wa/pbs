@@ -6,10 +6,11 @@ from django.utils.encoding import force_str
 from guardian.shortcuts import remove_perm
 
 from pbs.admin import get_permission_codename
-from django.core.mail import EmailMessage
+# from django.core.mail import EmailMessage
 from django.conf import settings
 import os
 
+from pbs.email import HtmlEmail
 from .pdf import pdflatex,download_pdf
 
 def get_deleted_objects(objs, opts, user, admin_site, using):
@@ -99,12 +100,15 @@ def support_email(subject, msg, exception=None, msg_type='Warning'):
         env = os.getcwd().split('/')[-1].split('.')[0].split('-')[1].upper() # PROD/UAT/DEV etc
     except:
         env = ''
-    email_instance=settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
-    systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+    # email_instance=settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+    # systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
     subject = 'PBS {}: {} ({})'.format(msg_type, subject, env)
     body = '<p>Subject: {}</p><br><br>{}<br><br>{}'.format(subject, msg, exception)
 
-    message = EmailMessage(subject=subject, body=body, from_email=settings.FROM_EMAIL, to=settings.SUPPORT_EMAIL,  headers={'System-Environment': email_instance, 'ITSystem-ID': systemid +"-"+email_instance})
-    message.content_subtype = 'html'
-    message.send()
+    # message = EmailMessage(subject=subject, body=body, from_email=settings.FROM_EMAIL, to=settings.SUPPORT_EMAIL,  headers={'System-Environment': email_instance, 'ITSystem-ID': systemid +"-"+email_instance})
+    # message.content_subtype = 'html'
+    # message.send()
+    HtmlEmail(subject=subject).send(
+        settings.SUPPORT_EMAIL, from_address=settings.FROM_EMAIL, context={'body': body},
+    )
 

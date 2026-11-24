@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.admin.forms import AdminAuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordResetForm
+# from django.contrib.auth.forms import PasswordResetForm
 from django.utils.html import format_html_join, format_html
 # from django.utils.encoding import force_text
 from django.utils.encoding import force_str
@@ -17,6 +17,7 @@ from datetime import date
 
 from .models import Profile
 
+from pbs.password_reset import LoggedPasswordResetForm
 from pbs.prescription.models import District, Region
 
 class RequestMixin(object):
@@ -382,7 +383,8 @@ class ProfileForm(HelperModelForm):
         return cleaned_data
 
 
-class PbsPasswordResetForm(Bootstrap5FormMixin, PasswordResetForm):
+# class PbsPasswordResetForm(Bootstrap5FormMixin, PasswordResetForm):
+class PbsPasswordResetForm(Bootstrap5FormMixin, LoggedPasswordResetForm):
     def __init__(self, *args, **kwargs):
         kwargs['error_class'] = PbsErrorList
         super(PbsPasswordResetForm, self).__init__(*args, **kwargs)

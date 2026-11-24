@@ -10,7 +10,7 @@ import logging
 
 from django.contrib.auth.models import User, Group
 from django.conf import settings
-from django.core.mail import EmailMessage
+# from django.core.mail import EmailMessage
 # from django.core.urlresolvers import reverse
 from django.urls import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -28,6 +28,7 @@ from swingers.models.auth import Audit
 from swingers import models
 from smart_selects.db_fields import ChainedForeignKey
 
+from pbs.email import PlainTextEmail
 from pbs.risk.models import Register, Risk, Action, Complexity, Context, Treatment
 
 logger = logging.getLogger("log." + __name__)
@@ -2099,21 +2100,25 @@ def archive_prescription(sender, instance, created, **kwargs):
                     'An attempt was made to create an archive for Prescription: {} at {}. \n\n'
                     'The archive attempt failed to generate the required pdf.'.format(instance, local_time)
                 )
-                email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
-                systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
-                headers = {
-                    'System-Environment': email_instance,
-                    'ITSystem-ID': systemid + '-' + email_instance,
-                }
+                # email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+                # systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+                # headers = {
+                #     'System-Environment': email_instance,
+                #     'ITSystem-ID': systemid + '-' + email_instance,
+                # }
                 # send_mail(title, message, email_from, settings.NOTIFICATION_EMAIL.split(","), fail_silently=True)
-                email = EmailMessage(
-                    subject=title,
-                    body=message,
-                    from_email=email_from,
-                    to=settings.NOTIFICATION_EMAIL.split(","),
-                    headers=headers,
+                # email = EmailMessage(
+                #     subject=title,
+                #     body=message,
+                #     from_email=email_from,
+                #     to=settings.NOTIFICATION_EMAIL.split(","),
+                #     headers=headers,
+                # )
+                # email.send(fail_silently=True)
+                PlainTextEmail(subject=title).send(
+                    settings.NOTIFICATION_EMAIL.split(","), from_address=email_from,
+                    context={'body': message}, fail_silently=True,
                 )
-                email.send(fail_silently=True)
             else:
                 logger.warning('ENV NOTIFICATION_EMAIL is not set. Unable to send notification email.')
 

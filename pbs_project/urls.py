@@ -5,6 +5,8 @@ from django.contrib import admin
 from django_media_serv.urls import urlpatterns as media_serv_patterns
 from django.contrib.auth import views as auth_views
 
+from pbs.password_reset import LoggedPasswordResetForm
+
 """
 some import statmement will load some module (directly or indirectly)
 and that module maybe include some statement "reverse('djdt:render_panel')" which will access the urlpattern of this module,
@@ -26,7 +28,8 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
     path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
-    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    # path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/', auth_views.PasswordResetView.as_view(form_class=LoggedPasswordResetForm), name='password_reset'),
     path(
         "password_change/done/",
         auth_views.PasswordChangeDoneView.as_view(),

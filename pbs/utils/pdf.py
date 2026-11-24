@@ -15,9 +15,10 @@ from django.utils import timezone
 from django.conf import settings
 from django.http import HttpResponse,HttpResponseRedirect
 from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
+# from django.core.mail import EmailMessage
 from django.contrib import messages
 
+from pbs.email import PlainTextEmail
 from pbs.models import FileDownloadHash
 
 logger = logging.getLogger('pdf')
@@ -434,21 +435,24 @@ def download_pdf_orig(request, prescription):
                 message = 'Prescribed Burn System: file {} can be downloaded at:\n\t{}\nFile size: {}\nNo. of times file can be downloaded: {}'.format(
                    downloadname, file_url, pdfresult.filesize, settings.SEND_DOWNLOAD_LIMIT)
                 try:
-                    email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
-                    systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
-                    headers = {
-                        'System-Environment': email_instance,
-                        'ITSystem-ID': systemid + '-' + email_instance,
-                    }
+                    # email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+                    # systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+                    # headers = {
+                    #     'System-Environment': email_instance,
+                    #     'ITSystem-ID': systemid + '-' + email_instance,
+                    # }
                     # send_mail(subject, message, email_from, [request.user.email])
-                    email = EmailMessage(
-                        subject=subject,
-                        body=message,
-                        from_email=email_from,
-                        to=[request.user.email],
-                        headers=headers,
+                    # email = EmailMessage(
+                    #     subject=subject,
+                    #     body=message,
+                    #     from_email=email_from,
+                    #     to=[request.user.email],
+                    #     headers=headers,
+                    # )
+                    # email.send()
+                    PlainTextEmail(subject=subject).send(
+                        [request.user.email], from_address=email_from, context={'body': message},
                     )
-                    email.send()
                 except Exception as e:
                     logger.warning('Email notification could not be sent: {}'.format(e))
                 url = request.META.get('HTTP_REFERER')  # redirect back to the current URL
@@ -540,21 +544,24 @@ def download_pdf_latest(request, prescription):
                 pdfresult.filesize,
                 expires_at.strftime('%Y-%m-%d %H:%M:%S %Z'),
             )
-            email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
-            systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
-            headers = {
-                'System-Environment': email_instance,
-                'ITSystem-ID': systemid + '-' + email_instance,
-            }
+            # email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+            # systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+            # headers = {
+            #     'System-Environment': email_instance,
+            #     'ITSystem-ID': systemid + '-' + email_instance,
+            # }
             # send_mail(subject, message, email_from, [request.user.email])
-            email = EmailMessage(
-                subject=subject,
-                body=message,
-                from_email=email_from,
-                to=[request.user.email],
-                headers=headers,
+            # email = EmailMessage(
+            #     subject=subject,
+            #     body=message,
+            #     from_email=email_from,
+            #     to=[request.user.email],
+            #     headers=headers,
+            # )
+            # email.send()
+            PlainTextEmail(subject=subject).send(
+                [request.user.email], from_address=email_from, context={'body': message},
             )
-            email.send()
 
             url = request.META.get('HTTP_REFERER')
             logger.info("__________________________ END _____________________________")
@@ -624,19 +631,22 @@ def enqueue_download_pdf(request, prescription):
 
 
 def _send_download_email(user, subject, message):
-    email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
-    systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
-    headers = {
-        'System-Environment': email_instance,
-        'ITSystem-ID': systemid + '-' + email_instance,
-    }
-    EmailMessage(
-        subject=subject,
-        body=message,
-        from_email=settings.FEX_MAIL,
-        to=[user.email],
-        headers=headers,
-    ).send()
+    # email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+    # systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+    # headers = {
+    #     'System-Environment': email_instance,
+    #     'ITSystem-ID': systemid + '-' + email_instance,
+    # }
+    # EmailMessage(
+    #     subject=subject,
+    #     body=message,
+    #     from_email=settings.FEX_MAIL,
+    #     to=[user.email],
+    #     headers=headers,
+    # ).send()
+    PlainTextEmail(subject=subject).send(
+        [user.email], from_address=settings.FEX_MAIL, context={'body': message},
+    )
 
 
 def process_download_pdf_job(job):
@@ -764,21 +774,24 @@ def download_pdf(request, prescription):
                 pdfresult.filesize,
                 expires_at.strftime('%Y-%m-%d %H:%M:%S %Z'),
             )
-            email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
-            systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
-            headers = {
-                'System-Environment': email_instance,
-                'ITSystem-ID': systemid + '-' + email_instance,
-            }
+            # email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+            # systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+            # headers = {
+            #     'System-Environment': email_instance,
+            #     'ITSystem-ID': systemid + '-' + email_instance,
+            # }
             # send_mail(subject, message, email_from, [request.user.email])
-            email = EmailMessage(
-                subject=subject,
-                body=message,
-                from_email=email_from,
-                to=[request.user.email],
-                headers=headers,
+            # email = EmailMessage(
+            #     subject=subject,
+            #     body=message,
+            #     from_email=email_from,
+            #     to=[request.user.email],
+            #     headers=headers,
+            # )
+            # email.send()
+            PlainTextEmail(subject=subject).send(
+                [request.user.email], from_address=email_from, context={'body': message},
             )
-            email.send()
 
             url = request.META.get('HTTP_REFERER')
             logger.info("__________________________ END _____________________________")

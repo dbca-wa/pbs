@@ -33,6 +33,7 @@ SUPPORT_EMAIL = env('SUPPORT_EMAIL', ['oim.servicedesk@dbca.wa.gov.au'])
 NOTIFICATION_EMAIL=env('NOTIFICATION_EMAIL', None)
 
 EMAIL_INSTANCE = env("EMAIL_INSTANCE", default="PROD")
+EMAIL_DELIVERY = env("EMAIL_DELIVERY", default="on")
 NON_PROD_EMAIL = env("NON_PROD_EMAIL", default="")
 PRODUCTION_EMAIL= env("PRODUCTION_EMAIL", default=False)
 SYSTEM_ID = env("SYSTEM_ID", default="S029")

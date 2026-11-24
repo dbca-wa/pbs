@@ -15,10 +15,11 @@ import os
 import shutil
 
 from django.conf import settings
-from django.core.mail import EmailMessage
+# from django.core.mail import EmailMessage
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+from pbs.email import PlainTextEmail
 from pbs.prescription.models import JobQueue, Prescription
 from pbs.utils import pdflatex
 
@@ -125,21 +126,25 @@ def _fail_archive_prescription_job(job, prescription, now, exc):
             'Dedupe key: {4}\n'
             'Error: {5}'
         ).format(prescription, local_time, job.id, job.job_type, job.dedupe_key, job.error_message)
-        email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
-        systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
-        headers = {
-            'System-Environment': email_instance,
-            'ITSystem-ID': systemid + '-' + email_instance,
-        }
+        # email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+        # systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+        # headers = {
+        #     'System-Environment': email_instance,
+        #     'ITSystem-ID': systemid + '-' + email_instance,
+        # }
         # send_mail(title, message, email_from, settings.NOTIFICATION_EMAIL.split(','), fail_silently=True)
-        email = EmailMessage(
-            subject=title,
-            body=message,
-            from_email=email_from,
-            to=settings.NOTIFICATION_EMAIL.split(','),
-            headers=headers,
+        # email = EmailMessage(
+        #     subject=title,
+        #     body=message,
+        #     from_email=email_from,
+        #     to=settings.NOTIFICATION_EMAIL.split(','),
+        #     headers=headers,
+        # )
+        # email.send(fail_silently=True)
+        PlainTextEmail(subject=title).send(
+            settings.NOTIFICATION_EMAIL.split(','), from_address=email_from,
+            context={'body': message}, fail_silently=True,
         )
-        email.send(fail_silently=True)
     else:
         logger.warning('ENV NOTIFICATION_EMAIL is not set. Unable to send notification email.')
 
@@ -199,21 +204,24 @@ def _send_requester_email(job, prescription, succeeded, local_time, error=None):
         )
 
     try:
-        email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
-        systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
-        headers = {
-            'System-Environment': email_instance,
-            'ITSystem-ID': systemid + '-' + email_instance,
-        }
+        # email_instance = settings.EMAIL_INSTANCE if hasattr(settings, 'EMAIL_INSTANCE') else ''
+        # systemid = settings.SYSTEM_ID if hasattr(settings, 'SYSTEM_ID') else ''
+        # headers = {
+        #     'System-Environment': email_instance,
+        #     'ITSystem-ID': systemid + '-' + email_instance,
+        # }
         # send_mail(subject, message, email_from, [recipient], fail_silently=False)
-        email = EmailMessage(
-            subject=subject,
-            body=message,
-            from_email=email_from,
-            to=[recipient],
-            headers=headers,
+        # email = EmailMessage(
+        #     subject=subject,
+        #     body=message,
+        #     from_email=email_from,
+        #     to=[recipient],
+        #     headers=headers,
+        # )
+        # email.send(fail_silently=False)
+        PlainTextEmail(subject=subject).send(
+            [recipient], from_address=email_from, context={'body': message},
         )
-        email.send(fail_silently=False)
     except Exception:
         logger.exception(
             'Failed to send archive completion email to %s for prescription %s',
