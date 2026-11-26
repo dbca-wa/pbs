@@ -138,7 +138,14 @@ def copy_pdflatex_artifacts(source_dir, burn_id, downloadname, logfilename):
     )
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
-    shutil.copytree(source_dir, log_dir, dirs_exist_ok=True)
+    
+    if os.path.exists(source_dir):
+        for root, dirs, files in os.walk(source_dir):
+            target_root = os.path.join(log_dir, os.path.relpath(root, source_dir))
+            os.makedirs(target_root, exist_ok=True)
+            for file_name in files:
+                shutil.copyfile(os.path.join(root, file_name), os.path.join(target_root, file_name))
+    
     return os.path.join(log_dir, logfilename)
 
 
