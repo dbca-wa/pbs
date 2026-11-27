@@ -335,10 +335,14 @@ class PrescribedBurn(Audit):
     @property
     def area_str(self):
         _str = ''
-        if self.area and self.area>=0:
+        # Original code: if self.area and self.area>=0:
+        # Bug: This fails for 0.0 since 0.0 is falsy. Changed to check if not None.
+        if self.area is not None and self.area>=0:
             _str += str(self.area) + " ha {} ".format('-' if self.distance else '')
 
-        if self.distance and self.distance>=0:
+        # Original code: if self.distance and self.distance>=0:
+        # Bug: This fails for 0.0 since 0.0 is falsy. Changed to check if not None.
+        if self.distance is not None and self.distance>=0:
             _str += str(self.distance) + " km"
 
         return _str
