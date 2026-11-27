@@ -420,6 +420,22 @@ class PrescribedBurn(Audit):
                 logger.info('Ongoing Record Already Exists (Burn) - not copied (268b today to 268b tomorrow). Record {}, today {}, tomorrow {}'.format(obj.fire_idd, dt, tomorrow))
                 continue
             try:
+                # Delete acknowledgements BEFORE setting pk to None (fix: requires original pk to delete related records)
+                obj.acknowledgements.all().delete()
+                
+                # NOW prepare for copy by removing the primary key
+                # obj.pk = None
+                # obj.date = tomorrow
+                # obj.area = None
+                # obj.status = None
+                # obj.approval_268a_status = PrescribedBurn.APPROVAL_DRAFT
+                # obj.approval_268a_status_modified = now
+                # obj.approval_268b_status = PrescribedBurn.APPROVAL_DRAFT
+                # obj.approval_268b_status_modified = now
+                # obj.acknowledgements.all().delete()
+                # obj.rolled = True
+                # obj.save()
+                
                 obj.pk = None
                 obj.date = tomorrow
                 obj.area = None
@@ -428,14 +444,16 @@ class PrescribedBurn(Audit):
                 obj.approval_268a_status_modified = now
                 obj.approval_268b_status = PrescribedBurn.APPROVAL_DRAFT
                 obj.approval_268b_status_modified = now
-                obj.acknowledgements.all().delete()
                 obj.rolled = True
                 obj.save()
                 count += 1
                 logger.info('Ongoing Record copied (268b today to 268b tomorrow). Record {}, today {}, tomorrow {}'.format(obj.fire_idd, dt, tomorrow))
-            except:
+            except Exception as e:
+                # Improved error handling: log actual exception details
                 # records already exist - pk (pres, date) will not allow overwrite, so ignore the exception
-                logger.warn('Ongoing Record not copied. Record {} already exists on day {}'.format(obj.fire_idd, tomorrow))
+                # logger.warn('Ongoing Record not copied. Record {} already exists on day {}'.format(obj.fire_idd, tomorrow))
+                logger.error('ERROR copying Ongoing Record {}: {} - {}'.format(obj.fire_idd, type(e).__name__, str(e)), exc_info=True)
+
 
     def copy_planned_approved_records_adhoc(self, dt):
         """
@@ -480,9 +498,11 @@ class PrescribedBurn(Audit):
                 obj.save()
                 count += 1
                 logger.info('Planned Approved Record copied (268a today to 268b tomorrow). Record {}, today {}, tomorrow {}'.format(obj.fire_idd, dt, tomorrow))
-            except:
+            except Exception as e:
+                # Improved error handling: log actual exception details
                 # records already exist - pk (pres, date) will not allow overwrite, so ignore the exception
-                logger.warn('Planned Approved Record not copied. Record {} already exists on day {}'.format(obj.fire_idd, tomorrow))
+                # logger.warn('Planned Approved Record not copied. Record {} already exists on day {}'.format(obj.fire_idd, tomorrow))
+                logger.error('ERROR copying Planned Approved Record {}: {} - {}'.format(obj.fire_idd, type(e).__name__, str(e)), exc_info=True)
 
 
     def __str__(self):
